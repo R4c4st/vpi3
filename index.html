@@ -3923,40 +3923,25 @@ function renderAll(){
 // ═══════════════════════════════════════
 // THÈME (auto / clair / sombre)
 // ═══════════════════════════════════════
-const THEMES=['auto','light','dark'];
+const THEMES=['light','dark'];
 const THEME_META={
-  auto:{icon:'🌓',label:'Auto'},
   light:{icon:'☀️',label:'Clair'},
   dark:{icon:'🌙',label:'Sombre'}
 };
-let _theme=localStorage.getItem('oci_theme')||'auto';
+let _theme=localStorage.getItem('oci_theme')||'light';
 
 function applyTheme(t){
   _theme=t;
   const html=document.documentElement;
-  // Reset
   html.classList.remove('dk');
   html.removeAttribute('data-theme');
-  // Apply
   if(t==='dark'){html.classList.add('dk');html.setAttribute('data-theme','dark');}
-  else if(t==='light'){html.setAttribute('data-theme','light');}
-  // Auto : .dk géré par prefers-color-scheme via CSS, mais on applique aussi en JS pour cohérence
-  else if(t==='auto'){
-    if(window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches){
-      html.classList.add('dk');
-    }
-  }
-  const m=THEME_META[t];
+  else{html.setAttribute('data-theme','light');}
+  const m=THEME_META[t]||THEME_META['light'];
   const icon=qs('theme-icon');const label=qs('theme-label');
   if(icon) icon.textContent=m.icon;
   if(label) label.textContent=m.label;
   localStorage.setItem('oci_theme',t);
-}
-// Écouter les changements système (mode auto)
-if(window.matchMedia){
-  window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',e=>{
-    if(_theme==='auto') applyTheme('auto');
-  });
 }
 function cycleTheme(){
   const idx=THEMES.indexOf(_theme);
