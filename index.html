@@ -448,6 +448,28 @@ canvas{display:block;touch-action:none;width:100%}
 <div style="padding:0 16px 0">
   <div id="heroSentinel" style="height:1px;pointer-events:none"></div>
 
+  <!-- Bandeau invitation plein écran (masqué après clic ou si déjà en FS) -->
+  <div id="fs-invite" style="
+    display:none;align-items:center;justify-content:space-between;gap:12px;
+    background:linear-gradient(135deg,#0d2a48,#1060a0);color:#fff;
+    padding:9px 16px;border-radius:14px;margin-bottom:10px;font-size:12px;font-weight:600;
+    box-shadow:0 4px 16px rgba(10,30,60,.2)">
+    <div style="display:flex;align-items:center;gap:10px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      Pour une meilleure expérience terrain, utilisez l'application en plein écran.
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="toggleFullscreen();qs('fs-invite').style.display='none'" style="
+        padding:6px 14px;border-radius:999px;background:#fff;color:#0d4880;
+        border:none;font-size:12px;font-weight:700;cursor:pointer">
+        Passer en plein écran
+      </button>
+      <button onclick="qs('fs-invite').style.display='none'" style="
+        background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;
+        font-size:18px;line-height:1;padding:2px 4px">✕</button>
+    </div>
+  </div>
+
   <!-- ══════════ HERO ══════════ -->
   <div class="hero" id="hero">
     <div class="hero-top">
@@ -457,6 +479,16 @@ canvas{display:block;touch-action:none;width:100%}
       </div>
       <div class="hero-actions">
         <div class="autosave-badge" id="autosaveBadge"><span class="autosave-dot"></span><span id="autosaveText">Session active</span></div>
+        <button id="fs-btn" onclick="toggleFullscreen()" title="Plein écran" style="
+          display:inline-flex;align-items:center;justify-content:center;gap:6px;
+          padding:7px 12px;border-radius:999px;
+          background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+          color:#fff;font-size:12px;font-weight:600;cursor:pointer;
+          transition:background .18s;white-space:nowrap;flex-shrink:0">
+          <svg id="fs-icon-expand" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          <svg id="fs-icon-exit" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
+          <span id="fs-label">Plein écran</span>
+        </button>
       </div>
       <div class="hero-strip">
         <button class="hbtn hbtn-warn" onclick="openNotebook()">Bloc-notes terrain</button>
@@ -3573,10 +3605,39 @@ function renderAll(){
   renderMetrics();
 }
 
+// ═══════════════════════════════════════
+// PLEIN ÉCRAN
+// ═══════════════════════════════════════
+function toggleFullscreen(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  } else {
+    document.exitFullscreen().catch(()=>{});
+  }
+}
+function updateFsBtn(){
+  const isFs=!!document.fullscreenElement;
+  const expand=qs('fs-icon-expand');const exit=qs('fs-icon-exit');const label=qs('fs-label');
+  if(expand) expand.style.display=isFs?'none':'block';
+  if(exit) exit.style.display=isFs?'block':'none';
+  if(label) label.textContent=isFs?'Quitter plein écran':'Plein écran';
+  if(isFs) {const inv=qs('fs-invite');if(inv) inv.style.display='none';}
+}
+document.addEventListener('fullscreenchange',updateFsBtn);
+
 document.addEventListener('DOMContentLoaded',()=>{
   loadSession();renderAll();initHeroObserver();
   qs('autosaveText').textContent='Session active';
+  // Afficher l'invitation plein écran si pas encore en FS et première visite
+  if(!document.fullscreenElement){
+    const seen=localStorage.getItem('oci_fs_seen');
+    if(!seen){
+      const inv=qs('fs-invite');if(inv) inv.style.display='flex';
+      localStorage.setItem('oci_fs_seen','1');
+    }
+  }
 });
 </script>
 </body>
 </html>
+
