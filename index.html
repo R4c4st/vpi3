@@ -869,11 +869,40 @@ canvas{display:block;touch-action:none;width:100%}
       <button class="btn ghost" onclick="document.getElementById('modal-accounts').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body" style="display:flex;flex-direction:column;gap:16px">
+
+      <!-- Utilisateur connecté -->
+      <div style="display:flex;align-items:center;gap:11px;padding:10px 13px;background:var(--panel-soft);border:1px solid var(--line);border-radius:12px">
+        <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:700;flex-shrink:0">
+          <span id="acc-user-initial">?</span>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text)" id="acc-user-label">—</div>
+          <div style="font-size:11px;color:var(--ok)">● Session active</div>
+        </div>
+      </div>
+
+      <!-- Dossier de sauvegarde -->
+      <div style="border:1px solid var(--line);border-radius:13px;padding:13px">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Dossier de sauvegarde locale</div>
+        <div id="acc-folder-status" style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5">
+          Les sauvegardes sont nommées <span style="color:var(--primary);font-weight:600">oci_[identifiant]_[date].json</span>
+        </div>
+        <div id="acc-folder-current" style="display:none;margin-bottom:9px;padding:8px 11px;background:var(--panel-soft);border:1px solid var(--line);border-radius:9px;font-size:12px;display:flex;align-items:center;gap:8px">
+          <span style="font-size:16px">📁</span>
+          <span id="acc-folder-name" style="font-weight:600;color:var(--primary)"></span>
+        </div>
+        <button onclick="pickBackupFolder();renderAccountsFolderStatus()" class="btn" style="width:100%;justify-content:center">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          Choisir / changer le dossier
+        </button>
+      </div>
+
       <!-- Liste des comptes -->
       <div>
         <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Comptes enregistrés</div>
         <div id="accounts-list" style="display:flex;flex-direction:column;gap:7px"></div>
       </div>
+
       <!-- Nouveau compte / modifier mdp -->
       <div style="border-top:1px solid var(--line);padding-top:14px">
         <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Nouveau compte / modifier mot de passe</div>
@@ -942,14 +971,11 @@ canvas{display:block;touch-action:none;width:100%}
       </div>
       <div class="hero-strip">
         <button class="hbtn hbtn-warn" onclick="openNotebook()">Bloc-notes terrain</button>
-        <button class="hbtn" onclick="openTerrainMode()" style="background:rgba(90,171,255,.22);border-color:rgba(90,171,255,.35)">
-          📱 Mode terrain
-        </button>
         <button class="hbtn" onclick="triggerPhoto(currentModule)">Photo / image</button>
         <button class="hbtn" onclick="document.getElementById('jsonImport').click()">Importer JSON</button>
         <button class="hbtn" onclick="exportJSON()">Exporter JSON</button>
         <button class="hbtn" onclick="saveSession()">Sauvegarder</button>
-        <button class="hbtn hbtn-ok" onclick="refreshPreview()">Prévisualiser</button>
+        <button class="hbtn hbtn-ok" onclick="openPreviewModal()">Prévisualiser</button>
         <button class="hbtn hbtn-pdf" onclick="printCurrentModule()">PDF</button>
         <button class="hbtn hbtn-danger" onclick="nouveauProjet()">Nouveau projet</button>
         <button class="hbtn" onclick="openAccounts()" style="background:rgba(255,255,255,.09)">⚙ Accès</button>
@@ -1860,6 +1886,53 @@ canvas{display:block;touch-action:none;width:100%}
   </div>
 </div>
 
+<!-- ══════════ MODAL : PRÉVISUALISATION & ÉDITEUR ══════════ -->
+<div class="modal" id="modal-preview" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box" style="width:min(98vw,1400px);height:min(94vh,960px);display:flex;flex-direction:column">
+    <div class="modal-hdr" style="flex-shrink:0">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <h3>Prévisualisation &amp; mise en forme</h3>
+        <!-- Sélecteur module -->
+        <div style="display:flex;gap:0;background:var(--panel-soft);border:1px solid var(--line);border-radius:10px;overflow:hidden">
+          <button id="prev-tab-vpi" onclick="switchPreviewModule('vpi')" style="padding:6px 14px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--primary);color:#fff">VPI</button>
+          <button id="prev-tab-tech" onclick="switchPreviewModule('tech')" style="padding:6px 14px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:transparent;color:var(--muted)">Dossier technique</button>
+          <button id="prev-tab-doe" onclick="switchPreviewModule('doe')" style="padding:6px 14px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:transparent;color:var(--muted)">DOE</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:7px;flex-shrink:0">
+        <button class="btn warn" onclick="printFromPreview()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Imprimer / PDF
+        </button>
+        <button class="btn" onclick="resetPreviewSections()">↺ Réinitialiser</button>
+        <button class="btn ghost" onclick="document.getElementById('modal-preview').classList.remove('open')">✕</button>
+      </div>
+    </div>
+
+    <!-- Corps : 2 colonnes -->
+    <div style="display:grid;grid-template-columns:300px 1fr;gap:0;flex:1;overflow:hidden;border-top:1px solid var(--line)">
+
+      <!-- Colonne gauche : éditeur de sections -->
+      <div style="display:flex;flex-direction:column;border-right:1px solid var(--line);overflow:hidden">
+        <div style="padding:12px 14px;background:var(--panel-soft);border-bottom:1px solid var(--line);font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">
+          Sections — glisser pour réordonner
+        </div>
+        <div id="preview-sections-list" style="overflow-y:auto;flex:1;padding:10px"></div>
+        <div style="padding:10px 14px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)">
+          Glissez les blocs • Œil = visible/masqué • ✏ = éditer titre
+        </div>
+      </div>
+
+      <!-- Colonne droite : rendu live -->
+      <div style="overflow-y:auto;background:#f0f4f9;padding:24px" id="preview-render-zone">
+        <div id="preview-render" style="background:#fff;max-width:860px;margin:0 auto;
+          box-shadow:0 4px 30px rgba(0,0,0,.12);border-radius:4px;overflow:hidden;
+          font-family:'IBM Plex Sans',Arial,sans-serif;font-size:12px;color:#1a2536"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════ MODAL : BIBLIOTHÈQUE FICHES TECHNIQUES ══════════ -->
 <div class="modal" id="modal-techlib" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="modal-box" style="width:min(95vw,1050px);height:min(90vh,800px)">
@@ -2165,46 +2238,6 @@ canvas{display:block;touch-action:none;width:100%}
 </div>
 
 <!-- ══════════ MODE TERRAIN (smartphone / tablette) ══════════ -->
-<div id="terrain-mode" style="display:none;position:fixed;inset:0;z-index:200;
-  font-family:'IBM Plex Sans',system-ui,sans-serif;overflow:hidden;flex-direction:column">
-
-  <!-- Header terrain -->
-  <div style="background:linear-gradient(135deg,#10253f 0%,#0f4f84 55%,#2b82cf 100%);
-    padding:10px 14px;display:flex;align-items:center;justify-content:space-between;
-    gap:12px;box-shadow:0 4px 20px rgba(5,15,40,.35);flex-shrink:0;z-index:10">
-    <div style="display:flex;align-items:center;gap:10px">
-      <img src="https://r4c4st.github.io/vpi/oci_logo_transparent.png" onerror="this.style.display='none'"
-        style="height:28px"/>
-      <div>
-        <div style="font-size:15px;font-weight:700;color:#fff;line-height:1">Mode terrain</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.7)" id="terrain-client-label">VPI</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <button onclick="saveSession();showToast('Sauvegardé.')" style="
-        padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.15);
-        border:1px solid rgba(255,255,255,.2);color:#fff;font-size:12px;font-weight:600;cursor:pointer">
-        💾 Sauvegarder
-      </button>
-      <button onclick="closeTerrainMode()" style="
-        padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.12);
-        border:1px solid rgba(255,255,255,.18);color:#fff;font-size:12px;font-weight:600;cursor:pointer">
-        ✕ Quitter
-      </button>
-    </div>
-  </div>
-
-  <!-- Nav sections terrain -->
-  <div id="terrain-nav" style="display:flex;overflow-x:auto;scrollbar-width:none;
-    background:#0d1e35;padding:0 10px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.1)">
-  </div>
-
-  <!-- Corps terrain -->
-  <div id="terrain-body" style="flex:1;overflow-y:auto;background:var(--bg);padding:14px;
-    display:flex;flex-direction:column;gap:14px">
-  </div>
-</div>
-
 <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="importPhotos(event)"/>
 <input type="file" id="jsonImport" accept=".json" style="display:none" onchange="importJSON(event)"/>
 <input type="file" id="lib-file-input" accept=".pdf,.png,.jpg,.jpeg,.webp" style="display:none" onchange="handleLibFile(event)"/>
@@ -2212,7 +2245,6 @@ canvas{display:block;touch-action:none;width:100%}
 <input type="file" id="ca-excel-input" accept=".xlsx,.xls" style="display:none" onchange="importCaExcel(event)"/>
 <input type="file" id="ca-attach-input" accept=".xlsx,.xls,.pdf" style="display:none" onchange="attachCaFile(event)"/>
 <input type="file" id="cable-photo-input" accept="image/*" multiple capture="environment" style="display:none" onchange="importCablePhotos(event)"/>
-<input type="file" id="terrain-photo-input" accept="image/*" multiple capture="environment" style="display:none" onchange="importTerrainPhotos(event)"/>
 <div id="printRoot"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -3840,19 +3872,388 @@ function deleteNotePage(){
 // ═══════════════════════════════════════
 // PREVIEW
 // ═══════════════════════════════════════
-function refreshPreview(){
-  const v=S.vpi,t=S.tech,d=S.doe;
-  const photos=S.photos.filter(p=>p.target==='doe'&&p.src);
-  let html=`<h2>Dossier DOE — ${esc(d.ref||'Réf. non renseignée')}</h2>`;
-  if(d.ref||d.version||d.date){html+=`<h3>Informations générales</h3>`;
-    [['Référence',d.ref],['Version',d.version],['Date',d.date],['Contact',t.contact]].forEach(([k,v2])=>{if(v2)html+=`<div class="pv-field"><span class="pv-k">${k}</span><span class="pv-v">${esc(v2)}</span></div>`;});
-    if(d.summary)html+=`<div class="pv-field"><span class="pv-k">Résumé</span><span class="pv-v">${esc(d.summary)}</span></div>`;
+// ═══════════════════════════════════════
+// PRÉVISUALISATION & ÉDITEUR DE SECTIONS
+// ═══════════════════════════════════════
+
+// Structure des sections disponibles par module
+const PREVIEW_DEFS={
+  vpi:[
+    {id:'vpi-ident',   title:'Identification du chantier', fn:pvVpiIdent},
+    {id:'vpi-faisab',  title:'Faisabilité & points de vigilance', fn:pvVpiFaisab},
+    {id:'vpi-cables',  title:'Relevé des passages de câbles', fn:pvVpiCables},
+    {id:'vpi-prep',    title:'Travaux préparatoires', fn:pvVpiPrep},
+    {id:'vpi-equip',   title:'Matériel de pose & fournitures', fn:pvVpiEquip},
+    {id:'vpi-ecarts',  title:'Écarts & corrections devis', fn:pvVpiEcarts},
+    {id:'vpi-photos',  title:'Photos & schémas terrain', fn:pvVpiPhotos},
+    {id:'vpi-conclu',  title:'Conclusion & transmission', fn:pvVpiConclu},
+    {id:'vpi-notes',   title:'Notes terrain', fn:pvVpiNotes},
+  ],
+  tech:[
+    {id:'tech-garde',   title:'Page de garde', fn:pvTechGarde},
+    {id:'tech-planning',title:'Planning par journée', fn:pvTechPlanning},
+    {id:'tech-equip',   title:'Matériels & check-list', fn:pvTechEquip},
+    {id:'tech-reseau',  title:'Architecture réseau', fn:pvTechReseau},
+    {id:'tech-cables',  title:'Passages de câbles & photos', fn:pvTechCables},
+    {id:'tech-prep',    title:'Travaux préparatoires', fn:pvTechPrep},
+    {id:'tech-param',   title:'Paramétrage & mise en service', fn:pvTechParam},
+    {id:'tech-photos',  title:'Photos techniques', fn:pvTechPhotos},
+    {id:'tech-notes',   title:'Notes', fn:pvTechNotes},
+  ],
+  doe:[
+    {id:'doe-infos',    title:'Informations DOE', fn:pvDoeInfos},
+    {id:'doe-docs',     title:'Documents & notices', fn:pvDoeDocs},
+    {id:'doe-recette',  title:'Recettage', fn:pvDoeRecette},
+    {id:'doe-fiches',   title:'Fiches techniques', fn:pvDoeFiches},
+    {id:'doe-photos',   title:'Photos finales', fn:pvDoePhotos},
+    {id:'doe-notes',    title:'Notes', fn:pvDoeNotes},
+  ]
+};
+
+// État des sections (ordre + visibilité + titres personnalisés)
+let _pvModule='vpi';
+let _pvSections={vpi:null,tech:null,doe:null}; // null = utiliser défaut
+
+function getPvSections(mod){
+  if(!_pvSections[mod]){
+    _pvSections[mod]=PREVIEW_DEFS[mod].map(s=>({...s,visible:true,customTitle:''}));
   }
-  if(d.docs.length){html+=`<h3>Documents</h3><table><tr><th>Nom</th><th>Catégorie</th><th>Lié à</th></tr>`;d.docs.forEach(r=>{html+=`<tr><td>${esc(r.name)}</td><td>${esc(r.category)}</td><td>${esc(r.linkedTo)}</td></tr>`;});html+=`</table>`;}
-  if(d.tests.length){html+=`<h3>Recettage</h3><table><tr><th>Test</th><th>Équipement</th><th>Résultat</th><th>Valeur</th></tr>`;d.tests.forEach(r=>{html+=`<tr><td>${esc(r.test)}</td><td>${esc(r.equip)}</td><td>${esc(r.result)}</td><td>${esc(r.value)}</td></tr>`;});html+=`</table>`;}
-  if(photos.length){html+=`<h3>Photos DOE</h3><div class="preview-img-grid">`;photos.slice(0,4).forEach(p=>{html+=`<img src="${p.src}"/>`;});html+=`</div>`;}
-  qs('preview-pane').innerHTML=html;
+  return _pvSections[mod];
 }
+
+function openPreviewModal(){
+  _pvModule=currentModule;
+  switchPreviewModule(_pvModule);
+  qs('modal-preview').classList.add('open');
+}
+
+function switchPreviewModule(mod){
+  _pvModule=mod;
+  ['vpi','tech','doe'].forEach(m=>{
+    const btn=qs(`prev-tab-${m}`);
+    if(btn){
+      btn.style.background=m===mod?'var(--primary)':'transparent';
+      btn.style.color=m===mod?'#fff':'var(--muted)';
+    }
+  });
+  renderPvSectionsList();
+  renderPvPreview();
+}
+
+// ── Rendu de la liste de sections (panneau gauche) ──
+let _pvDragSrc=null;
+
+function renderPvSectionsList(){
+  const list=qs('preview-sections-list');if(!list) return;
+  const secs=getPvSections(_pvModule);
+  list.innerHTML=secs.map((s,i)=>`
+    <div id="pvs-${s.id}" draggable="true"
+      ondragstart="pvDragStart(event,'${s.id}')"
+      ondragover="pvDragOver(event,'${s.id}')"
+      ondrop="pvDrop(event,'${s.id}')"
+      ondragend="pvDragEnd()"
+      style="display:flex;align-items:center;gap:8px;padding:9px 10px;margin-bottom:6px;
+        border:1px solid var(--line);border-radius:11px;background:var(--panel);
+        cursor:grab;transition:all .18s;opacity:${s.visible?1:.4};
+        ${s.visible?'':'text-decoration:line-through'}">
+      <!-- Drag handle -->
+      <span style="color:var(--muted);cursor:grab;font-size:14px;flex-shrink:0;user-select:none" title="Glisser pour réordonner">⠿</span>
+      <!-- Titre -->
+      <span id="pvs-title-${s.id}" style="flex:1;font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+        ${esc(s.customTitle||s.title)}
+      </span>
+      <!-- Boutons -->
+      <button onclick="pvToggle('${s.id}')" title="${s.visible?'Masquer':'Afficher'}"
+        style="border:none;background:none;cursor:pointer;font-size:14px;padding:2px 3px;flex-shrink:0;color:${s.visible?'var(--ok)':'var(--muted)'}">
+        ${s.visible?'👁':'🚫'}
+      </button>
+      <button onclick="pvEditTitle('${s.id}')" title="Modifier le titre"
+        style="border:none;background:none;cursor:pointer;font-size:13px;padding:2px 3px;flex-shrink:0;color:var(--muted)">✏</button>
+      <button onclick="pvDelete('${s.id}')" title="Supprimer cette section"
+        style="border:none;background:none;cursor:pointer;font-size:13px;padding:2px 3px;flex-shrink:0;color:var(--danger)">✕</button>
+    </div>`).join('');
+}
+
+// Drag & drop natif
+function pvDragStart(e,id){
+  _pvDragSrc=id;
+  e.dataTransfer.effectAllowed='move';
+  e.currentTarget.style.opacity='0.4';
+}
+function pvDragOver(e,id){
+  e.preventDefault();
+  e.dataTransfer.dropEffect='move';
+  const el=qs(`pvs-${id}`);
+  if(el&&id!==_pvDragSrc) el.style.borderColor='var(--primary)';
+}
+function pvDrop(e,targetId){
+  e.preventDefault();
+  if(!_pvDragSrc||_pvDragSrc===targetId) return;
+  const secs=getPvSections(_pvModule);
+  const srcIdx=secs.findIndex(s=>s.id===_pvDragSrc);
+  const tgtIdx=secs.findIndex(s=>s.id===targetId);
+  if(srcIdx<0||tgtIdx<0) return;
+  const [moved]=secs.splice(srcIdx,1);
+  secs.splice(tgtIdx,0,moved);
+  renderPvSectionsList();
+  renderPvPreview();
+}
+function pvDragEnd(){
+  _pvDragSrc=null;
+  // Reset borders
+  getPvSections(_pvModule).forEach(s=>{
+    const el=qs(`pvs-${s.id}`);
+    if(el) el.style.borderColor='var(--line)';
+    el && (el.style.opacity= s.visible?'1':'0.4');
+  });
+}
+
+function pvToggle(id){
+  const secs=getPvSections(_pvModule);
+  const s=secs.find(x=>x.id===id);
+  if(s){s.visible=!s.visible;renderPvSectionsList();renderPvPreview();}
+}
+function pvDelete(id){
+  if(!confirm('Supprimer cette section de la prévisualisation ?')) return;
+  _pvSections[_pvModule]=getPvSections(_pvModule).filter(s=>s.id!==id);
+  renderPvSectionsList();renderPvPreview();
+}
+function pvEditTitle(id){
+  const secs=getPvSections(_pvModule);
+  const s=secs.find(x=>x.id===id);if(!s) return;
+  const current=s.customTitle||s.title;
+  const newTitle=prompt('Nouveau titre de section :',current);
+  if(newTitle!==null){s.customTitle=newTitle.trim()||s.title;}
+  renderPvSectionsList();renderPvPreview();
+}
+function resetPreviewSections(){
+  if(!confirm('Réinitialiser l\'ordre et la visibilité des sections ?')) return;
+  _pvSections[_pvModule]=null;
+  renderPvSectionsList();renderPvPreview();
+}
+
+// ── Rendu live (panneau droit) ──
+function renderPvPreview(){
+  const zone=qs('preview-render');if(!zone) return;
+  const secs=getPvSections(_pvModule).filter(s=>s.visible);
+  const logoUrl='https://r4c4st.github.io/vpi/oci_logo_transparent.png';
+  const labels={vpi:'VPI · Visite Préalable à l\'Installation',tech:'Dossier technique',doe:'DOE · Dossier des Ouvrages Exécutés'};
+
+  let html=`<div style="padding:24px 28px">`;
+  // En-tête
+  html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:3px solid #0f4f84;margin-bottom:20px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <img src="${logoUrl}" onerror="this.style.display='none'" style="height:38px"/>
+      <div><div style="font-size:16px;font-weight:700;color:#0f4f84">OCI Connect</div><div style="font-size:10px;color:#6a7c92">Solutions courant faible & réseaux</div></div>
+    </div>
+    <div style="text-align:right;font-size:11px;color:#6a7c92">
+      <div>${labels[_pvModule]||''}</div><div style="margin-top:2px">${new Date().toLocaleDateString('fr-FR')}</div>
+    </div>
+  </div>`;
+
+  // Sections visibles
+  secs.forEach(s=>{
+    const title=s.customTitle||s.title;
+    const content=s.fn?s.fn():'';
+    if(!content) return;
+    html+=`<div style="margin-bottom:22px;page-break-inside:avoid">
+      <div style="font-size:13px;font-weight:800;color:#0f4f84;text-transform:uppercase;letter-spacing:.04em;
+        border-bottom:1px solid #d9e4f0;padding-bottom:5px;margin-bottom:10px">${esc(title)}</div>
+      ${content}
+    </div>`;
+  });
+
+  // Pied de page
+  html+=`<div style="margin-top:24px;padding-top:9px;border-top:1px solid #d9e4f0;display:flex;justify-content:space-between;font-size:10px;color:#6a7c92">
+    <span>OCI Connect Nancy — Confidentiel</span><span>${labels[_pvModule]||''} · ${new Date().toLocaleDateString('fr-FR')}</span>
+  </div>`;
+  html+=`</div>`;
+  zone.innerHTML=html;
+}
+
+// ── Fonctions de contenu par section ──
+// Helpers
+function pvField(k,v){if(!v) return '';return`<div style="display:flex;gap:8px;margin:3px 0;font-size:11px"><span style="font-weight:700;color:#6a7c92;min-width:130px;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em;font-size:10px">${esc(k)}</span><span style="color:#1a2536">${esc(v)}</span></div>`;}
+function pvTable(headers,rows){
+  if(!rows.length) return '';
+  return`<table style="width:100%;border-collapse:collapse;font-size:11px;margin:6px 0">
+    <tr>${headers.map(h=>`<th style="background:#f4f8fd;padding:6px 8px;text-align:left;font-weight:700;border:1px solid #d9e4f0;font-size:10px;color:#365170;text-transform:uppercase;letter-spacing:.04em">${h}</th>`).join('')}</tr>
+    ${rows.map((r,i)=>`<tr>${r.map(c=>`<td style="padding:5px 8px;border:1px solid #d9e4f0;background:${i%2?'#f8fbff':'#fff'}">${c||'—'}</td>`).join('')}</tr>`).join('')}
+  </table>`;
+}
+function pvPhotos(target,max=4){
+  const photos=S.photos.filter(p=>p.target===target&&p.src).slice(0,max);
+  if(!photos.length) return '';
+  return`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0">
+    ${photos.map(p=>`<div><img src="${p.src}" style="width:100%;max-height:180px;object-fit:cover;border-radius:5px;border:1px solid #d9e4f0"/>${p.caption?`<div style="font-size:10px;color:#6a7c92;text-align:center;margin-top:3px">${esc(p.caption)}</div>`:''}</div>`).join('')}
+  </div>`;
+}
+function pvWarnBox(txt){return`<div style="background:#fff3e0;border:1px solid #f5c080;border-radius:5px;padding:8px 12px;font-size:11px;color:#8a4a00;margin:5px 0">⚠️ ${txt}</div>`;}
+function pvInfoBox(txt){return`<div style="background:#e3f2fd;border:1px solid #b8d4ea;border-radius:5px;padding:8px 12px;font-size:11px;color:#1a3a5c;margin:5px 0">ℹ️ ${txt}</div>`;}
+
+// ── VPI sections ──
+function pvVpiIdent(){
+  const v=S.vpi;
+  let h=pvField('N° commande',v.orderRef)+pvField('Date visite',v.visitDate)+pvField('Chargé d\'affaires',v.salesRef)+pvField('Client / Société',v.clientCompany)+pvField('Interlocuteur',v.clientContact)+pvField('Téléphone',v.clientPhone)+pvField('Email',v.clientEmail)+pvField('Adresse',v.clientAddress);
+  if(v.need) h+=`<div style="margin-top:8px;font-size:11px;color:#1a2536;background:#f7fbff;border:1px solid #d9e4f0;border-radius:5px;padding:8px">${esc(v.need)}</div>`;
+  return h||null;
+}
+function pvVpiFaisab(){
+  const v=S.vpi;
+  const [,,fl]=FAISAB[v.faisabiliteStatus||'']||FAISAB[''];
+  let h='';
+  if(v.faisabiliteStatus) h+=`<div style="margin-bottom:8px"><span style="font-size:11px;font-weight:700;background:#e8f5e9;color:#1b5e20;padding:4px 10px;border-radius:999px">${fl}</span></div>`;
+  if(v.faisabilite) h+=`<div style="font-size:11px;color:#1a2536;margin-bottom:8px;white-space:pre-wrap">${esc(v.faisabilite)}</div>`;
+  if(v.vigilance.length){
+    h+=pvTable(['Criticité','Description','Zone','Action requise'],
+      v.vigilance.map(r=>{const[,,l]=VIGILANCE_LEVELS[r.level]||VIGILANCE_LEVELS['warning'];return[l,r.desc,r.zone,r.action];}));
+  }
+  return h||null;
+}
+function pvVpiCables(){
+  const v=S.vpi;if(!v.cables.length) return null;
+  let h=pvTable(['Destination','De','Vers','Type câble','Long.','Chemin','État'],
+    v.cables.map(r=>{const[,,l]=CABLE_STATUS[r.status]||CABLE_STATUS['a_verifier'];return[r.dest,r.from,r.to,r.type,r.length,r.path,l];}));
+  // Photos câbles
+  const withPhotos=v.cables.filter(c=>c.photos&&c.photos.length);
+  withPhotos.forEach(c=>{
+    h+=`<div style="margin-top:10px"><div style="font-size:11px;font-weight:700;color:#1a5aaa;margin-bottom:5px">${esc(c.dest||'Câble')} — ${esc(c.from||'?')} → ${esc(c.to||'?')}</div>`;
+    h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">`;
+    c.photos.slice(0,4).forEach(p=>{h+=`<img src="${p.src}" style="width:100%;max-height:150px;object-fit:cover;border-radius:5px;border:1px solid #d9e4f0"/>`;});
+    h+=`</div></div>`;
+  });
+  return h;
+}
+function pvVpiPrep(){
+  const v=S.vpi;
+  const checks=Object.entries(v.prepChecks||{}).filter(([,on])=>on).map(([k])=>PREP_CHECKLIST.find(c=>c.key===k)?.label||k);
+  let h='';
+  if(checks.length) h+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">${checks.map(c=>`<span style="padding:3px 9px;background:#e8f2ff;color:#0f4f84;border-radius:999px;font-size:11px;font-weight:600">${c}</span>`).join('')}</div>`;
+  if(v.prep.length) h+=pvTable(['Type','Description / localisation','Prise en charge','Qté'],v.prep.map(r=>[r.type,r.desc,r.charge,r.qty]));
+  return h||null;
+}
+function pvVpiEquip(){
+  const v=S.vpi;if(!v.equipment.length) return null;
+  return pvTable(['Référence','Désignation','Qté','Unité','Note'],v.equipment.map(r=>[r.code,r.name,r.qty,r.unit,r.note]));
+}
+function pvVpiEcarts(){
+  const v=S.vpi;if(!v.ecarts.length) return null;
+  return pvTable(['Type','Réf. devis','Constat terrain','Impact','Action'],
+    v.ecarts.map(r=>{const[,,l]=ECART_IMPACTS[r.impact]||ECART_IMPACTS['neutre'];return[r.type,r.devisRef,r.constat,l,r.action];}));
+}
+function pvVpiPhotos(){return pvPhotos('vpi',8)||null;}
+function pvVpiConclu(){
+  const v=S.vpi;
+  let h=pvField('Suite donnée',v.suite)+pvField('Visé par',v.visePar);
+  if(v.conclusion) h+=`<div style="margin-top:6px;font-size:11px;white-space:pre-wrap;background:#f7fbff;border:1px solid #d9e4f0;border-radius:5px;padding:8px">${esc(v.conclusion)}</div>`;
+  if(v.instructions) h+=`<div style="margin-top:6px;font-size:11px;white-space:pre-wrap;background:#fff8e6;border:1px solid #f5c080;border-radius:5px;padding:8px">${esc(v.instructions)}</div>`;
+  return h||null;
+}
+function pvVpiNotes(){
+  const notes=S.notebookPages.filter(p=>p.target==='vpi'&&p.content.trim());
+  if(!notes.length) return null;
+  return notes.map(n=>`<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;margin-bottom:3px">${esc(n.title)}</div><div style="font-size:11px;white-space:pre-wrap;color:#365170">${esc(n.content)}</div></div>`).join('');
+}
+
+// ── DT sections ──
+function pvTechGarde(){
+  const v=S.vpi,t=S.tech;
+  let h=pvField('Client',v.clientCompany||t.clientRef)+pvField('Adresse',v.clientAddress||t.address)+pvField('N° dossier',t.number)+pvField('Réf. commande',v.orderRef||t.clientRef)+pvField('Chargé d\'affaires',t.manager||v.salesRef)+pvField('Contact site',v.clientContact+(v.clientPhone?' — '+v.clientPhone:''));
+  if(t.planning.length) h+=pvField('Durée estimée',`${t.planning.length} jour${t.planning.length>1?'s':''} d'intervention`);
+  if(t.context) h+=`<div style="margin-top:8px;font-size:11px;background:#f7fbff;border:1px solid #d9e4f0;border-radius:5px;padding:8px">${esc(t.context)}</div>`;
+  return h||null;
+}
+function pvTechPlanning(){
+  const t=S.tech;if(!t.planning.length) return null;
+  return pvTable(['Date','Technicien(s)','Tâches prévues','Zone / site'],t.planning.map(r=>[r.date,r.tech,r.tasks,r.site]));
+}
+function pvTechEquip(){
+  const t=S.tech;if(!t.equipment.length) return null;
+  return`<table style="width:100%;border-collapse:collapse;font-size:11px;margin:6px 0">
+    <tr><th style="background:#2e74b5;color:#fff;padding:6px 8px;text-align:left;border:1px solid #1e5f9f;font-size:10px;width:30px">✓</th>
+    <th style="background:#2e74b5;color:#fff;padding:6px 8px;text-align:left;border:1px solid #1e5f9f">Désignation</th>
+    <th style="background:#2e74b5;color:#fff;padding:6px 8px;text-align:left;border:1px solid #1e5f9f">Référence</th>
+    <th style="background:#2e74b5;color:#fff;padding:6px 8px;text-align:left;border:1px solid #1e5f9f">Qté</th>
+    <th style="background:#2e74b5;color:#fff;padding:6px 8px;text-align:left;border:1px solid #1e5f9f">Remarque</th></tr>
+    ${t.equipment.map((r,i)=>`<tr><td style="padding:5px 8px;border:1px solid #d9e4f0;text-align:center;background:${i%2?'#f8fbff':'#fff'}">☐</td>
+    <td style="padding:5px 8px;border:1px solid #d9e4f0;background:${i%2?'#f8fbff':'#fff'}">${esc(r.name)}</td>
+    <td style="padding:5px 8px;border:1px solid #d9e4f0;background:${i%2?'#f8fbff':'#fff'}">${esc(r.code)}</td>
+    <td style="padding:5px 8px;border:1px solid #d9e4f0;background:${i%2?'#f8fbff':'#fff'}">${esc(r.qty)} ${esc(r.unit)}</td>
+    <td style="padding:5px 8px;border:1px solid #d9e4f0;background:${i%2?'#f8fbff':'#fff'}">${esc(r.note)}</td></tr>`).join('')}
+  </table>`;
+}
+function pvTechReseau(){
+  const t=S.tech;if(!t.network.length) return null;
+  return pvTable(['Équipement','N° Série','Adresse IP','Masque','Passerelle','Login/Pass'],t.network.map(r=>[r.equipment,r.serial,r.ip||'À compléter',r.mask,r.gateway,r.credentials]));
+}
+function pvTechCables(){
+  const v=S.vpi;if(!v.cables.length) return null;
+  return pvVpiCables();
+}
+function pvTechPrep(){return pvVpiPrep();}
+function pvTechParam(){
+  const t=S.tech;if(!t.notes4) return null;
+  return`<div style="font-size:11px;white-space:pre-wrap;line-height:1.6">${esc(t.notes4)}</div>`;
+}
+function pvTechPhotos(){
+  const p=pvPhotos('tech',6);const p2=pvPhotos('vpi',4);
+  return(p||'')+(p2||'')||null;
+}
+function pvTechNotes(){
+  const notes=S.notebookPages.filter(p=>p.target==='tech'&&p.content.trim());
+  if(!notes.length) return null;
+  return notes.map(n=>`<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;margin-bottom:3px">${esc(n.title)}</div><div style="font-size:11px;white-space:pre-wrap;color:#365170">${esc(n.content)}</div></div>`).join('');
+}
+
+// ── DOE sections ──
+function pvDoeInfos(){
+  const d=S.doe,t=S.tech;
+  let h=pvField('Référence DOE',d.ref)+pvField('Version',d.version)+pvField('Date remise',d.date)+pvField('Contact client',t.contact);
+  if(d.summary) h+=`<div style="margin-top:6px;font-size:11px;background:#f7fbff;border:1px solid #d9e4f0;border-radius:5px;padding:8px">${esc(d.summary)}</div>`;
+  return h||null;
+}
+function pvDoeDocs(){
+  const d=S.doe;if(!d.docs.length) return null;
+  return pvTable(['Nom','Catégorie','Lié à'],d.docs.map(r=>[r.name,r.category,r.linkedTo]));
+}
+function pvDoeRecette(){
+  const d=S.doe;if(!d.tests.length) return null;
+  return pvTable(['Test','Équipement','Résultat','Valeur'],d.tests.map(r=>[r.test,r.equip,`<strong style="color:${r.result==='OK'?'#1b7a55':r.result==='NOK'?'#c53030':'#6a7c92'}">${esc(r.result)}</strong>`,r.value]));
+}
+function pvDoeFiches(){
+  const d=S.doe;if(!d.techSheets.length) return null;
+  return pvTable(['Référence','Désignation','Famille','Fiche','Note'],d.techSheets.map(r=>[r.code,r.name,r.family,r.fileName?`📎 ${r.fileName}`:'—',r.note]));
+}
+function pvDoePhotos(){return pvPhotos('doe',8)||null;}
+function pvDoeNotes(){
+  const notes=S.notebookPages.filter(p=>p.target==='doe'&&p.content.trim());
+  if(!notes.length) return null;
+  return notes.map(n=>`<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;margin-bottom:3px">${esc(n.title)}</div><div style="font-size:11px;white-space:pre-wrap;color:#365170">${esc(n.content)}</div></div>`).join('');
+}
+
+function printFromPreview(){
+  const secs=getPvSections(_pvModule).filter(s=>s.visible);
+  const logoUrl='https://r4c4st.github.io/vpi/oci_logo_transparent.png';
+  const labels={vpi:'VPI · Visite Préalable à l\'Installation',tech:'Dossier technique',doe:'DOE · Dossier des Ouvrages Exécutés'};
+  let html=`<div class="print-doc"><div class="print-hdr">
+    <div class="print-hdr-brand"><img class="print-hdr-logo" src="${logoUrl}" onerror="this.style.display='none'"/><div><div style="font-size:18px;font-weight:700;color:#0f4f84">OCI Connect</div><div style="font-size:11px;color:#6a7c92">Solutions courant faible & réseaux</div></div></div>
+    <div class="print-hdr-title"><h1>${labels[_pvModule]||''}</h1></div>
+    <div class="print-hdr-meta"><div>${new Date().toLocaleDateString('fr-FR')}</div><div style="font-weight:700;color:#0f4f84">OCI Connect Nancy</div></div>
+  </div>`;
+  secs.forEach(s=>{
+    const title=s.customTitle||s.title;
+    const content=s.fn?s.fn():'';
+    if(!content) return;
+    html+=`<div class="print-section"><h2>${esc(title)}</h2>${content}</div>`;
+  });
+  html+=`<div class="print-footer"><span>OCI Connect Nancy — Confidentiel</span><span>${labels[_pvModule]||''} · ${new Date().toLocaleDateString('fr-FR')}</span></div></div>`;
+  qs('printRoot').innerHTML=html;
+  window.print();
+}
+
+// Garde refreshPreview pour la carte DOE
+function refreshPreview(){openPreviewModal();}
+
 
 // ═══════════════════════════════════════
 // PRINT
@@ -4341,412 +4742,6 @@ function cablePhotoCaption(cableId,idx,val){
   scheduleAutosave();
 }
 
-// ═══════════════════════════════════════
-// MODE TERRAIN (smartphone / tablette)
-// ═══════════════════════════════════════
-const TERRAIN_SECTIONS=[
-  {id:'t-client',   icon:'👤', label:'Chantier',    fn:renderTerrainClient},
-  {id:'t-cables',   icon:'🔌', label:'Câbles',       fn:renderTerrainCables},
-  {id:'t-prep',     icon:'🔧', label:'Travaux',      fn:renderTerrainPrep},
-  {id:'t-photos',   icon:'📷', label:'Photos',       fn:renderTerrainPhotos},
-  {id:'t-faisab',   icon:'✅', label:'Faisabilité', fn:renderTerrainFaisab},
-  {id:'t-ecarts',   icon:'⚠️', label:'Écarts',       fn:renderTerrainEcarts},
-  {id:'t-notes',    icon:'📝', label:'Synthèse',     fn:renderTerrainNotes},
-];
-let _terrainSection='t-client';
-let _terrainPhotoTarget='vpi';
-
-function openTerrainMode(){
-  const el=qs('terrain-mode');
-  if(!el) return;
-  el.style.display='flex';
-  document.body.style.overflow='hidden';
-  // Label client
-  const lbl=qs('terrain-client-label');
-  if(lbl) lbl.textContent=S.vpi.clientCompany||'VPI en cours';
-  renderTerrainNav();
-  switchTerrainSection('t-client');
-  // Plein écran automatique si possible
-  if(!document.fullscreenElement){
-    document.documentElement.requestFullscreen().catch(()=>{});
-  }
-}
-
-function closeTerrainMode(){
-  const el=qs('terrain-mode');if(!el) return;
-  el.style.display='none';
-  document.body.style.overflow='';
-  renderAll();
-}
-
-function renderTerrainNav(){
-  const nav=qs('terrain-nav');if(!nav) return;
-  nav.innerHTML=TERRAIN_SECTIONS.map(s=>`
-    <button onclick="switchTerrainSection('${s.id}')" id="tnav-${s.id}" style="
-      flex-shrink:0;padding:11px 14px;background:none;border:none;border-bottom:3px solid transparent;
-      color:rgba(255,255,255,.55);font-size:12px;font-weight:700;cursor:pointer;
-      display:flex;align-items:center;gap:6px;white-space:nowrap;
-      transition:all .18s;font-family:inherit">
-      <span>${s.icon}</span>${s.label}
-    </button>`).join('');
-}
-
-function switchTerrainSection(id){
-  _terrainSection=id;
-  TERRAIN_SECTIONS.forEach(s=>{
-    const btn=qs(`tnav-${s.id}`);
-    if(btn){
-      btn.style.borderBottomColor=s.id===id?'#5aabff':'transparent';
-      btn.style.color=s.id===id?'#fff':'rgba(255,255,255,.55)';
-      btn.style.background=s.id===id?'rgba(90,171,255,.1)':'none';
-    }
-  });
-  const body=qs('terrain-body');if(!body) return;
-  body.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted)">Chargement…</div>';
-  const sec=TERRAIN_SECTIONS.find(s=>s.id===id);
-  if(sec) setTimeout(()=>{ body.innerHTML=''; sec.fn(body); },30);
-}
-
-// ── Helpers terrain ──
-function tCard(title,sub,content){
-  return`<div class="card" style="padding:16px">
-    <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:${sub?'2px':'10px'}">${title}</div>
-    ${sub?`<div style="font-size:12px;color:var(--muted);margin-bottom:12px">${sub}</div>`:''}
-    ${content}
-  </div>`;
-}
-function tField(label,id,val,type='text',placeholder=''){
-  return`<div style="margin-bottom:12px">
-    <label style="display:block;font-size:11px;font-weight:700;color:var(--muted);
-      text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">${label}</label>
-    ${type==='textarea'
-      ?`<textarea id="${id}" style="width:100%;background:var(--input-bg);border:1px solid var(--line);
-          border-radius:11px;padding:11px;font-size:15px;font-family:inherit;color:var(--text);
-          min-height:80px;resize:vertical" oninput="syncTerrainField('${id}')"
-          placeholder="${placeholder}">${esc(val)}</textarea>`
-      :`<input id="${id}" type="${type}" value="${esc(val)}" placeholder="${placeholder}"
-          style="width:100%;background:var(--input-bg);border:1px solid var(--line);
-          border-radius:11px;padding:13px;font-size:16px;color:var(--text);font-family:inherit"
-          oninput="syncTerrainField('${id}')"/>`}
-  </div>`;
-}
-function syncTerrainField(id){
-  const el=qs(id);if(!el) return;
-  // Sync avec les champs du module principal
-  const map={
-    vpiOrderRef:['vpi','orderRef'],vpiVisitDate:['vpi','visitDate'],vpiSalesRef:['vpi','salesRef'],
-    vpiClientCompany:['vpi','clientCompany'],vpiClientContact:['vpi','clientContact'],
-    vpiClientPhone:['vpi','clientPhone'],vpiClientEmail:['vpi','clientEmail'],
-    vpiClientAddress:['vpi','clientAddress'],vpiNeed:['vpi','need'],
-    vpiFaisabilite:['vpi','faisabilite'],vpiConclusion:['vpi','conclusion'],
-    vpiInstructions:['vpi','instructions'],
-  };
-  const path=map[id];
-  if(path) S[path[0]][path[1]]=el.value;
-  scheduleAutosave();
-  // Mettre à jour le label client dans le header terrain
-  const lbl=qs('terrain-client-label');
-  if(lbl) lbl.textContent=S.vpi.clientCompany||'VPI en cours';
-}
-function tBigBtn(label,icon,color,onclick){
-  return`<button onclick="${onclick}" style="
-    width:100%;padding:16px;border-radius:14px;border:none;
-    background:${color};color:#fff;font-size:15px;font-weight:700;
-    cursor:pointer;font-family:inherit;display:flex;align-items:center;
-    justify-content:center;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,.2);
-    margin-bottom:10px">${icon} ${label}</button>`;
-}
-
-// ── Sections terrain ──
-function renderTerrainClient(body){
-  const v=S.vpi;
-  body.innerHTML=tCard('Identification du chantier','Référence, client et interlocuteur sur site',`
-    ${tField('N° commande / devis','vpiOrderRef',v.orderRef,'text','ex: CMD-2024-0047')}
-    ${tField('Date de visite','vpiVisitDate',v.visitDate,'date')}
-    ${tField('Chargé d\'affaires','vpiSalesRef',v.salesRef,'text','Nom du commercial')}
-    ${tField('Client / Société','vpiClientCompany',v.clientCompany,'text','')}
-    ${tField('Interlocuteur sur site','vpiClientContact',v.clientContact,'text','')}
-    ${tField('Téléphone','vpiClientPhone',v.clientPhone,'tel','')}
-    ${tField('Email','vpiClientEmail',v.clientEmail,'email','')}
-    ${tField('Adresse du chantier','vpiClientAddress',v.clientAddress,'text','')}
-    ${tField('Description du projet commandé','vpiNeed',v.need,'textarea','Ex : installation 8 caméras…')}
-  `);
-}
-
-function renderTerrainFaisab(body){
-  const v=S.vpi;
-  const [,, faisLabel]=FAISAB[v.faisabiliteStatus||'']||FAISAB[''];
-  body.innerHTML=`
-    <div class="card" style="padding:16px">
-      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Évaluation de faisabilité</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-        ${Object.entries(FAISAB).filter(([k])=>k!=='').map(([k,[bg,fg,l]])=>`
-          <button onclick="setFaisabilite('${k}');switchTerrainSection('t-faisab')" style="
-            padding:14px 10px;border-radius:12px;border:2px solid ${v.faisabiliteStatus===k?fg:'var(--line)'};
-            background:${v.faisabiliteStatus===k?bg:'var(--panel-soft)'};color:${v.faisabiliteStatus===k?fg:'var(--muted)'};
-            font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;line-height:1.4">
-            ${l}
-          </button>`).join('')}
-      </div>
-      ${tField('Résumé de faisabilité','vpiFaisabilite',v.faisabilite,'textarea','Décrire l\'état général du site, les accès…')}
-    </div>
-    <div class="card" style="padding:16px">
-      <div style="font-size:14px;font-weight:700;margin-bottom:12px">Points de vigilance (${v.vigilance.length})</div>
-      ${v.vigilance.map((r,i)=>`
-        <div style="padding:11px 13px;border:1px solid var(--line);border-radius:11px;
-          margin-bottom:8px;background:${VIGILANCE_LEVELS[r.level]?.[0]||'var(--panel-soft)'}">
-          <div style="font-size:12px;font-weight:700;color:${VIGILANCE_LEVELS[r.level]?.[1]||'var(--text)'}">
-            ${VIGILANCE_LEVELS[r.level]?.[2]||''} — ${r.zone||'Zone non précisée'}
-          </div>
-          <div style="font-size:13px;margin-top:4px">${esc(r.desc||'—')}</div>
-          ${r.action?`<div style="font-size:11px;color:var(--muted);margin-top:3px">→ ${esc(r.action)}</div>`:''}
-        </div>`).join('')}
-      <button onclick="addVigilanceRow();switchTerrainSection('t-faisab')" style="
-        width:100%;padding:13px;border-radius:12px;border:2px dashed var(--line);
-        background:transparent;color:var(--muted);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">
-        + Ajouter un point de vigilance
-      </button>
-    </div>`;
-}
-
-function renderTerrainCables(body){
-  const v=S.vpi;
-  body.innerHTML=`
-    <div class="card" style="padding:16px">
-      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Passages de câbles (${v.cables.length})</div>
-      ${v.cables.map((r,i)=>`
-        <div style="border:1px solid var(--line);border-radius:13px;padding:13px;margin-bottom:10px;background:var(--panel-soft)">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px">
-            <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
-              <span style="padding:5px 11px;border-radius:999px;font-size:11px;font-weight:700;
-                background:${(CABLE_STATUS[r.status]||CABLE_STATUS['a_verifier'])[0]};
-                color:${(CABLE_STATUS[r.status]||CABLE_STATUS['a_verifier'])[1]}">
-                ${(CABLE_STATUS[r.status]||CABLE_STATUS['a_verifier'])[2]}
-              </span>
-              <span style="font-size:13px;font-weight:700;color:var(--primary)">${esc(r.dest||'Destination')}</span>
-            </div>
-            <button onclick="removeCableRow('${r.id}');switchTerrainSection('t-cables')"
-              style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:16px;padding:2px">✕</button>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-            <div>
-              <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px">De</div>
-              <input value="${esc(r.from)}" placeholder="Départ" oninput="cableField('${r.id}','from',this.value)"
-                style="width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:9px;padding:10px;font-size:14px;color:var(--text);font-family:inherit"/>
-            </div>
-            <div>
-              <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px">Vers</div>
-              <input value="${esc(r.to)}" placeholder="Arrivée / local" oninput="cableField('${r.id}','to',this.value)"
-                style="width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:9px;padding:10px;font-size:14px;color:var(--text);font-family:inherit"/>
-            </div>
-          </div>
-          <div style="margin-bottom:8px">
-            <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px">Destination</div>
-            <select onchange="cableField('${r.id}','dest',this.value)"
-              style="width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:9px;padding:10px;font-size:14px;color:var(--text);font-family:inherit">
-              ${CABLE_DEST.map(d=>`<option${(r.dest||'Caméra')===d?' selected':''}>${d}</option>`).join('')}
-            </select>
-          </div>
-          <div style="margin-bottom:8px">
-            <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px">Chemin / support</div>
-            <input value="${esc(r.path)}" placeholder="Goulotte, faux-plafond, fourreau…"
-              oninput="cableField('${r.id}','path',this.value)"
-              style="width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:9px;padding:10px;font-size:14px;color:var(--text);font-family:inherit"/>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-            <div>
-              <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px">Type câble</div>
-              <select onchange="cableField('${r.id}','type',this.value)"
-                style="width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:9px;padding:10px;font-size:13px;color:var(--text);font-family:inherit">
-                ${CABLE_TYPES.map(t=>`<option${r.type===t?' selected':''}>${t}</option>`).join('')}
-              </select>
-            </div>
-            <div>
-              <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px">État</div>
-              <select onchange="cableField('${r.id}','status',this.value)"
-                style="width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:9px;padding:10px;font-size:13px;color:var(--text);font-family:inherit">
-                ${Object.entries(CABLE_STATUS).map(([k,[b,c,l]])=>`<option value="${k}"${r.status===k?' selected':''}>${l}</option>`).join('')}
-              </select>
-            </div>
-          </div>
-          <!-- Bouton photos pour ce câble -->
-          <button onclick="openCablePhotos('${r.id}')" style="
-            width:100%;padding:12px;border-radius:11px;
-            background:${(r.photos&&r.photos.length)?'#e8f5e9':'var(--panel)'};
-            border:2px ${(r.photos&&r.photos.length)?'solid #a5d6a7':'dashed var(--line)'};
-            color:${(r.photos&&r.photos.length)?'#1b5e20':'var(--muted)'};
-            font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
-            display:flex;align-items:center;justify-content:center;gap:8px">
-            📷 ${(r.photos&&r.photos.length)?r.photos.length+' photo'+(r.photos.length>1?'s':'')+' jointe'+(r.photos.length>1?'s':''):'Ajouter photos du passage'}
-          </button>
-        </div>`).join('')}
-      <button onclick="addCableRow();switchTerrainSection('t-cables')" style="
-        width:100%;padding:15px;border-radius:13px;border:2px dashed var(--line);
-        background:transparent;color:var(--muted);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">
-        + Nouveau passage de câble
-      </button>
-    </div>`;
-}
-
-function renderTerrainPrep(body){
-  const v=S.vpi;
-  body.innerHTML=`
-    <div class="card" style="padding:16px">
-      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Travaux préparatoires</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
-        ${PREP_CHECKLIST.map(c=>{
-          const on=v.prepChecks&&v.prepChecks[c.key];
-          return`<button onclick="togglePrepCheck('${c.key}',${!on});renderTerrainPrep(qs('terrain-body'))" style="
-            padding:14px 10px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;
-            border:2px solid ${on?'var(--primary)':'var(--line)'};
-            background:${on?'rgba(90,171,255,.1)':'var(--panel-soft)'};
-            color:${on?'var(--primary)':'var(--muted)'};font-family:inherit;
-            display:flex;align-items:center;gap:7px">
-            <span style="font-size:18px">${c.icon}</span>${c.label}
-            ${on?'<span style="margin-left:auto;font-size:16px">✓</span>':''}
-          </button>`;
-        }).join('')}
-      </div>
-      ${v.prep.length?`
-        <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text)">Détail des travaux (${v.prep.length})</div>
-        ${v.prep.map(r=>`
-          <div style="padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:7px;background:var(--panel-soft)">
-            <div style="font-size:12px;font-weight:700;color:var(--primary)">${esc(r.type)}</div>
-            <div style="font-size:13px;margin-top:3px">${esc(r.desc||'—')}</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:3px">Prise en charge : ${esc(r.charge)}</div>
-          </div>`).join('')}`:''}
-    </div>`;
-}
-
-function renderTerrainPhotos(body){
-  _terrainPhotoTarget='vpi';
-  const photos=S.photos.filter(p=>p.target==='vpi');
-  // Also include cable photos
-  const cablePhotos=S.vpi.cables.filter(c=>c.photos&&c.photos.length);
-  body.innerHTML=`
-    <div class="card" style="padding:16px">
-      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Photos terrain</div>
-      <div style="display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap">
-        <button onclick="triggerTerrainPhoto('vpi')" style="
-          flex:1;padding:16px;border-radius:13px;border:none;
-          background:linear-gradient(135deg,#0f4f84,#1f78c8);color:#fff;
-          font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;
-          display:flex;align-items:center;justify-content:center;gap:9px">
-          📷 Prendre une photo
-        </button>
-        <button onclick="createWhiteboard('vpi')" style="
-          padding:16px 14px;border-radius:13px;border:2px solid var(--line);
-          background:var(--panel-soft);color:var(--text);
-          font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
-          ✏️ Schéma
-        </button>
-      </div>
-      ${photos.length?`
-        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">
-          ${photos.length} photo${photos.length>1?'s':''} générale${photos.length>1?'s':''}
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
-          ${photos.map(p=>`<div style="border-radius:10px;overflow:hidden;border:1px solid var(--line)">
-            <img src="${p.src}" style="width:100%;height:120px;object-fit:cover;display:block"/>
-            <div style="padding:6px 8px;font-size:10px;color:var(--muted)">${esc(p.caption||p.name)}</div>
-          </div>`).join('')}
-        </div>`:''}
-      ${cablePhotos.length?`
-        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">
-          Photos de passages câbles
-        </div>
-        ${cablePhotos.map(c=>`
-          <div style="margin-bottom:10px">
-            <div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px">
-              ${esc(c.dest||'Câble')} — ${esc(c.from||'?')} → ${esc(c.to||'?')}
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
-              ${c.photos.map(p=>`
-                <div style="border-radius:10px;overflow:hidden;border:1px solid var(--line)">
-                  <img src="${p.src}" style="width:100%;height:100px;object-fit:cover;display:block"/>
-                  <div style="padding:5px 8px;font-size:10px;color:var(--muted)">${esc(p.caption||'')}</div>
-                </div>`).join('')}
-            </div>
-          </div>`).join('')}`:''}
-      ${!photos.length&&!cablePhotos.length?`
-        <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px">
-          Aucune photo — utilisez le bouton ci-dessus ou ajoutez des photos depuis les passages de câbles
-        </div>`:''}
-    </div>`;
-}
-
-function renderTerrainEcarts(body){
-  const v=S.vpi;
-  body.innerHTML=`
-    <div class="card" style="padding:16px">
-      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Écarts / corrections devis (${v.ecarts.length})</div>
-      ${v.ecarts.map((r,i)=>`
-        <div style="padding:12px 13px;border:1px solid var(--line);border-radius:12px;margin-bottom:9px;
-          background:${(ECART_IMPACTS[r.impact]||ECART_IMPACTS['neutre'])[0]}">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="font-size:11px;font-weight:700;color:${(ECART_IMPACTS[r.impact]||ECART_IMPACTS['neutre'])[1]}">
-              ${esc(r.type)} — ${(ECART_IMPACTS[r.impact]||ECART_IMPACTS['neutre'])[2]}
-            </span>
-            <button onclick="removeEcartRow('${r.id}');switchTerrainSection('t-ecarts')"
-              style="background:none;border:none;color:var(--danger);cursor:pointer">✕</button>
-          </div>
-          <input value="${esc(r.constat)}" placeholder="Constat terrain"
-            oninput="ecartField('${r.id}','constat',this.value)"
-            style="width:100%;background:rgba(255,255,255,.5);border:1px solid var(--line);
-            border-radius:9px;padding:9px;font-size:13px;color:var(--text);font-family:inherit;margin-bottom:6px"/>
-          <input value="${esc(r.action)}" placeholder="Action proposée"
-            oninput="ecartField('${r.id}','action',this.value)"
-            style="width:100%;background:rgba(255,255,255,.5);border:1px solid var(--line);
-            border-radius:9px;padding:9px;font-size:13px;color:var(--text);font-family:inherit"/>
-        </div>`).join('')}
-      <button onclick="addEcartRow();switchTerrainSection('t-ecarts')" style="
-        width:100%;padding:15px;border-radius:13px;border:2px dashed var(--line);
-        background:transparent;color:var(--muted);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">
-        + Signaler un écart
-      </button>
-    </div>`;
-}
-
-function renderTerrainNotes(body){
-  const v=S.vpi;
-  body.innerHTML=`
-    <div class="card" style="padding:16px">
-      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Synthèse &amp; notes</div>
-      ${tField('Synthèse de visite','vpiConclusion',v.conclusion,'textarea','Résumé des constats, décisions…')}
-      <div style="margin-bottom:12px">
-        <label style="display:block;font-size:11px;font-weight:700;color:var(--muted);
-          text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Suite à donner</label>
-        <select id="vpiSuite" onchange="fc('vpi','suite',this.value)" style="
-          width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:11px;
-          padding:13px;font-size:15px;color:var(--text);font-family:inherit">
-          <option value="">— Choisir —</option>
-          ${['Passage direct au dossier technique','Correction devis avant dossier technique',
-             'Retour client requis avant démarrage','Visite complémentaire nécessaire',
-             'En attente de validation commerciale']
-             .map(o=>`<option${v.suite===o?' selected':''}>${o}</option>`).join('')}
-        </select>
-      </div>
-      ${tField('Instructions pour le dossier technique','vpiInstructions',v.instructions,'textarea','Points particuliers à intégrer dans le DT…')}
-      <button onclick="saveSession();showToast('Sauvegardé !')" style="
-        width:100%;padding:15px;border-radius:13px;border:none;
-        background:linear-gradient(135deg,#0b8b65,#10b981);color:#fff;
-        font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px">
-        💾 Sauvegarder la VPI
-      </button>
-    </div>`;
-  qs('vpiSuite')?.addEventListener('change',e=>fc('vpi','suite',e.target.value));
-}
-
-function triggerTerrainPhoto(target){
-  _terrainPhotoTarget=target;
-  qs('terrain-photo-input')?.click();
-}
-function importTerrainPhotos(e){
-  _photoTarget=_terrainPhotoTarget;
-  importPhotos(e);
-  setTimeout(()=>switchTerrainSection('t-photos'),300);
-}
-
 function renderAll(){
   syncFields();
   renderVigilanceTable();renderCableTable();renderPrepTable();renderPrepChecklist();renderEcartTable();
@@ -4793,17 +4788,19 @@ async function pickBackupFolder(){
   if('showDirectoryPicker' in window){
     try{
       _backupDirHandle=await window.showDirectoryPicker({mode:'readwrite'});
+      localStorage.setItem('oci_backup_folder_name',_backupDirHandle.name);
+      // Mettre à jour les deux endroits où le dossier est affiché
       const label=qs('backup-folder-label');
       const btn=qs('pick-folder-btn');
       if(label) label.innerHTML=`<span style="color:#22c55e">✓ ${_backupDirHandle.name}</span>`;
       if(btn){btn.style.borderColor='#22c55e';btn.style.color='#22c55e';}
-      // Persister le nom (le handle lui-même ne peut pas être sérialisé)
-      localStorage.setItem('oci_backup_folder_name',_backupDirHandle.name);
+      renderAccountsFolderStatus();
+      showToast(`Dossier "${_backupDirHandle.name}" configuré.`);
     }catch(e){
       if(e.name!=='AbortError') showToast('Impossible d\'accéder au dossier.');
     }
   } else {
-    alert('Votre navigateur ne supporte pas la sélection de dossier.\nLes sauvegardes seront téléchargées dans Téléchargements.');
+    alert('Votre navigateur ne supporte pas la sélection de dossier (Chrome/Edge requis).\nLes sauvegardes seront téléchargées dans Téléchargements.');
   }
 }
 
@@ -4984,8 +4981,33 @@ async function saveSessionWithUser(silent=false){
 // ── Gestion comptes ──
 function openAccounts(){
   renderAccountsList();
+  renderAccountsFolderStatus();
+  // Afficher utilisateur connecté
+  const user=_currentUser||localStorage.getItem('oci_current_user')||'—';
+  const lbl=qs('acc-user-label');const ini=qs('acc-user-initial');
+  if(lbl) lbl.textContent=user;
+  if(ini) ini.textContent=user.charAt(0).toUpperCase()||'?';
   qs('acc-user').value='';qs('acc-pass').value='';qs('acc-pass2').value='';
   qs('modal-accounts').classList.add('open');
+}
+
+function renderAccountsFolderStatus(){
+  const fname=localStorage.getItem('oci_backup_folder_name');
+  const cur=qs('acc-folder-current');
+  const nm=qs('acc-folder-name');
+  const st=qs('acc-folder-status');
+  if(fname&&_backupDirHandle){
+    if(cur) cur.style.display='flex';
+    if(nm) nm.textContent=fname;
+    if(st) st.innerHTML=`Sauvegarde active dans <span style="color:var(--ok);font-weight:600">${esc(fname)}</span>. Fichiers nommés <span style="color:var(--primary);font-weight:600">oci_[identifiant]_[date].json</span>`;
+  } else if(fname){
+    if(cur) cur.style.display='flex';
+    if(nm) nm.textContent=fname+' (à réautoriser)';
+    if(st) st.innerHTML=`Dossier mémorisé : <span style="color:var(--warn);font-weight:600">${esc(fname)}</span>. Cliquez "Choisir / changer" pour le réautoriser.`;
+  } else {
+    if(cur) cur.style.display='none';
+    if(st) st.innerHTML=`Aucun dossier configuré. Les sauvegardes restent dans le navigateur (localStorage). Configurez un dossier pour des sauvegardes fichiers nommées <span style="color:var(--primary);font-weight:600">oci_[identifiant]_[date].json</span>`;
+  }
 }
 function renderAccountsList(){
   const accounts=getAccounts()||{admin:'admin'};
@@ -5163,37 +5185,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   qs('autosaveText').textContent='Session active';
   applyTheme(_theme);
   checkSession();
-
-  // ── Auto-détection mode terrain (smartphone / tablette) ──
-  function isSmallDevice(){
-    const w=window.innerWidth,h=window.innerHeight;
-    // Détecte mobile/tablette : largeur < 1024px OU user agent mobile
-    const uaMobile=/Android|iPhone|iPad|iPod|Mobile|Tablet/i.test(navigator.userAgent);
-    return uaMobile||(w<1024&&w<h*1.4);
-  }
-  // Auto-lancer terrain si petit device ET session active ET pas déjà en terrain
-  function autoTerrainCheck(){
-    const ls=qs('login-screen');
-    const lsHidden=ls&&ls.style.display==='none';
-    if(isSmallDevice()&&lsHidden&&qs('terrain-mode')?.style.display==='none'){
-      const seen=localStorage.getItem('oci_terrain_auto_seen');
-      if(!seen){
-        localStorage.setItem('oci_terrain_auto_seen','1');
-        openTerrainMode();
-      }
-    }
-  }
-  // Lancer après checkSession (async — on attend un tick)
-  setTimeout(autoTerrainCheck,300);
-
-  // Ré-évaluer si l'écran pivote ou redimensionne
-  window.addEventListener('resize',()=>{
-    // Si on passe en grand écran depuis le mode terrain → proposer de quitter
-    if(!isSmallDevice()&&qs('terrain-mode')?.style.display==='flex'){
-      const btn=document.createElement('div');
-      // Rien d'automatique : on laisse l'utilisateur quitter manuellement
-    }
-  });
 
   // ── Invitation plein écran ──
   if(!document.fullscreenElement){
