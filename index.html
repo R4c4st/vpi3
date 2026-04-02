@@ -751,6 +751,141 @@ canvas{display:block;touch-action:none;width:100%}
 </head>
 <body>
 
+<!-- ══════════ ÉCRAN DE CONNEXION ══════════ -->
+<div id="login-screen" style="
+  position:fixed;inset:0;z-index:999;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 30% 20%,#1a2e50 0%,#0a1220 60%);
+  font-family:'IBM Plex Sans',system-ui,sans-serif;
+  overflow-y:auto;padding:20px 0;
+">
+  <div style="width:min(92vw,420px);display:flex;flex-direction:column;align-items:center">
+    <img src="https://r4c4st.github.io/vpi/oci_logo_transparent.png" alt="OCI Connect"
+      onerror="this.style.display='none'"
+      style="height:60px;margin-bottom:18px;filter:drop-shadow(0 4px 18px rgba(90,171,255,.3))"/>
+    <div style="font-size:26px;font-weight:700;color:#dde8f5;letter-spacing:-.02em;margin-bottom:3px">OCI <span style="opacity:.6;font-weight:500">Connect</span></div>
+    <div style="font-size:12px;color:#7a95b5;margin-bottom:28px">Logiciel terrain VPI · DT · DOE</div>
+
+    <!-- ── Panneau CONNEXION (affiché par défaut) ── -->
+    <div id="login-panel" style="width:100%;background:#1a2030;border:1px solid #2c3a52;border-radius:20px;padding:26px 24px;box-shadow:0 24px 60px rgba(0,0,0,.5)">
+      <div style="font-size:15px;font-weight:700;color:#c8daf0;margin-bottom:18px;text-align:center">Connexion</div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:10px;font-weight:700;color:#7a95b5;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:5px">Identifiant</label>
+        <input id="login-user" type="text" placeholder="Identifiant" autocomplete="username"
+          style="width:100%;background:#131921;border:1px solid #2c3a52;border-radius:10px;padding:11px 13px;color:#dde8f5;font-size:15px;font-family:inherit;outline:none"
+          onkeydown="if(event.key==='Enter')qs('login-pass').focus()"
+          onfocus="this.style.borderColor='#5aabff'" onblur="this.style.borderColor='#2c3a52'"/>
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="font-size:10px;font-weight:700;color:#7a95b5;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:5px">Mot de passe</label>
+        <div style="position:relative">
+          <input id="login-pass" type="password" placeholder="Mot de passe" autocomplete="current-password"
+            style="width:100%;background:#131921;border:1px solid #2c3a52;border-radius:10px;padding:11px 42px 11px 13px;color:#dde8f5;font-size:15px;font-family:inherit;outline:none"
+            onkeydown="if(event.key==='Enter')doLogin()"
+            onfocus="this.style.borderColor='#5aabff'" onblur="this.style.borderColor='#2c3a52'"/>
+          <button onclick="togglePassVis('login-pass')" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:#7a95b5;cursor:pointer;font-size:15px">👁</button>
+        </div>
+      </div>
+      <!-- Se souvenir de moi -->
+      <label style="display:flex;align-items:center;gap:9px;cursor:pointer;margin-bottom:16px;padding:9px 12px;background:#131921;border-radius:10px;border:1px solid #2c3a52">
+        <input type="checkbox" id="login-remember" style="width:16px;height:16px;accent-color:#5aabff"/>
+        <span style="font-size:12px;color:#7a95b5;font-weight:600">Se souvenir de moi sur cet appareil</span>
+      </label>
+      <div id="login-error" style="display:none;margin-bottom:12px;padding:9px 12px;background:rgba(200,50,50,.15);border:1px solid rgba(200,50,50,.3);border-radius:9px;font-size:12px;color:#ff8585;text-align:center">
+        Identifiant ou mot de passe incorrect.
+      </div>
+      <button onclick="doLogin()" style="width:100%;padding:13px;border-radius:11px;border:none;background:linear-gradient(135deg,#1a5aaa,#2470cc);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 6px 20px rgba(36,112,204,.35)">
+        Se connecter →
+      </button>
+      <div style="margin-top:12px;text-align:center;font-size:11px;color:#3a5070">Accès restreint — OCI Connect Nancy</div>
+    </div>
+
+    <!-- ── Panneau PREMIER LANCEMENT ── -->
+    <div id="firstlaunch-panel" style="display:none;width:100%;background:#1a2030;border:1px solid #2c3a52;border-radius:20px;padding:26px 24px;box-shadow:0 24px 60px rgba(0,0,0,.5)">
+      <div style="text-align:center;margin-bottom:18px">
+        <div style="font-size:32px;margin-bottom:8px">🎉</div>
+        <div style="font-size:16px;font-weight:700;color:#c8daf0;margin-bottom:6px">Bienvenue dans OCI Connect</div>
+        <div style="font-size:12px;color:#7a95b5;line-height:1.6">Première utilisation détectée.<br/>Souhaitez-vous créer vos identifiants personnalisés ?</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button onclick="showCreateAccountPanel()" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#1a5aaa,#2470cc);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">
+          ✏️ Créer mes identifiants
+        </button>
+        <button onclick="useDefaultLogin()" style="width:100%;padding:14px;border-radius:12px;border:2px solid #2c3a52;background:transparent;color:#7a95b5;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">
+          Continuer avec admin / admin
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Panneau CRÉATION COMPTE ── -->
+    <div id="createaccount-panel" style="display:none;width:100%;background:#1a2030;border:1px solid #2c3a52;border-radius:20px;padding:26px 24px;box-shadow:0 24px 60px rgba(0,0,0,.5)">
+      <div style="font-size:15px;font-weight:700;color:#c8daf0;margin-bottom:18px;text-align:center">Créer votre compte</div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:10px;font-weight:700;color:#7a95b5;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:5px">Votre identifiant *</label>
+        <input id="new-user" type="text" placeholder="ex: raphael" autocomplete="username"
+          style="width:100%;background:#131921;border:1px solid #2c3a52;border-radius:10px;padding:11px 13px;color:#dde8f5;font-size:15px;font-family:inherit;outline:none"
+          onfocus="this.style.borderColor='#5aabff'" onblur="this.style.borderColor='#2c3a52'"/>
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:10px;font-weight:700;color:#7a95b5;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:5px">Mot de passe *</label>
+        <div style="position:relative">
+          <input id="new-pass" type="password" placeholder="Minimum 4 caractères"
+            style="width:100%;background:#131921;border:1px solid #2c3a52;border-radius:10px;padding:11px 42px 11px 13px;color:#dde8f5;font-size:15px;font-family:inherit;outline:none"
+            onfocus="this.style.borderColor='#5aabff'" onblur="this.style.borderColor='#2c3a52'"/>
+          <button onclick="togglePassVis('new-pass')" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:#7a95b5;cursor:pointer;font-size:15px">👁</button>
+        </div>
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="font-size:10px;font-weight:700;color:#7a95b5;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:5px">Confirmer le mot de passe *</label>
+        <input id="new-pass2" type="password" placeholder="Répéter le mot de passe"
+          style="width:100%;background:#131921;border:1px solid #2c3a52;border-radius:10px;padding:11px 13px;color:#dde8f5;font-size:15px;font-family:inherit;outline:none"
+          onfocus="this.style.borderColor='#5aabff'" onblur="this.style.borderColor='#2c3a52'"/>
+      </div>
+      <!-- Dossier de sauvegarde -->
+      <div style="margin-bottom:16px;padding:12px;background:#131921;border:1px solid #2c3a52;border-radius:11px">
+        <div style="font-size:11px;font-weight:700;color:#7a95b5;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Dossier de sauvegarde automatique</div>
+        <div style="font-size:11px;color:#4a6080;margin-bottom:10px;line-height:1.5">Les sauvegardes seront nommées <span style="color:#5aabff;font-weight:600">oci_[identifiant]_[date].json</span> et enregistrées dans le dossier choisi.</div>
+        <button onclick="pickBackupFolder()" id="pick-folder-btn" style="width:100%;padding:10px;border-radius:9px;border:2px dashed #2c3a52;background:transparent;color:#7a95b5;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
+          📁 Choisir un dossier de sauvegarde
+        </button>
+        <div id="backup-folder-label" style="margin-top:8px;font-size:11px;color:#4a6080;text-align:center">Aucun dossier sélectionné — les sauvegardes iront dans Téléchargements</div>
+      </div>
+      <div id="new-account-error" style="display:none;margin-bottom:12px;padding:9px 12px;background:rgba(200,50,50,.15);border:1px solid rgba(200,50,50,.3);border-radius:9px;font-size:12px;color:#ff8585;text-align:center"></div>
+      <button onclick="createFirstAccount()" style="width:100%;padding:13px;border-radius:11px;border:none;background:linear-gradient(135deg,#1a7a55,#22a870);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:9px">
+        ✅ Créer le compte et démarrer
+      </button>
+      <button onclick="showLoginPanel()" style="width:100%;padding:11px;border-radius:11px;border:2px solid #2c3a52;background:transparent;color:#7a95b5;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">
+        ← Retour
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL : GESTION COMPTES ══════════ -->
+<div class="modal" id="modal-accounts" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box sm">
+    <div class="modal-hdr">
+      <h3>Gestion des accès</h3>
+      <button class="btn ghost" onclick="document.getElementById('modal-accounts').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:16px">
+      <!-- Liste des comptes -->
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Comptes enregistrés</div>
+        <div id="accounts-list" style="display:flex;flex-direction:column;gap:7px"></div>
+      </div>
+      <!-- Nouveau compte / modifier mdp -->
+      <div style="border-top:1px solid var(--line);padding-top:14px">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Nouveau compte / modifier mot de passe</div>
+        <div class="field" style="margin-bottom:9px"><label>Identifiant</label><input id="acc-user" placeholder="ex: raphael"/></div>
+        <div class="field" style="margin-bottom:9px"><label>Mot de passe</label><input id="acc-pass" type="password" placeholder="Minimum 4 caractères"/></div>
+        <div class="field" style="margin-bottom:12px"><label>Confirmer le mot de passe</label><input id="acc-pass2" type="password" placeholder="Répéter le mot de passe"/></div>
+        <button class="btn primary" onclick="saveAccount()" style="width:100%;justify-content:center">Enregistrer le compte</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div style="padding:0 16px 0">
   <div id="heroSentinel" style="height:1px;pointer-events:none"></div>
 
@@ -807,6 +942,9 @@ canvas{display:block;touch-action:none;width:100%}
       </div>
       <div class="hero-strip">
         <button class="hbtn hbtn-warn" onclick="openNotebook()">Bloc-notes terrain</button>
+        <button class="hbtn" onclick="openTerrainMode()" style="background:rgba(90,171,255,.22);border-color:rgba(90,171,255,.35)">
+          📱 Mode terrain
+        </button>
         <button class="hbtn" onclick="triggerPhoto(currentModule)">Photo / image</button>
         <button class="hbtn" onclick="document.getElementById('jsonImport').click()">Importer JSON</button>
         <button class="hbtn" onclick="exportJSON()">Exporter JSON</button>
@@ -814,6 +952,8 @@ canvas{display:block;touch-action:none;width:100%}
         <button class="hbtn hbtn-ok" onclick="refreshPreview()">Prévisualiser</button>
         <button class="hbtn hbtn-pdf" onclick="printCurrentModule()">PDF</button>
         <button class="hbtn hbtn-danger" onclick="nouveauProjet()">Nouveau projet</button>
+        <button class="hbtn" onclick="openAccounts()" style="background:rgba(255,255,255,.09)">⚙ Accès</button>
+        <button class="hbtn" onclick="doLogout()" style="background:rgba(255,255,255,.09)">⏻ Déco.</button>
       </div>
     </div>
     <div class="statusbar">
@@ -935,6 +1075,10 @@ canvas{display:block;touch-action:none;width:100%}
               Base clients
             </button>
             <button class="btn ok" onclick="saveClientToDB()">Enregistrer client</button>
+            <button class="btn warn" onclick="openSendClientModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Envoyer au client
+            </button>
           </div>
         </div>
         <div class="form-grid">
@@ -1010,12 +1154,14 @@ canvas{display:block;touch-action:none;width:100%}
           <table>
             <thead><tr>
               <th>De</th>
-              <th>Vers</th>
+              <th style="width:130px">Destination</th>
+              <th>Vers (local / zone)</th>
               <th>Type câble</th>
               <th style="width:70px">Longueur</th>
               <th>Chemin / support</th>
               <th style="width:110px">État passage</th>
               <th>Remarque</th>
+              <th style="width:40px">📷</th>
               <th style="width:34px"></th>
             </tr></thead>
             <tbody id="cable-table"></tbody>
@@ -1888,12 +2034,185 @@ canvas{display:block;touch-action:none;width:100%}
   </div>
 </div>
 
+<!-- ══════════ MODAL : ENVOYER AU CLIENT ══════════ -->
+<div class="modal" id="modal-send-client" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box sm">
+    <div class="modal-hdr">
+      <div>
+        <h3>Envoyer la fiche au client</h3>
+        <div style="font-size:12px;color:var(--muted)">Génère un PDF de la fiche VPI et ouvre votre client mail</div>
+      </div>
+      <button class="btn ghost" onclick="document.getElementById('modal-send-client').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+
+      <!-- Récapitulatif client -->
+      <div id="send-client-recap" style="padding:11px 14px;background:var(--panel-soft);border:1px solid var(--line);border-radius:12px;font-size:13px"></div>
+
+      <!-- Email -->
+      <div class="field">
+        <label>Adresse e-mail du destinataire</label>
+        <input id="send-email" type="email" placeholder="contact@client.fr"
+          style="font-size:14px"/>
+      </div>
+
+      <!-- Objet -->
+      <div class="field">
+        <label>Objet du message</label>
+        <input id="send-subject" type="text"/>
+      </div>
+
+      <!-- Corps -->
+      <div class="field">
+        <label>Message</label>
+        <textarea id="send-body" style="min-height:110px;font-size:13px;line-height:1.6"></textarea>
+      </div>
+
+      <!-- Fichiers à joindre -->
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">
+          Pièces jointes à préparer
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+
+          <!-- PDF VPI -->
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;
+            padding:9px 13px;border:1px solid var(--line);border-radius:11px;background:var(--panel-soft)">
+            <div style="display:flex;align-items:center;gap:9px">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e05555" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <div>
+                <div style="font-size:12px;font-weight:700;color:var(--text)">Fiche VPI (PDF)</div>
+                <div style="font-size:10px;color:var(--muted)">Relevé complet de visite préalable à l'installation</div>
+              </div>
+            </div>
+            <button class="btn sm warn" onclick="downloadVpiPdf()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>
+              Générer PDF
+            </button>
+          </div>
+
+          <!-- Excel CA -->
+          <div id="send-ca-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;
+            padding:9px 13px;border:1px solid var(--line);border-radius:11px;background:var(--panel-soft)">
+            <div style="display:flex;align-items:center;gap:9px">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1b7a4a" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <div>
+                <div style="font-size:12px;font-weight:700;color:var(--text)">Formulaire CA (Excel)</div>
+                <div id="send-ca-desc" style="font-size:10px;color:var(--muted)">Demande pré-installation contrôle d'accès à compléter par le client</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0">
+              <button id="send-ca-download-existing" class="btn sm ok" style="display:none" onclick="downloadExistingCaAttach()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>
+                Fichier joint
+              </button>
+              <button class="btn sm primary" onclick="downloadCaForSend()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>
+                Générer Excel
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Bouton envoi -->
+      <button class="btn ok" onclick="sendViaMailto()" style="width:100%;justify-content:center;padding:12px">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Ouvrir dans ma messagerie (Outlook / Thunderbird…)
+      </button>
+
+      <!-- Note explicative -->
+      <div style="font-size:11px;color:var(--muted);line-height:1.6;padding:10px 13px;
+        background:var(--panel-soft);border-radius:10px;border:1px solid var(--line)">
+        <strong style="color:var(--text)">Étapes :</strong>
+        <ol style="margin:6px 0 0 16px;display:flex;flex-direction:column;gap:3px">
+          <li>Cliquer sur <strong>Générer PDF</strong> et <strong>Générer Excel</strong> — les fichiers se téléchargent</li>
+          <li>Cliquer sur <strong>Ouvrir dans ma messagerie</strong> — le mail s'ouvre avec l'objet et le message pré-remplis</li>
+          <li>Joindre les fichiers téléchargés depuis votre dossier Téléchargements</li>
+          <li>Envoyer</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL : PHOTOS PASSAGE DE CÂBLE ══════════ -->
+<div class="modal" id="modal-cable-photos" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box" style="width:min(95vw,820px);max-height:88vh">
+    <div class="modal-hdr">
+      <div>
+        <h3 id="cable-photos-title">Photos du passage</h3>
+        <div style="font-size:12px;color:var(--muted)" id="cable-photos-sub">Contexte visuel — chemin, arrivée, obstacles, emplacement équipement</div>
+      </div>
+      <div style="display:flex;gap:7px">
+        <button class="btn warn" onclick="document.getElementById('cable-photo-input').click()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Prendre / joindre photo
+        </button>
+        <button class="btn ghost" onclick="document.getElementById('modal-cable-photos').classList.remove('open')">✕</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <!-- Info câble -->
+      <div id="cable-photos-info" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;
+        padding:10px 13px;background:var(--panel-soft);border:1px solid var(--line);border-radius:12px;font-size:12px"></div>
+      <!-- Grille photos -->
+      <div class="photo-grid" id="cable-photos-grid"></div>
+      <div id="cable-photos-empty" class="photo-empty">Aucune photo — joignez des images du chemin, de l'arrivée ou de l'emplacement de l'équipement</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODE TERRAIN (smartphone / tablette) ══════════ -->
+<div id="terrain-mode" style="display:none;position:fixed;inset:0;z-index:200;
+  font-family:'IBM Plex Sans',system-ui,sans-serif;overflow:hidden;flex-direction:column">
+
+  <!-- Header terrain -->
+  <div style="background:linear-gradient(135deg,#10253f 0%,#0f4f84 55%,#2b82cf 100%);
+    padding:10px 14px;display:flex;align-items:center;justify-content:space-between;
+    gap:12px;box-shadow:0 4px 20px rgba(5,15,40,.35);flex-shrink:0;z-index:10">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img src="https://r4c4st.github.io/vpi/oci_logo_transparent.png" onerror="this.style.display='none'"
+        style="height:28px"/>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:#fff;line-height:1">Mode terrain</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.7)" id="terrain-client-label">VPI</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button onclick="saveSession();showToast('Sauvegardé.')" style="
+        padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.15);
+        border:1px solid rgba(255,255,255,.2);color:#fff;font-size:12px;font-weight:600;cursor:pointer">
+        💾 Sauvegarder
+      </button>
+      <button onclick="closeTerrainMode()" style="
+        padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.12);
+        border:1px solid rgba(255,255,255,.18);color:#fff;font-size:12px;font-weight:600;cursor:pointer">
+        ✕ Quitter
+      </button>
+    </div>
+  </div>
+
+  <!-- Nav sections terrain -->
+  <div id="terrain-nav" style="display:flex;overflow-x:auto;scrollbar-width:none;
+    background:#0d1e35;padding:0 10px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.1)">
+  </div>
+
+  <!-- Corps terrain -->
+  <div id="terrain-body" style="flex:1;overflow-y:auto;background:var(--bg);padding:14px;
+    display:flex;flex-direction:column;gap:14px">
+  </div>
+</div>
+
 <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="importPhotos(event)"/>
 <input type="file" id="jsonImport" accept=".json" style="display:none" onchange="importJSON(event)"/>
 <input type="file" id="lib-file-input" accept=".pdf,.png,.jpg,.jpeg,.webp" style="display:none" onchange="handleLibFile(event)"/>
 <input type="file" id="csv-client-input" accept=".csv,.txt" style="display:none" onchange="importClientCSV(event)"/>
 <input type="file" id="ca-excel-input" accept=".xlsx,.xls" style="display:none" onchange="importCaExcel(event)"/>
 <input type="file" id="ca-attach-input" accept=".xlsx,.xls,.pdf" style="display:none" onchange="attachCaFile(event)"/>
+<input type="file" id="cable-photo-input" accept="image/*" multiple capture="environment" style="display:none" onchange="importCablePhotos(event)"/>
+<input type="file" id="terrain-photo-input" accept="image/*" multiple capture="environment" style="display:none" onchange="importTerrainPhotos(event)"/>
 <div id="printRoot"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -2190,6 +2509,7 @@ function renderVigilanceTable(){
 // VPI — PASSAGES DE CÂBLES
 // ═══════════════════════════════════════
 const CABLE_TYPES=['Cat6A S/FTP','Cat6 UTP','Coaxial RG59','Fibre optique 9/125','Fibre optique 50/125','2×0.75mm²','3G1.5mm²','Bus 2 fils','Câble alarme 6×0.22','HDMI','Autre'];
+const CABLE_DEST=['Caméra','Borne Wi-Fi','Prise RJ45','Rack / baie info','Centrale CA','Interphone','Lecteur badge','Barrière','Détecteur','Onduleur','Divers'];
 const CABLE_STATUS={
   'libre':['#e8f5e9','#1b5e20','✅ Libre'],
   'a_verifier':['#fff8e1','#e65100','⚠️ À vérifier'],
@@ -2198,7 +2518,7 @@ const CABLE_STATUS={
   'impossible':['#fce4ec','#880e4f','🚫 Impossible']
 };
 function addCableRow(){
-  S.vpi.cables.push({id:uid(),from:'',to:'',type:'Cat6A S/FTP',length:'',path:'',status:'a_verifier',note:''});
+  S.vpi.cables.push({id:uid(),from:'',dest:'Caméra',to:'',type:'Cat6A S/FTP',length:'',path:'',status:'a_verifier',note:'',photos:[]});
   renderCableTable();scheduleAutosave();
 }
 function removeCableRow(id){S.vpi.cables=S.vpi.cables.filter(r=>r.id!==id);renderCableTable();renderMetrics();scheduleAutosave();}
@@ -2206,8 +2526,13 @@ function cableField(id,key,val){const r=S.vpi.cables.find(x=>x.id===id);if(r){r[
 function renderCableTable(){
   const tbody=qs('cable-table');if(!tbody) return;
   tbody.innerHTML=S.vpi.cables.map(r=>`<tr>
-    <td><input value="${esc(r.from)}" placeholder="Départ / équipement" oninput="cableField('${r.id}','from',this.value)" style="min-width:120px"/></td>
-    <td><input value="${esc(r.to)}" placeholder="Arrivée / local tech." oninput="cableField('${r.id}','to',this.value)" style="min-width:120px"/></td>
+    <td><input value="${esc(r.from)}" placeholder="Départ / équipement" oninput="cableField('${r.id}','from',this.value)" style="min-width:110px"/></td>
+    <td>
+      <select onchange="cableField('${r.id}','dest',this.value)" style="min-width:120px">
+        ${CABLE_DEST.map(d=>`<option${(r.dest||'Caméra')===d?' selected':''}>${d}</option>`).join('')}
+      </select>
+    </td>
+    <td><input value="${esc(r.to)}" placeholder="Local tech / zone" oninput="cableField('${r.id}','to',this.value)" style="min-width:110px"/></td>
     <td>
       <select onchange="cableField('${r.id}','type',this.value)" style="min-width:130px">
         ${CABLE_TYPES.map(t=>`<option${r.type===t?' selected':''}>${t}</option>`).join('')}
@@ -2221,6 +2546,12 @@ function renderCableTable(){
       </select>
     </td>
     <td><input value="${esc(r.note)}" placeholder="Note…" oninput="cableField('${r.id}','note',this.value)" style="min-width:130px"/></td>
+    <td style="white-space:nowrap">
+      <button class="btn sm" onclick="openCablePhotos('${r.id}')" title="Photos / contexte visuel"
+        style="padding:5px 7px;${(r.photos&&r.photos.length)?'background:#e8f5e9;border-color:#a5d6a7;color:#1b5e20':''}">
+        📷${(r.photos&&r.photos.length)?` <span style="font-size:10px;font-weight:700">${r.photos.length}</span>`:''}
+      </button>
+    </td>
     <td><button class="btn sm danger" onclick="removeCableRow('${r.id}')">✕</button></td>
   </tr>`).join('');
 }
@@ -3751,15 +4082,39 @@ function buildPrintTech(){
     if(v.cables.length){
       h+=`<div class="dt-h2">3.2 Passages de câbles identifiés (VPI)</div>`;
       h+=`<table class="dt-table">
-        <tr><th>De</th><th>Vers</th><th>Type câble</th><th>Long.</th><th>Chemin</th><th>État</th></tr>`;
+        <tr><th>Destination</th><th>De</th><th>Vers</th><th>Type câble</th><th>Long.</th><th>Chemin</th><th>État</th></tr>`;
       v.cables.forEach(r=>{
         const [,,l]=CABLE_STATUS[r.status]||CABLE_STATUS['a_verifier'];
-        h+=`<tr><td>${esc(r.from)}</td><td>${esc(r.to)}</td><td>${esc(r.type)}</td><td>${esc(r.length)}</td><td>${esc(r.path)}</td><td>${l}</td></tr>`;
+        h+=`<tr>
+          <td style="font-weight:700;color:#1a5aaa">${esc(r.dest||'—')}</td>
+          <td>${esc(r.from)}</td><td>${esc(r.to)}</td><td>${esc(r.type)}</td>
+          <td>${esc(r.length)}</td><td>${esc(r.path)}</td><td>${l}</td>
+        </tr>`;
       });
       h+=`</table>`;
+      // Photos de passages câbles par destination
+      const cablesWithPhotos=v.cables.filter(c=>c.photos&&c.photos.length);
+      if(cablesWithPhotos.length){
+        h+=`<div class="dt-h2">3.3 Photos des passages et emplacements équipements</div>`;
+        cablesWithPhotos.forEach(c=>{
+          h+=`<div style="margin-bottom:18px;page-break-inside:avoid">
+            <div style="font-size:12px;font-weight:700;color:#1a5aaa;margin-bottom:4px;
+              padding:5px 10px;background:#e8f3fb;border-radius:6px;display:inline-block">
+              ${esc(c.dest||'Câble')} — ${esc(c.from||'?')} → ${esc(c.to||'?')}
+              ${c.path?` &nbsp;|&nbsp; ${esc(c.path)}`:''}
+            </div>
+            <div class="print-photos" style="margin-top:8px">`;
+          c.photos.forEach(p=>{
+            h+=`<div><img src="${p.src}" style="width:100%;max-height:220px;object-fit:cover;border-radius:6px;border:1px solid #d9e4f0"/>
+              ${p.caption?`<div class="ph-caption">${esc(p.caption)}</div>`:''}
+            </div>`;
+          });
+          h+=`</div></div>`;
+        });
+      }
     }
     if(t.scope){
-      h+=`<div class="dt-h2">3.3 Dépendances client &amp; périmètre</div>`;
+      h+=`<div class="dt-h2">${v.cables.length&&v.cables.some(c=>c.photos&&c.photos.length)?'3.4':'3.3'} Dépendances client &amp; périmètre</div>`;
       const scopeLines=t.scope.split('\n').filter(l=>l.trim());
       if(scopeLines.length>1){
         h+=`<ul class="dt-bullets">`;
@@ -3862,12 +4217,7 @@ function scheduleAutosave(){
   _autosaveTimer=setTimeout(()=>saveSession(true),3000);
 }
 function saveSession(silent=false){
-  try{
-    localStorage.setItem('oci_vpi_v3',JSON.stringify({catalog:S.catalog,techLibrary:S.techLibrary,clientDB:S.clientDB,photos:S.photos,
-      notebookPages:S.notebookPages,activeNote:S.activeNote,vpi:S.vpi,tech:S.tech,doe:S.doe}));
-    qs('autosaveText').textContent='Sauvegarde '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    if(!silent) showToast('Session sauvegardée.');
-  }catch(e){console.error(e);}
+  saveSessionWithUser(silent);
 }
 function loadSession(){
   try{
@@ -3911,6 +4261,492 @@ function showToast(msg){
 // ═══════════════════════════════════════
 // RENDER ALL & INIT
 // ═══════════════════════════════════════
+// ═══════════════════════════════════════
+// PHOTOS PAR PASSAGE DE CÂBLE
+// ═══════════════════════════════════════
+let _cablePhotoRowId=null;
+
+function openCablePhotos(cableId){
+  _cablePhotoRowId=cableId;
+  const r=S.vpi.cables.find(x=>x.id===cableId);
+  if(!r) return;
+  if(!r.photos) r.photos=[];
+  const title=qs('cable-photos-title');
+  const sub=qs('cable-photos-sub');
+  const info=qs('cable-photos-info');
+  if(title) title.textContent=`Photos — ${r.dest||'Passage'} : ${r.from||'?'} → ${r.to||'?'}`;
+  if(sub) sub.textContent=`Type : ${r.type} · Chemin : ${r.path||'Non renseigné'} · État : ${(CABLE_STATUS[r.status]||CABLE_STATUS['a_verifier'])[2]}`;
+  if(info) info.innerHTML=`
+    <span style="font-weight:700;color:var(--primary)">${esc(r.dest||'—')}</span>
+    ${r.from?`<span>De : <strong>${esc(r.from)}</strong></span>`:''}
+    ${r.to?`<span>Vers : <strong>${esc(r.to)}</strong></span>`:''}
+    ${r.type?`<span>Câble : ${esc(r.type)}</span>`:''}
+    ${r.length?`<span>${esc(r.length)} m</span>`:''}
+    ${r.path?`<span>🛣 ${esc(r.path)}</span>`:''}
+    ${r.note?`<span style="color:var(--muted)">Note : ${esc(r.note)}</span>`:''}
+  `;
+  renderCablePhotoGrid(r);
+  qs('modal-cable-photos').classList.add('open');
+}
+
+function renderCablePhotoGrid(r){
+  const grid=qs('cable-photos-grid');
+  const empty=qs('cable-photos-empty');
+  if(!grid) return;
+  const photos=r.photos||[];
+  empty.style.display=photos.length?'none':'block';
+  grid.innerHTML=photos.map((p,i)=>`
+    <div class="photo-card">
+      <img src="${p.src}" alt="${esc(p.caption||'Photo')}"
+        onclick="openCaptureModal('cable_${r.id}')" title="Cliquer pour annoter"/>
+      <div class="photo-foot">
+        <input value="${esc(p.caption)}" placeholder="Légende…"
+          oninput="cablePhotoCaption('${r.id}',${i},this.value)"/>
+        <button class="btn sm" style="background:transparent;box-shadow:none;border:none;color:#c53737"
+          onclick="removeCablePhoto('${r.id}',${i})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function importCablePhotos(e){
+  const r=S.vpi.cables.find(x=>x.id===_cablePhotoRowId);
+  if(!r) return;
+  if(!r.photos) r.photos=[];
+  Array.from(e.target.files||[]).forEach(f=>{
+    const rd=new FileReader();
+    rd.onload=ev=>{
+      r.photos.push({src:ev.target.result,caption:r.dest||f.name});
+      renderCablePhotoGrid(r);
+      renderCableTable();
+      // Sync vers photos VPI pour la partie DT
+      S.photos.push({id:uid(),name:`[${r.dest||'Câble'}] ${r.from||''}→${r.to||''}`,
+        src:ev.target.result,target:'vpi',caption:`${r.dest||''} — ${r.from||''}→${r.to||''}`,
+        cableRef:r.id});
+      renderPhotos('vpi');renderMetrics();scheduleAutosave();
+    };
+    rd.readAsDataURL(f);
+  });e.target.value='';
+}
+
+function removeCablePhoto(cableId,idx){
+  const r=S.vpi.cables.find(x=>x.id===cableId);
+  if(!r||!r.photos) return;
+  r.photos.splice(idx,1);
+  renderCablePhotoGrid(r);renderCableTable();scheduleAutosave();
+}
+
+function cablePhotoCaption(cableId,idx,val){
+  const r=S.vpi.cables.find(x=>x.id===cableId);
+  if(r&&r.photos&&r.photos[idx]) r.photos[idx].caption=val;
+  scheduleAutosave();
+}
+
+// ═══════════════════════════════════════
+// MODE TERRAIN (smartphone / tablette)
+// ═══════════════════════════════════════
+const TERRAIN_SECTIONS=[
+  {id:'t-client',   icon:'👤', label:'Chantier',    fn:renderTerrainClient},
+  {id:'t-cables',   icon:'🔌', label:'Câbles',       fn:renderTerrainCables},
+  {id:'t-prep',     icon:'🔧', label:'Travaux',      fn:renderTerrainPrep},
+  {id:'t-photos',   icon:'📷', label:'Photos',       fn:renderTerrainPhotos},
+  {id:'t-faisab',   icon:'✅', label:'Faisabilité', fn:renderTerrainFaisab},
+  {id:'t-ecarts',   icon:'⚠️', label:'Écarts',       fn:renderTerrainEcarts},
+  {id:'t-notes',    icon:'📝', label:'Synthèse',     fn:renderTerrainNotes},
+];
+let _terrainSection='t-client';
+let _terrainPhotoTarget='vpi';
+
+function openTerrainMode(){
+  const el=qs('terrain-mode');
+  if(!el) return;
+  el.style.display='flex';
+  document.body.style.overflow='hidden';
+  // Label client
+  const lbl=qs('terrain-client-label');
+  if(lbl) lbl.textContent=S.vpi.clientCompany||'VPI en cours';
+  renderTerrainNav();
+  switchTerrainSection('t-client');
+  // Plein écran automatique si possible
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  }
+}
+
+function closeTerrainMode(){
+  const el=qs('terrain-mode');if(!el) return;
+  el.style.display='none';
+  document.body.style.overflow='';
+  renderAll();
+}
+
+function renderTerrainNav(){
+  const nav=qs('terrain-nav');if(!nav) return;
+  nav.innerHTML=TERRAIN_SECTIONS.map(s=>`
+    <button onclick="switchTerrainSection('${s.id}')" id="tnav-${s.id}" style="
+      flex-shrink:0;padding:11px 14px;background:none;border:none;border-bottom:3px solid transparent;
+      color:rgba(255,255,255,.55);font-size:12px;font-weight:700;cursor:pointer;
+      display:flex;align-items:center;gap:6px;white-space:nowrap;
+      transition:all .18s;font-family:inherit">
+      <span>${s.icon}</span>${s.label}
+    </button>`).join('');
+}
+
+function switchTerrainSection(id){
+  _terrainSection=id;
+  TERRAIN_SECTIONS.forEach(s=>{
+    const btn=qs(`tnav-${s.id}`);
+    if(btn){
+      btn.style.borderBottomColor=s.id===id?'#5aabff':'transparent';
+      btn.style.color=s.id===id?'#fff':'rgba(255,255,255,.55)';
+      btn.style.background=s.id===id?'rgba(90,171,255,.1)':'none';
+    }
+  });
+  const body=qs('terrain-body');if(!body) return;
+  body.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted)">Chargement…</div>';
+  const sec=TERRAIN_SECTIONS.find(s=>s.id===id);
+  if(sec) setTimeout(()=>{ body.innerHTML=''; sec.fn(body); },30);
+}
+
+// ── Helpers terrain ──
+function tCard(title,sub,content){
+  return`<div class="card" style="padding:16px">
+    <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:${sub?'2px':'10px'}">${title}</div>
+    ${sub?`<div style="font-size:12px;color:var(--muted);margin-bottom:12px">${sub}</div>`:''}
+    ${content}
+  </div>`;
+}
+function tField(label,id,val,type='text',placeholder=''){
+  return`<div style="margin-bottom:12px">
+    <label style="display:block;font-size:11px;font-weight:700;color:var(--muted);
+      text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">${label}</label>
+    ${type==='textarea'
+      ?`<textarea id="${id}" style="width:100%;background:var(--input-bg);border:1px solid var(--line);
+          border-radius:11px;padding:11px;font-size:15px;font-family:inherit;color:var(--text);
+          min-height:80px;resize:vertical" oninput="syncTerrainField('${id}')"
+          placeholder="${placeholder}">${esc(val)}</textarea>`
+      :`<input id="${id}" type="${type}" value="${esc(val)}" placeholder="${placeholder}"
+          style="width:100%;background:var(--input-bg);border:1px solid var(--line);
+          border-radius:11px;padding:13px;font-size:16px;color:var(--text);font-family:inherit"
+          oninput="syncTerrainField('${id}')"/>`}
+  </div>`;
+}
+function syncTerrainField(id){
+  const el=qs(id);if(!el) return;
+  // Sync avec les champs du module principal
+  const map={
+    vpiOrderRef:['vpi','orderRef'],vpiVisitDate:['vpi','visitDate'],vpiSalesRef:['vpi','salesRef'],
+    vpiClientCompany:['vpi','clientCompany'],vpiClientContact:['vpi','clientContact'],
+    vpiClientPhone:['vpi','clientPhone'],vpiClientEmail:['vpi','clientEmail'],
+    vpiClientAddress:['vpi','clientAddress'],vpiNeed:['vpi','need'],
+    vpiFaisabilite:['vpi','faisabilite'],vpiConclusion:['vpi','conclusion'],
+    vpiInstructions:['vpi','instructions'],
+  };
+  const path=map[id];
+  if(path) S[path[0]][path[1]]=el.value;
+  scheduleAutosave();
+  // Mettre à jour le label client dans le header terrain
+  const lbl=qs('terrain-client-label');
+  if(lbl) lbl.textContent=S.vpi.clientCompany||'VPI en cours';
+}
+function tBigBtn(label,icon,color,onclick){
+  return`<button onclick="${onclick}" style="
+    width:100%;padding:16px;border-radius:14px;border:none;
+    background:${color};color:#fff;font-size:15px;font-weight:700;
+    cursor:pointer;font-family:inherit;display:flex;align-items:center;
+    justify-content:center;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,.2);
+    margin-bottom:10px">${icon} ${label}</button>`;
+}
+
+// ── Sections terrain ──
+function renderTerrainClient(body){
+  const v=S.vpi;
+  body.innerHTML=tCard('Identification du chantier','Référence, client et interlocuteur sur site',`
+    ${tField('N° commande / devis','vpiOrderRef',v.orderRef,'text','ex: CMD-2024-0047')}
+    ${tField('Date de visite','vpiVisitDate',v.visitDate,'date')}
+    ${tField('Chargé d\'affaires','vpiSalesRef',v.salesRef,'text','Nom du commercial')}
+    ${tField('Client / Société','vpiClientCompany',v.clientCompany,'text','')}
+    ${tField('Interlocuteur sur site','vpiClientContact',v.clientContact,'text','')}
+    ${tField('Téléphone','vpiClientPhone',v.clientPhone,'tel','')}
+    ${tField('Email','vpiClientEmail',v.clientEmail,'email','')}
+    ${tField('Adresse du chantier','vpiClientAddress',v.clientAddress,'text','')}
+    ${tField('Description du projet commandé','vpiNeed',v.need,'textarea','Ex : installation 8 caméras…')}
+  `);
+}
+
+function renderTerrainFaisab(body){
+  const v=S.vpi;
+  const [,, faisLabel]=FAISAB[v.faisabiliteStatus||'']||FAISAB[''];
+  body.innerHTML=`
+    <div class="card" style="padding:16px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Évaluation de faisabilité</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        ${Object.entries(FAISAB).filter(([k])=>k!=='').map(([k,[bg,fg,l]])=>`
+          <button onclick="setFaisabilite('${k}');switchTerrainSection('t-faisab')" style="
+            padding:14px 10px;border-radius:12px;border:2px solid ${v.faisabiliteStatus===k?fg:'var(--line)'};
+            background:${v.faisabiliteStatus===k?bg:'var(--panel-soft)'};color:${v.faisabiliteStatus===k?fg:'var(--muted)'};
+            font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;line-height:1.4">
+            ${l}
+          </button>`).join('')}
+      </div>
+      ${tField('Résumé de faisabilité','vpiFaisabilite',v.faisabilite,'textarea','Décrire l\'état général du site, les accès…')}
+    </div>
+    <div class="card" style="padding:16px">
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px">Points de vigilance (${v.vigilance.length})</div>
+      ${v.vigilance.map((r,i)=>`
+        <div style="padding:11px 13px;border:1px solid var(--line);border-radius:11px;
+          margin-bottom:8px;background:${VIGILANCE_LEVELS[r.level]?.[0]||'var(--panel-soft)'}">
+          <div style="font-size:12px;font-weight:700;color:${VIGILANCE_LEVELS[r.level]?.[1]||'var(--text)'}">
+            ${VIGILANCE_LEVELS[r.level]?.[2]||''} — ${r.zone||'Zone non précisée'}
+          </div>
+          <div style="font-size:13px;margin-top:4px">${esc(r.desc||'—')}</div>
+          ${r.action?`<div style="font-size:11px;color:var(--muted);margin-top:3px">→ ${esc(r.action)}</div>`:''}
+        </div>`).join('')}
+      <button onclick="addVigilanceRow();switchTerrainSection('t-faisab')" style="
+        width:100%;padding:13px;border-radius:12px;border:2px dashed var(--line);
+        background:transparent;color:var(--muted);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">
+        + Ajouter un point de vigilance
+      </button>
+    </div>`;
+}
+
+function renderTerrainCables(body){
+  const v=S.vpi;
+  body.innerHTML=`
+    <div class="card" style="padding:16px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Passages de câbles (${v.cables.length})</div>
+      ${v.cables.map((r,i)=>`
+        <div style="border:1px solid var(--line);border-radius:13px;padding:13px;margin-bottom:10px;background:var(--panel-soft)">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px">
+            <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+              <span style="padding:5px 11px;border-radius:999px;font-size:11px;font-weight:700;
+                background:${(CABLE_STATUS[r.status]||CABLE_STATUS['a_verifier'])[0]};
+                color:${(CABLE_STATUS[r.status]||CABLE_STATUS['a_verifier'])[1]}">
+                ${(CABLE_STATUS[r.status]||CABLE_STATUS['a_verifier'])[2]}
+              </span>
+              <span style="font-size:13px;font-weight:700;color:var(--primary)">${esc(r.dest||'Destination')}</span>
+            </div>
+            <button onclick="removeCableRow('${r.id}');switchTerrainSection('t-cables')"
+              style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:16px;padding:2px">✕</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+            <div>
+              <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px">De</div>
+              <input value="${esc(r.from)}" placeholder="Départ" oninput="cableField('${r.id}','from',this.value)"
+                style="width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:9px;padding:10px;font-size:14px;color:var(--text);font-family:inherit"/>
+            </div>
+            <div>
+              <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px">Vers</div>
+              <input value="${esc(r.to)}" placeholder="Arrivée / local" oninput="cableField('${r.id}','to',this.value)"
+                style="width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:9px;padding:10px;font-size:14px;color:var(--text);font-family:inherit"/>
+            </div>
+          </div>
+          <div style="margin-bottom:8px">
+            <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px">Destination</div>
+            <select onchange="cableField('${r.id}','dest',this.value)"
+              style="width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:9px;padding:10px;font-size:14px;color:var(--text);font-family:inherit">
+              ${CABLE_DEST.map(d=>`<option${(r.dest||'Caméra')===d?' selected':''}>${d}</option>`).join('')}
+            </select>
+          </div>
+          <div style="margin-bottom:8px">
+            <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px">Chemin / support</div>
+            <input value="${esc(r.path)}" placeholder="Goulotte, faux-plafond, fourreau…"
+              oninput="cableField('${r.id}','path',this.value)"
+              style="width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:9px;padding:10px;font-size:14px;color:var(--text);font-family:inherit"/>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+            <div>
+              <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px">Type câble</div>
+              <select onchange="cableField('${r.id}','type',this.value)"
+                style="width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:9px;padding:10px;font-size:13px;color:var(--text);font-family:inherit">
+                ${CABLE_TYPES.map(t=>`<option${r.type===t?' selected':''}>${t}</option>`).join('')}
+              </select>
+            </div>
+            <div>
+              <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px">État</div>
+              <select onchange="cableField('${r.id}','status',this.value)"
+                style="width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:9px;padding:10px;font-size:13px;color:var(--text);font-family:inherit">
+                ${Object.entries(CABLE_STATUS).map(([k,[b,c,l]])=>`<option value="${k}"${r.status===k?' selected':''}>${l}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <!-- Bouton photos pour ce câble -->
+          <button onclick="openCablePhotos('${r.id}')" style="
+            width:100%;padding:12px;border-radius:11px;
+            background:${(r.photos&&r.photos.length)?'#e8f5e9':'var(--panel)'};
+            border:2px ${(r.photos&&r.photos.length)?'solid #a5d6a7':'dashed var(--line)'};
+            color:${(r.photos&&r.photos.length)?'#1b5e20':'var(--muted)'};
+            font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
+            display:flex;align-items:center;justify-content:center;gap:8px">
+            📷 ${(r.photos&&r.photos.length)?r.photos.length+' photo'+(r.photos.length>1?'s':'')+' jointe'+(r.photos.length>1?'s':''):'Ajouter photos du passage'}
+          </button>
+        </div>`).join('')}
+      <button onclick="addCableRow();switchTerrainSection('t-cables')" style="
+        width:100%;padding:15px;border-radius:13px;border:2px dashed var(--line);
+        background:transparent;color:var(--muted);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">
+        + Nouveau passage de câble
+      </button>
+    </div>`;
+}
+
+function renderTerrainPrep(body){
+  const v=S.vpi;
+  body.innerHTML=`
+    <div class="card" style="padding:16px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Travaux préparatoires</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+        ${PREP_CHECKLIST.map(c=>{
+          const on=v.prepChecks&&v.prepChecks[c.key];
+          return`<button onclick="togglePrepCheck('${c.key}',${!on});renderTerrainPrep(qs('terrain-body'))" style="
+            padding:14px 10px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;
+            border:2px solid ${on?'var(--primary)':'var(--line)'};
+            background:${on?'rgba(90,171,255,.1)':'var(--panel-soft)'};
+            color:${on?'var(--primary)':'var(--muted)'};font-family:inherit;
+            display:flex;align-items:center;gap:7px">
+            <span style="font-size:18px">${c.icon}</span>${c.label}
+            ${on?'<span style="margin-left:auto;font-size:16px">✓</span>':''}
+          </button>`;
+        }).join('')}
+      </div>
+      ${v.prep.length?`
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text)">Détail des travaux (${v.prep.length})</div>
+        ${v.prep.map(r=>`
+          <div style="padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:7px;background:var(--panel-soft)">
+            <div style="font-size:12px;font-weight:700;color:var(--primary)">${esc(r.type)}</div>
+            <div style="font-size:13px;margin-top:3px">${esc(r.desc||'—')}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:3px">Prise en charge : ${esc(r.charge)}</div>
+          </div>`).join('')}`:''}
+    </div>`;
+}
+
+function renderTerrainPhotos(body){
+  _terrainPhotoTarget='vpi';
+  const photos=S.photos.filter(p=>p.target==='vpi');
+  // Also include cable photos
+  const cablePhotos=S.vpi.cables.filter(c=>c.photos&&c.photos.length);
+  body.innerHTML=`
+    <div class="card" style="padding:16px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Photos terrain</div>
+      <div style="display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap">
+        <button onclick="triggerTerrainPhoto('vpi')" style="
+          flex:1;padding:16px;border-radius:13px;border:none;
+          background:linear-gradient(135deg,#0f4f84,#1f78c8);color:#fff;
+          font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;
+          display:flex;align-items:center;justify-content:center;gap:9px">
+          📷 Prendre une photo
+        </button>
+        <button onclick="createWhiteboard('vpi')" style="
+          padding:16px 14px;border-radius:13px;border:2px solid var(--line);
+          background:var(--panel-soft);color:var(--text);
+          font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
+          ✏️ Schéma
+        </button>
+      </div>
+      ${photos.length?`
+        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">
+          ${photos.length} photo${photos.length>1?'s':''} générale${photos.length>1?'s':''}
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+          ${photos.map(p=>`<div style="border-radius:10px;overflow:hidden;border:1px solid var(--line)">
+            <img src="${p.src}" style="width:100%;height:120px;object-fit:cover;display:block"/>
+            <div style="padding:6px 8px;font-size:10px;color:var(--muted)">${esc(p.caption||p.name)}</div>
+          </div>`).join('')}
+        </div>`:''}
+      ${cablePhotos.length?`
+        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">
+          Photos de passages câbles
+        </div>
+        ${cablePhotos.map(c=>`
+          <div style="margin-bottom:10px">
+            <div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px">
+              ${esc(c.dest||'Câble')} — ${esc(c.from||'?')} → ${esc(c.to||'?')}
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+              ${c.photos.map(p=>`
+                <div style="border-radius:10px;overflow:hidden;border:1px solid var(--line)">
+                  <img src="${p.src}" style="width:100%;height:100px;object-fit:cover;display:block"/>
+                  <div style="padding:5px 8px;font-size:10px;color:var(--muted)">${esc(p.caption||'')}</div>
+                </div>`).join('')}
+            </div>
+          </div>`).join('')}`:''}
+      ${!photos.length&&!cablePhotos.length?`
+        <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px">
+          Aucune photo — utilisez le bouton ci-dessus ou ajoutez des photos depuis les passages de câbles
+        </div>`:''}
+    </div>`;
+}
+
+function renderTerrainEcarts(body){
+  const v=S.vpi;
+  body.innerHTML=`
+    <div class="card" style="padding:16px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Écarts / corrections devis (${v.ecarts.length})</div>
+      ${v.ecarts.map((r,i)=>`
+        <div style="padding:12px 13px;border:1px solid var(--line);border-radius:12px;margin-bottom:9px;
+          background:${(ECART_IMPACTS[r.impact]||ECART_IMPACTS['neutre'])[0]}">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:11px;font-weight:700;color:${(ECART_IMPACTS[r.impact]||ECART_IMPACTS['neutre'])[1]}">
+              ${esc(r.type)} — ${(ECART_IMPACTS[r.impact]||ECART_IMPACTS['neutre'])[2]}
+            </span>
+            <button onclick="removeEcartRow('${r.id}');switchTerrainSection('t-ecarts')"
+              style="background:none;border:none;color:var(--danger);cursor:pointer">✕</button>
+          </div>
+          <input value="${esc(r.constat)}" placeholder="Constat terrain"
+            oninput="ecartField('${r.id}','constat',this.value)"
+            style="width:100%;background:rgba(255,255,255,.5);border:1px solid var(--line);
+            border-radius:9px;padding:9px;font-size:13px;color:var(--text);font-family:inherit;margin-bottom:6px"/>
+          <input value="${esc(r.action)}" placeholder="Action proposée"
+            oninput="ecartField('${r.id}','action',this.value)"
+            style="width:100%;background:rgba(255,255,255,.5);border:1px solid var(--line);
+            border-radius:9px;padding:9px;font-size:13px;color:var(--text);font-family:inherit"/>
+        </div>`).join('')}
+      <button onclick="addEcartRow();switchTerrainSection('t-ecarts')" style="
+        width:100%;padding:15px;border-radius:13px;border:2px dashed var(--line);
+        background:transparent;color:var(--muted);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">
+        + Signaler un écart
+      </button>
+    </div>`;
+}
+
+function renderTerrainNotes(body){
+  const v=S.vpi;
+  body.innerHTML=`
+    <div class="card" style="padding:16px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:14px">Synthèse &amp; notes</div>
+      ${tField('Synthèse de visite','vpiConclusion',v.conclusion,'textarea','Résumé des constats, décisions…')}
+      <div style="margin-bottom:12px">
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--muted);
+          text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Suite à donner</label>
+        <select id="vpiSuite" onchange="fc('vpi','suite',this.value)" style="
+          width:100%;background:var(--input-bg);border:1px solid var(--line);border-radius:11px;
+          padding:13px;font-size:15px;color:var(--text);font-family:inherit">
+          <option value="">— Choisir —</option>
+          ${['Passage direct au dossier technique','Correction devis avant dossier technique',
+             'Retour client requis avant démarrage','Visite complémentaire nécessaire',
+             'En attente de validation commerciale']
+             .map(o=>`<option${v.suite===o?' selected':''}>${o}</option>`).join('')}
+        </select>
+      </div>
+      ${tField('Instructions pour le dossier technique','vpiInstructions',v.instructions,'textarea','Points particuliers à intégrer dans le DT…')}
+      <button onclick="saveSession();showToast('Sauvegardé !')" style="
+        width:100%;padding:15px;border-radius:13px;border:none;
+        background:linear-gradient(135deg,#0b8b65,#10b981);color:#fff;
+        font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px">
+        💾 Sauvegarder la VPI
+      </button>
+    </div>`;
+  qs('vpiSuite')?.addEventListener('change',e=>fc('vpi','suite',e.target.value));
+}
+
+function triggerTerrainPhoto(target){
+  _terrainPhotoTarget=target;
+  qs('terrain-photo-input')?.click();
+}
+function importTerrainPhotos(e){
+  _photoTarget=_terrainPhotoTarget;
+  importPhotos(e);
+  setTimeout(()=>switchTerrainSection('t-photos'),300);
+}
+
 function renderAll(){
   syncFields();
   renderVigilanceTable();renderCableTable();renderPrepTable();renderPrepChecklist();renderEcartTable();
@@ -3918,6 +4754,360 @@ function renderAll(){
   renderNetTable();renderPlanTable();renderAllCa();renderDoeDocs();renderTests();renderDoeSheets();
   renderPhotos('vpi');renderPhotos('tech');renderPhotos('doe');
   renderMetrics();
+}
+
+// ═══════════════════════════════════════
+// AUTHENTIFICATION & PREMIER LANCEMENT
+// ═══════════════════════════════════════
+let _currentUser='';
+let _backupDirHandle=null; // File System Access API handle
+
+function getAccounts(){
+  try{return JSON.parse(localStorage.getItem('oci_accounts')||'null')||null;}
+  catch{return null;}
+}
+function saveAccounts(obj){localStorage.setItem('oci_accounts',JSON.stringify(obj));}
+function isFirstLaunch(){return getAccounts()===null;}
+
+// ── Panels login ──
+function showLoginPanel(){
+  qs('login-panel').style.display='block';
+  qs('firstlaunch-panel').style.display='none';
+  qs('createaccount-panel').style.display='none';
+  setTimeout(()=>qs('login-user')?.focus(),100);
+}
+function showFirstLaunchPanel(){
+  qs('login-panel').style.display='none';
+  qs('firstlaunch-panel').style.display='block';
+  qs('createaccount-panel').style.display='none';
+}
+function showCreateAccountPanel(){
+  qs('login-panel').style.display='none';
+  qs('firstlaunch-panel').style.display='none';
+  qs('createaccount-panel').style.display='block';
+  setTimeout(()=>qs('new-user')?.focus(),100);
+}
+
+// ── Dossier de sauvegarde ──
+async function pickBackupFolder(){
+  if('showDirectoryPicker' in window){
+    try{
+      _backupDirHandle=await window.showDirectoryPicker({mode:'readwrite'});
+      const label=qs('backup-folder-label');
+      const btn=qs('pick-folder-btn');
+      if(label) label.innerHTML=`<span style="color:#22c55e">✓ ${_backupDirHandle.name}</span>`;
+      if(btn){btn.style.borderColor='#22c55e';btn.style.color='#22c55e';}
+      // Persister le nom (le handle lui-même ne peut pas être sérialisé)
+      localStorage.setItem('oci_backup_folder_name',_backupDirHandle.name);
+    }catch(e){
+      if(e.name!=='AbortError') showToast('Impossible d\'accéder au dossier.');
+    }
+  } else {
+    alert('Votre navigateur ne supporte pas la sélection de dossier.\nLes sauvegardes seront téléchargées dans Téléchargements.');
+  }
+}
+
+// ── Création compte (premier lancement) ──
+function createFirstAccount(){
+  const user=(qs('new-user')?.value||'').trim().toLowerCase();
+  const pass=qs('new-pass')?.value||'';
+  const pass2=qs('new-pass2')?.value||'';
+  const errEl=qs('new-account-error');
+  const showErr=msg=>{if(errEl){errEl.textContent=msg;errEl.style.display='block';}};
+  if(!user){showErr('L\'identifiant est obligatoire.');return;}
+  if(!/^[a-z0-9_.-]+$/.test(user)){showErr('Identifiant : lettres, chiffres, _ . - uniquement.');return;}
+  if(pass.length<4){showErr('Mot de passe trop court (4 caractères minimum).');return;}
+  if(pass!==pass2){showErr('Les mots de passe ne correspondent pas.');return;}
+  // Enregistrer compte
+  const accounts={[user]:pass};
+  saveAccounts(accounts);
+  // Connecter directement
+  _currentUser=user;
+  localStorage.setItem('oci_session',btoa(user+':'+Date.now()));
+  localStorage.setItem('oci_current_user',user);
+  // Enregistrer "se souvenir"
+  localStorage.setItem('oci_remember',JSON.stringify({user,pass}));
+  qs('login-screen').style.display='none';
+  document.body.style.overflow='';
+  showToast(`Bienvenue ${user} ! Compte créé avec succès.`);
+  // Sauvegarde initiale
+  setTimeout(()=>saveSessionWithUser(),800);
+}
+
+// ── Utiliser admin/admin par défaut ──
+function useDefaultLogin(){
+  saveAccounts({admin:'admin'});
+  showLoginPanel();
+  qs('login-user').value='admin';
+  qs('login-pass').value='admin';
+}
+
+// ── Connexion ──
+function doLogin(){
+  const user=(qs('login-user')?.value||'').trim();
+  const pass=(qs('login-pass')?.value||'');
+  const remember=qs('login-remember')?.checked||false;
+  const accounts=getAccounts()||{admin:'admin'};
+  if(accounts[user]&&accounts[user]===pass){
+    _currentUser=user;
+    localStorage.setItem('oci_session',btoa(user+':'+Date.now()));
+    localStorage.setItem('oci_current_user',user);
+    if(remember){
+      localStorage.setItem('oci_remember',JSON.stringify({user,pass}));
+    } else {
+      localStorage.removeItem('oci_remember');
+    }
+    qs('login-screen').style.display='none';
+    document.body.style.overflow='';
+    updateUserBadge();
+  } else {
+    const err=qs('login-error');if(err) err.style.display='block';
+    const inp=qs('login-pass');if(inp){inp.style.borderColor='#e05555';inp.value='';}
+    setTimeout(()=>{if(err)err.style.display='none';if(inp)inp.style.borderColor='#2c3a52';},2800);
+  }
+}
+
+function doLogout(){
+  if(!confirm('Se déconnecter ?')) return;
+  localStorage.removeItem('oci_session');
+  localStorage.removeItem('oci_current_user');
+  // Garder remember si cochée
+  location.reload();
+}
+
+function togglePassVis(inputId){
+  const inp=qs(inputId||'login-pass');
+  if(!inp) return;
+  inp.type=inp.type==='password'?'text':'password';
+}
+
+function updateUserBadge(){
+  const u=_currentUser||localStorage.getItem('oci_current_user')||'';
+  const el=qs('autosaveText');
+  if(el&&u) el.title=`Connecté : ${u}`;
+}
+
+// ── Badge utilisateur dans le hero ──
+function checkSession(){
+  // Récupérer utilisateur courant
+  _currentUser=localStorage.getItem('oci_current_user')||'';
+
+  // Première fois : aucun compte
+  if(isFirstLaunch()){
+    qs('login-screen').style.display='flex';
+    document.body.style.overflow='hidden';
+    showFirstLaunchPanel();
+    return;
+  }
+
+  // Session active ?
+  const session=localStorage.getItem('oci_session');
+  if(session){
+    qs('login-screen').style.display='none';
+    document.body.style.overflow='';
+    updateUserBadge();
+    return;
+  }
+
+  // Remember me ?
+  const remembered=localStorage.getItem('oci_remember');
+  if(remembered){
+    try{
+      const {user,pass}=JSON.parse(remembered);
+      const accounts=getAccounts()||{admin:'admin'};
+      if(accounts[user]&&accounts[user]===pass){
+        _currentUser=user;
+        localStorage.setItem('oci_session',btoa(user+':'+Date.now()));
+        localStorage.setItem('oci_current_user',user);
+        qs('login-screen').style.display='none';
+        document.body.style.overflow='';
+        updateUserBadge();
+        if(qs('login-user')) qs('login-user').value=user;
+        if(qs('login-remember')) qs('login-remember').checked=true;
+        return;
+      }
+    }catch{}
+  }
+
+  // Sinon afficher login
+  qs('login-screen').style.display='flex';
+  document.body.style.overflow='hidden';
+  showLoginPanel();
+  // Pré-remplir si remember me
+  const rem=localStorage.getItem('oci_remember');
+  if(rem){
+    try{
+      const {user}=JSON.parse(rem);
+      if(qs('login-user')) qs('login-user').value=user;
+      if(qs('login-remember')) qs('login-remember').checked=true;
+    }catch{}
+  }
+  // Afficher nom du dossier de backup si connu
+  const fname=localStorage.getItem('oci_backup_folder_name');
+  if(fname){
+    const label=qs('backup-folder-label');
+    if(label) label.innerHTML=`<span style="color:#7a95b5">📁 ${fname} (à réautoriser si besoin)</span>`;
+  }
+  setTimeout(()=>qs('login-user')?.focus(),100);
+}
+
+// ── Sauvegarde avec nom utilisateur ──
+async function saveSessionWithUser(silent=false){
+  const user=_currentUser||localStorage.getItem('oci_current_user')||'inconnu';
+  try{
+    const data={catalog:S.catalog,techLibrary:S.techLibrary,clientDB:S.clientDB,
+      photos:S.photos,notebookPages:S.notebookPages,activeNote:S.activeNote,
+      vpi:S.vpi,tech:S.tech,doe:S.doe,
+      savedBy:user,savedAt:new Date().toISOString()};
+    const json=JSON.stringify(data);
+    // localStorage toujours
+    localStorage.setItem('oci_vpi_v3',json);
+    const ts=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    qs('autosaveText').textContent=`Sauvegarde ${ts} (${user})`;
+    // Dossier local si disponible
+    if(_backupDirHandle){
+      const fname=`oci_${user}_${new Date().toISOString().slice(0,10)}.json`;
+      try{
+        const fh=await _backupDirHandle.getFileHandle(fname,{create:true});
+        const w=await fh.createWritable();
+        await w.write(json);await w.close();
+        if(!silent) showToast(`Sauvegardé — ${fname}`);
+      }catch(e){
+        if(!silent) showToast('Sauvegarde localStorage OK. Dossier local inaccessible.');
+      }
+    } else {
+      if(!silent) showToast(`Session sauvegardée (${user}).`);
+    }
+  }catch(e){console.error(e);}
+}
+
+// ── Gestion comptes ──
+function openAccounts(){
+  renderAccountsList();
+  qs('acc-user').value='';qs('acc-pass').value='';qs('acc-pass2').value='';
+  qs('modal-accounts').classList.add('open');
+}
+function renderAccountsList(){
+  const accounts=getAccounts()||{admin:'admin'};
+  const current=_currentUser||localStorage.getItem('oci_current_user')||'';
+  const list=qs('accounts-list');if(!list) return;
+  list.innerHTML=Object.keys(accounts).map(u=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel-soft)">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">${esc(u)}${u===current?' <span style="font-size:10px;color:var(--ok);font-weight:600">● connecté</span>':''}</div>
+        <div style="font-size:11px;color:var(--muted)">${u==='admin'?'Administrateur':'Utilisateur'}</div>
+      </div>
+      ${u!=='admin'?`<button class="btn sm danger" onclick="deleteAccount('${esc(u)}')">Supprimer</button>`:'<span style="font-size:10px;color:var(--muted)">Protégé</span>'}
+    </div>`).join('');
+}
+function saveAccount(){
+  const user=(qs('acc-user')?.value||'').trim().toLowerCase();
+  const pass=qs('acc-pass')?.value||'';
+  const pass2=qs('acc-pass2')?.value||'';
+  if(!user){alert('Identifiant requis.');return;}
+  if(pass.length<4){alert('Mot de passe trop court (4 caractères minimum).');return;}
+  if(pass!==pass2){alert('Les mots de passe ne correspondent pas.');return;}
+  const accounts=getAccounts()||{admin:'admin'};
+  accounts[user]=pass;
+  saveAccounts(accounts);
+  renderAccountsList();
+  qs('acc-user').value='';qs('acc-pass').value='';qs('acc-pass2').value='';
+  showToast(`Compte "${user}" enregistré.`);
+}
+function deleteAccount(user){
+  if(user==='admin'){alert('Le compte admin ne peut pas être supprimé.');return;}
+  if(!confirm(`Supprimer le compte "${user}" ?`)) return;
+  const accounts=getAccounts()||{admin:'admin'};delete accounts[user];
+  saveAccounts(accounts);renderAccountsList();
+  showToast(`Compte "${user}" supprimé.`);
+}
+
+// ═══════════════════════════════════════
+// ENVOI CLIENT (mailto + PDF VPI)
+// ═══════════════════════════════════════
+function openSendClientModal(){
+  const v=S.vpi;
+  const email=v.clientEmail||'';
+  const company=v.clientCompany||'Client';
+  const contact=v.clientContact||'';
+  const ref=v.orderRef||'';
+
+  if(qs('send-email')) qs('send-email').value=email;
+  if(qs('send-subject')) qs('send-subject').value=`OCI Connect — Formulaire pré-installation contrôle d'accès${ref?' ('+ref+')':''}`;
+  if(qs('send-body')) qs('send-body').value=
+`Bonjour${contact?' '+contact:''},\n\nDans le cadre de notre intervention${ref?' (réf. '+ref+')':''}, merci de bien vouloir compléter le formulaire Excel joint.\n\nCe document nous permettra de préparer la programmation de vos centrales de contrôle d'accès avant notre intervention.\n\nMerci de nous le retourner complété dès que possible.\n\nCordialement,\nOCI Connect Nancy`;
+
+  // Récapitulatif
+  const recap=qs('send-client-recap');
+  if(recap) recap.innerHTML=`
+    <div style="display:flex;gap:14px;flex-wrap:wrap">
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:2px">Client</div><div style="font-weight:700">${esc(company)||'—'}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:2px">Contact</div><div>${esc(contact)||'—'}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:2px">Email</div><div style="color:var(--primary)">${esc(email)||'Non renseigné'}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:2px">Réf.</div><div>${esc(ref)||'—'}</div></div>
+    </div>`;
+
+  // Vérifier si un fichier CA est déjà joint
+  ensureCa();
+  const attach=S.tech.ca.attach;
+  const btnExisting=qs('send-ca-download-existing');
+  const desc=qs('send-ca-desc');
+  if(attach&&attach.fileUrl&&btnExisting){
+    btnExisting.style.display='inline-flex';
+    btnExisting.title=attach.fileName;
+    if(desc) desc.textContent=`Fichier joint : ${attach.fileName}`;
+  } else {
+    if(btnExisting) btnExisting.style.display='none';
+    if(desc) desc.textContent='Formulaire pré-installation contrôle d\'accès à compléter par le client';
+  }
+
+  qs('modal-send-client').classList.add('open');
+}
+
+function downloadCaForSend(){
+  // Génère le Excel CA vierge (ou avec données existantes si saisies)
+  ensureCa();
+  const hasSaisie=S.tech.ca.reseau.length||S.tech.ca.groupes.length||S.tech.ca.usagers.length;
+  if(hasSaisie){
+    // Exporter les données saisies
+    exportCaExcel();
+    showToast('Excel CA avec données exporté. Joignez-le à votre mail.');
+  } else {
+    // Générer le formulaire vierge
+    generateBlankCaExcel();
+    showToast('Formulaire Excel CA vierge généré. Joignez-le à votre mail.');
+  }
+}
+
+function downloadExistingCaAttach(){
+  ensureCa();
+  const attach=S.tech.ca.attach;
+  if(!attach||!attach.fileUrl) return;
+  const a=document.createElement('a');
+  a.href=attach.fileUrl;
+  a.download=attach.fileName||'CA_programmation.xlsx';
+  a.click();
+  showToast(`Fichier "${attach.fileName}" téléchargé. Joignez-le à votre mail.`);
+}
+
+function sendViaMailto(){
+  const email=(qs('send-email')?.value||'').trim();
+  const subject=encodeURIComponent(qs('send-subject')?.value||'OCI Connect — Fiche VPI');
+  const body=encodeURIComponent(qs('send-body')?.value||'');
+  if(!email){alert('Veuillez saisir une adresse e-mail.');return;}
+  window.location.href=`mailto:${email}?subject=${subject}&body=${body}`;
+}
+
+function downloadVpiPdf(){
+  printCurrentModule._forceVpi=true;
+  const saved=currentModule;
+  currentModule='vpi';
+  const html=buildPrintVPI();
+  qs('printRoot').innerHTML=html;
+  window.print();
+  currentModule=saved;
+  showToast('PDF VPI envoyé à l\'impression — enregistrez-le en PDF depuis la boîte de dialogue.');
 }
 
 // ═══════════════════════════════════════
@@ -3972,7 +5162,40 @@ document.addEventListener('DOMContentLoaded',()=>{
   loadSession();renderAll();initHeroObserver();
   qs('autosaveText').textContent='Session active';
   applyTheme(_theme);
-  // Afficher l'invitation plein écran si pas encore en FS et première visite
+  checkSession();
+
+  // ── Auto-détection mode terrain (smartphone / tablette) ──
+  function isSmallDevice(){
+    const w=window.innerWidth,h=window.innerHeight;
+    // Détecte mobile/tablette : largeur < 1024px OU user agent mobile
+    const uaMobile=/Android|iPhone|iPad|iPod|Mobile|Tablet/i.test(navigator.userAgent);
+    return uaMobile||(w<1024&&w<h*1.4);
+  }
+  // Auto-lancer terrain si petit device ET session active ET pas déjà en terrain
+  function autoTerrainCheck(){
+    const ls=qs('login-screen');
+    const lsHidden=ls&&ls.style.display==='none';
+    if(isSmallDevice()&&lsHidden&&qs('terrain-mode')?.style.display==='none'){
+      const seen=localStorage.getItem('oci_terrain_auto_seen');
+      if(!seen){
+        localStorage.setItem('oci_terrain_auto_seen','1');
+        openTerrainMode();
+      }
+    }
+  }
+  // Lancer après checkSession (async — on attend un tick)
+  setTimeout(autoTerrainCheck,300);
+
+  // Ré-évaluer si l'écran pivote ou redimensionne
+  window.addEventListener('resize',()=>{
+    // Si on passe en grand écran depuis le mode terrain → proposer de quitter
+    if(!isSmallDevice()&&qs('terrain-mode')?.style.display==='flex'){
+      const btn=document.createElement('div');
+      // Rien d'automatique : on laisse l'utilisateur quitter manuellement
+    }
+  });
+
+  // ── Invitation plein écran ──
   if(!document.fullscreenElement){
     const seen=localStorage.getItem('oci_fs_seen');
     if(!seen){
