@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+<meta name="referrer" content="no-referrer"/>
 <title>OCI Connect · VPI & Dossier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -972,9 +974,8 @@ canvas{display:block;touch-action:none;width:100%}
       <div class="hero-strip">
         <button class="hbtn hbtn-warn" onclick="openNotebook()">Bloc-notes terrain</button>
         <button class="hbtn" onclick="triggerPhoto(currentModule)">Photo / image</button>
-        <button class="hbtn" onclick="document.getElementById('jsonImport').click()">Importer JSON</button>
-        <button class="hbtn" onclick="exportJSON()">Exporter JSON</button>
-        <button class="hbtn" onclick="saveSession()">Sauvegarder</button>
+        <button class="hbtn" onclick="saveSession()">💾 Sauvegarder</button>
+        <button class="hbtn" onclick="document.getElementById('jsonImport').click()">📂 Restaurer</button>
         <button class="hbtn hbtn-ok" onclick="openPreviewModal()">Prévisualiser</button>
         <button class="hbtn hbtn-pdf" onclick="printCurrentModule()">PDF</button>
         <button class="hbtn hbtn-danger" onclick="nouveauProjet()">Nouveau projet</button>
@@ -1753,14 +1754,19 @@ canvas{display:block;touch-action:none;width:100%}
       </div>
 
       <div class="card">
-        <div class="toolbar">
-          <div class="left"><h4 style="margin:0">Prévisualisation &amp; export PDF</h4></div>
-          <div class="right">
-            <button class="btn primary" onclick="refreshPreview()">Actualiser</button>
+        <div class="card-hdr">
+          <div>
+            <div class="card-title">Prévisualisation &amp; export PDF</div>
+            <div class="card-sub">Générez une prévisualisation du DOE et personnalisez les sections avant impression.</div>
+          </div>
+          <div class="card-acts">
+            <button class="btn primary" onclick="openPreviewModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Prévisualiser &amp; mettre en forme
+            </button>
             <button class="btn warn" onclick="printCurrentModule()">Imprimer DOE</button>
           </div>
         </div>
-        <div class="preview-box" id="preview-pane"><em style="color:var(--muted)">Cliquez sur « Actualiser » pour générer la prévisualisation.</em></div>
       </div>
     </div>
   </section>
@@ -2239,7 +2245,7 @@ canvas{display:block;touch-action:none;width:100%}
 
 <!-- ══════════ MODE TERRAIN (smartphone / tablette) ══════════ -->
 <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="importPhotos(event)"/>
-<input type="file" id="jsonImport" accept=".json" style="display:none" onchange="importJSON(event)"/>
+<input type="file" id="jsonImport" accept=".json" style="display:none" onchange="restaurerSauvegarde(event)"/>
 <input type="file" id="lib-file-input" accept=".pdf,.png,.jpg,.jpeg,.webp" style="display:none" onchange="handleLibFile(event)"/>
 <input type="file" id="csv-client-input" accept=".csv,.txt" style="display:none" onchange="importClientCSV(event)"/>
 <input type="file" id="ca-excel-input" accept=".xlsx,.xls" style="display:none" onchange="importCaExcel(event)"/>
@@ -2342,6 +2348,7 @@ let _photoTarget='vpi';
 
 function uid(){return Math.random().toString(36).slice(2,9)}
 function qs(id){return document.getElementById(id)}
+function qset(id,prop,val){const _e=document.getElementById(id);if(_e)_e[prop]=val;}
 function esc(v){return String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]))}
 function today(){return new Date().toLocaleDateString('fr-FR')}
 function todayISO(){return new Date().toISOString().slice(0,10)}
@@ -2426,16 +2433,16 @@ function renderMetrics(){
   setRing('ringVpi',vPct);
   ['ringPctVpi','tileVpiPct'].forEach(id=>{const e=qs(id);if(e)e.textContent=vPct+'%'});
   const el=qs('barVpi');if(el)el.style.width=vPct+'%';
-  qs('tileVpiCaptures').textContent=vPhotos+' photo'+(vPhotos>1?'s':'');
-  qs('tileVpiMeta2').textContent=`${vPhotos} photo · ${vEcarts} écart`;
-  qs('heroVpiPct').textContent=vPct+'%';
-  qs('heroVpiMeta').textContent=`${vPhotos} photo · ${vVigilance} vigilance · ${vCables} passage`;
-  qs('metVpiPct').textContent=vPct+'%';
-  qs('metVpiPhotos').textContent=vPhotos;
-  qs('metVpiEquip').textContent=vEcarts;
-  qs('kpiVpiClient').textContent=v.clientCompany||'—';
-  qs('kpiVpiCaptures').textContent=vVigilance+' point'+(vVigilance>1?'s':'');
-  qs('kpiVpiEquip').textContent=vEcarts+' écart'+(vEcarts>1?'s':'');
+  qset('tileVpiCaptures','textContent',vPhotos+' photo'+(vPhotos>1?'s':''));
+  qset('tileVpiMeta2','textContent',`${vPhotos} photo · ${vEcarts} écart`);
+  qset('heroVpiPct','textContent',vPct+'%');
+  qset('heroVpiMeta','textContent',`${vPhotos} photo · ${vVigilance} vigilance · ${vCables} passage`);
+  qset('metVpiPct','textContent',vPct+'%');
+  qset('metVpiPhotos','textContent',vPhotos);
+  qset('metVpiEquip','textContent',vEcarts);
+  qset('kpiVpiClient','textContent',v.clientCompany||'—');
+  qset('kpiVpiCaptures','textContent',vVigilance+' point'+(vVigilance>1?'s':''));
+  qset('kpiVpiEquip','textContent',vEcarts+' écart'+(vEcarts>1?'s':''));
   // Ecart badge
   const badge=qs('ecart-count-badge');
   if(badge){if(vEcarts){badge.style.display='inline-block';badge.textContent=`${vEcarts} écart${vEcarts>1?'s':''} à traiter`;}else badge.style.display='none';}
@@ -2449,16 +2456,16 @@ function renderMetrics(){
   setRing('ringTech',tPct);
   ['ringPctTech','tileTechPct'].forEach(id=>{const e=qs(id);if(e)e.textContent=tPct+'%'});
   const bt=qs('barTech');if(bt)bt.style.width=tPct+'%';
-  qs('tileTechDays').textContent=tDays+' jour'+(tDays>1?'s':'');
-  qs('tileTechMeta2').textContent=`${tDays} jour · ${tSup} fourniture`;
-  qs('heroTechPct').textContent=tPct+'%';
-  qs('heroTechMeta').textContent=`${tDays} jour · ${tSup} fourniture`;
-  qs('metTechPct').textContent=tPct+'%';
-  qs('metTechDays').textContent=tDays;
-  qs('metTechSupplies').textContent=tSup;
-  qs('kpiTechNum').textContent=t.number||'—';
-  qs('kpiTechDays').textContent=tDays;
-  qs('kpiTechSupplies').textContent=tSup;
+  qset('tileTechDays','textContent',tDays+' jour'+(tDays>1?'s':''));
+  qset('tileTechMeta2','textContent',`${tDays} jour · ${tSup} fourniture`);
+  qset('heroTechPct','textContent',tPct+'%');
+  qset('heroTechMeta','textContent',`${tDays} jour · ${tSup} fourniture`);
+  qset('metTechPct','textContent',tPct+'%');
+  qset('metTechDays','textContent',tDays);
+  qset('metTechSupplies','textContent',tSup);
+  qset('kpiTechNum','textContent',t.number||'—');
+  qset('kpiTechDays','textContent',tDays);
+  qset('kpiTechSupplies','textContent',tSup);
 
   // DOE
   const d=S.doe;
@@ -2469,21 +2476,21 @@ function renderMetrics(){
   setRing('ringDoe',dPct);
   ['ringPctDoe','tileDoePct'].forEach(id=>{const e=qs(id);if(e)e.textContent=dPct+'%'});
   const bd=qs('barDoe');if(bd)bd.style.width=dPct+'%';
-  qs('tileDoeTests').textContent=dDocs+' document';
-  qs('tileDoeMeta2').textContent=`${dDocs} doc · ${dTests} recette · ${dSheets} fiche`;
-  qs('heroDoePct').textContent=dPct+'%';
-  qs('heroDoeMeta').textContent=`${dDocs} document · ${dTests} recette · ${dSheets} fiche`;
-  qs('metDoePct').textContent=dPct+'%';
-  qs('metDoeDocs').textContent=dDocs;
-  qs('metDoeTests').textContent=dTests;
-  qs('kpiDoeRef').textContent=d.ref||'—';
-  qs('kpiDoeDocs').textContent=dDocs;
-  qs('kpiDoeTests').textContent=dTests;
+  qset('tileDoeTests','textContent',dDocs+' document');
+  qset('tileDoeMeta2','textContent',`${dDocs} doc · ${dTests} recette · ${dSheets} fiche`);
+  qset('heroDoePct','textContent',dPct+'%');
+  qset('heroDoeMeta','textContent',`${dDocs} document · ${dTests} recette · ${dSheets} fiche`);
+  qset('metDoePct','textContent',dPct+'%');
+  qset('metDoeDocs','textContent',dDocs);
+  qset('metDoeTests','textContent',dTests);
+  qset('kpiDoeRef','textContent',d.ref||'—');
+  qset('kpiDoeDocs','textContent',dDocs);
+  qset('kpiDoeTests','textContent',dTests);
 
   // Global
   const gPct=Math.round((vPct+tPct+dPct)/3);
-  qs('heroGlobalPct').textContent=gPct+'%';
-  qs('heroGlobalMeta').textContent=gPct<30?'Démarrage du projet':gPct<70?'En cours de constitution':'Dossier avancé';
+  qset('heroGlobalPct','textContent',gPct+'%');
+  qset('heroGlobalMeta','textContent',gPct<30?'Démarrage du projet':gPct<70?'En cours de constitution':'Dossier avancé');
 }
 
 // ═══════════════════════════════════════
@@ -2972,7 +2979,7 @@ function exportCaExcel(){
   ];
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(plagesRows),'INFOS PLAGES HORAIRES');
 
-  XLSX.writeFile(wb,`Demande_pre-installation_${S.vpi.clientCompany||'client'}_${todayISO()}.xlsx`);
+  XLSX.writeFile(wb,`Demande_pre-installation_${(S.vpi.clientCompany||'client').replace(/[^a-zA-Z0-9_-]/g,'_')}_${todayISO()}.xlsx`);
   showToast('Export Excel généré.');
 }
 
@@ -2992,7 +2999,7 @@ function generateBlankCaExcel(){
   const ph=[null,null,'DEBUT','FIN','DEBUT','FIN','DEBUT','FIN','DEBUT','FIN'];
   const phData=[['PLAGE HORAIRE AUTORISATION DES PERSONNES','GROUPE DE PERSONNES','HEURES DE DEBUT ET FIN'],ph,...Array(8).fill(null).map(()=>[null,'','','','','','','','','']),['PLAGE HORAIRE PILOTAGE DES PORTES','LECTEUR','HEURES DE DEBUT ET FIN'],ph,...Array(8).fill(null).map(()=>[null,'','','','','','','','',''])];
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(phData),'INFOS PLAGES HORAIRES');
-  XLSX.writeFile(wb,`Demande_pre-installation_${S.vpi.clientCompany||'client'}.xlsx`);
+  XLSX.writeFile(wb,`Demande_pre-installation_${(S.vpi.clientCompany||'client').replace(/[^a-zA-Z0-9_-]/g,'_')}.xlsx`);
   showToast('Fichier vierge généré pour le client.');
 }
 
@@ -4126,7 +4133,7 @@ function pvVpiCables(){
 }
 function pvVpiPrep(){
   const v=S.vpi;
-  const checks=Object.entries(v.prepChecks||{}).filter(([,on])=>on).map(([k])=>PREP_CHECKLIST.find(c=>c.key===k)?.label||k);
+  const checks=Object.entries(v.prepChecks||{}).filter(([,on])=>on).map(([k])=>{const found=PREP_CHECKLIST.find(c=>c.key===k);return found?`${found.icon} ${found.label}`:k;});
   let h='';
   if(checks.length) h+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">${checks.map(c=>`<span style="padding:3px 9px;background:#e8f2ff;color:#0f4f84;border-radius:999px;font-size:11px;font-weight:600">${c}</span>`).join('')}</div>`;
   if(v.prep.length) h+=pvTable(['Type','Description / localisation','Prise en charge','Qté'],v.prep.map(r=>[r.type,r.desc,r.charge,r.qty]));
@@ -4630,24 +4637,110 @@ function loadSession(){
     if(data.photos) S.photos=data.photos;
     if(data.notebookPages) S.notebookPages=data.notebookPages;
     if(data.activeNote!=null) S.activeNote=data.activeNote;
-    if(data.vpi) Object.assign(S.vpi,data.vpi);
-    if(data.tech) Object.assign(S.tech,data.tech);
-    if(data.doe) Object.assign(S.doe,data.doe);
+    if(data.vpi){
+      Object.assign(S.vpi,data.vpi);
+      // Migration défensive — champs ajoutés après v1
+      if(!Array.isArray(S.vpi.vigilance)) S.vpi.vigilance=[];
+      if(!Array.isArray(S.vpi.cables)) S.vpi.cables=[];
+      if(!Array.isArray(S.vpi.prep)) S.vpi.prep=[];
+      if(!Array.isArray(S.vpi.ecarts)) S.vpi.ecarts=[];
+      if(!Array.isArray(S.vpi.equipment)) S.vpi.equipment=[];
+      if(!S.vpi.prepChecks) S.vpi.prepChecks={};
+      // Patch cables sans photos (données antérieures)
+      S.vpi.cables.forEach(c=>{if(!Array.isArray(c.photos))c.photos=[];});
+    }
+    if(data.tech){
+      Object.assign(S.tech,data.tech);
+      if(!Array.isArray(S.tech.planning)) S.tech.planning=[];
+      if(!Array.isArray(S.tech.equipment)) S.tech.equipment=[];
+      if(!Array.isArray(S.tech.network)) S.tech.network=[];
+      if(!S.tech.ca) S.tech.ca={reseau:[],groupes:[],usagers:[],plages:[],attach:{fileName:'',fileUrl:'',mimeType:''}};
+      if(!S.tech.ca.attach) S.tech.ca.attach={fileName:'',fileUrl:'',mimeType:''};
+      if(!Array.isArray(S.tech.ca.reseau)) S.tech.ca.reseau=[];
+      if(!Array.isArray(S.tech.ca.groupes)) S.tech.ca.groupes=[];
+      if(!Array.isArray(S.tech.ca.usagers)) S.tech.ca.usagers=[];
+      if(!Array.isArray(S.tech.ca.plages)) S.tech.ca.plages=[];
+    }
+    if(data.doe){
+      Object.assign(S.doe,data.doe);
+      if(!Array.isArray(S.doe.docs)) S.doe.docs=[];
+      if(!Array.isArray(S.doe.tests)) S.doe.tests=[];
+      if(!Array.isArray(S.doe.techSheets)) S.doe.techSheets=[];
+    }
   }catch(e){console.error(e);}
 }
-function exportJSON(){
-  const blob=new Blob([JSON.stringify({catalog:S.catalog,photos:S.photos,notebookPages:S.notebookPages,vpi:S.vpi,tech:S.tech,doe:S.doe,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`oci_vpi_${todayISO()}.json`;a.click();
-}
-function importJSON(e){
+function restaurerSauvegarde(e){
   const f=e.target.files?.[0];if(!f) return;
-  const r=new FileReader();r.onload=ev=>{try{
-    const d=JSON.parse(ev.target.result);
-    if(d.catalog) S.catalog=d.catalog;if(d.photos) S.photos=d.photos;
-    if(d.notebookPages) S.notebookPages=d.notebookPages;
-    if(d.vpi) Object.assign(S.vpi,d.vpi);if(d.tech) Object.assign(S.tech,d.tech);if(d.doe) Object.assign(S.doe,d.doe);
-    renderAll();saveSession(true);showToast('Session importée avec succès.');
-  }catch{alert('Erreur de lecture JSON.');}};r.readAsText(f);e.target.value='';
+  // Vérification préalable : lire le fichier pour afficher les infos avant confirmation
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      // Construire un résumé lisible
+      const savedBy=d.savedBy||'inconnu';
+      const savedAt=d.savedAt?new Date(d.savedAt).toLocaleString('fr-FR'):(d.exportedAt?new Date(d.exportedAt).toLocaleString('fr-FR'):'date inconnue');
+      const client=d.vpi?.clientCompany||d.vpi?.clientAddress||'—';
+      const orderRef=d.vpi?.orderRef||'—';
+      const photosCount=(d.photos||[]).length;
+      const equipCount=(d.vpi?.equipment||[]).length+(d.tech?.equipment||[]).length;
+      const msg=[
+        `📂 RESTAURER UNE SAUVEGARDE`,
+        ``,
+        `Fichier : ${f.name}`,
+        `Sauvegardé par : ${savedBy}`,
+        `Date : ${savedAt}`,
+        ``,
+        `Contenu :`,
+        `  • Client : ${client}`,
+        `  • Réf. commande : ${orderRef}`,
+        `  • Photos : ${photosCount}`,
+        `  • Matériel : ${equipCount} lignes`,
+        ``,
+        `⚠️ Les données actuelles seront remplacées.`,
+        `Continuer ?`
+      ].join('\n');
+      if(!confirm(msg)){e.target.value='';return;}
+      // Restauration avec migration défensive
+      if(d.catalog) S.catalog=d.catalog;
+      if(d.techLibrary) S.techLibrary=d.techLibrary;
+      if(d.clientDB) S.clientDB=d.clientDB;
+      if(d.photos) S.photos=d.photos;
+      if(d.notebookPages) S.notebookPages=d.notebookPages;
+      if(d.activeNote!=null) S.activeNote=d.activeNote;
+      if(d.vpi){
+        Object.assign(S.vpi,d.vpi);
+        if(!Array.isArray(S.vpi.vigilance)) S.vpi.vigilance=[];
+        if(!Array.isArray(S.vpi.cables)) S.vpi.cables=[];
+        S.vpi.cables.forEach(c=>{if(!Array.isArray(c.photos))c.photos=[];});
+        if(!Array.isArray(S.vpi.prep)) S.vpi.prep=[];
+        if(!Array.isArray(S.vpi.ecarts)) S.vpi.ecarts=[];
+        if(!Array.isArray(S.vpi.equipment)) S.vpi.equipment=[];
+        if(!S.vpi.prepChecks) S.vpi.prepChecks={};
+      }
+      if(d.tech){
+        Object.assign(S.tech,d.tech);
+        if(!Array.isArray(S.tech.planning)) S.tech.planning=[];
+        if(!Array.isArray(S.tech.equipment)) S.tech.equipment=[];
+        if(!Array.isArray(S.tech.network)) S.tech.network=[];
+        if(!S.tech.ca) S.tech.ca={reseau:[],groupes:[],usagers:[],plages:[],attach:{fileName:'',fileUrl:'',mimeType:''}};
+        if(!S.tech.ca.attach) S.tech.ca.attach={fileName:'',fileUrl:'',mimeType:''};
+      }
+      if(d.doe){
+        Object.assign(S.doe,d.doe);
+        if(!Array.isArray(S.doe.docs)) S.doe.docs=[];
+        if(!Array.isArray(S.doe.tests)) S.doe.tests=[];
+        if(!Array.isArray(S.doe.techSheets)) S.doe.techSheets=[];
+      }
+      renderAll();
+      saveSession(true);
+      showToast(`✅ Sauvegarde restaurée — ${client} (${savedAt})`);
+    }catch(err){
+      console.error(err);
+      alert('❌ Erreur de lecture du fichier.\nVérifiez qu\'il s\'agit bien d\'une sauvegarde OCI Connect.');
+    }
+    e.target.value='';
+  };
+  r.readAsText(f,'UTF-8');
 }
 
 // ═══════════════════════════════════════
@@ -4823,7 +4916,7 @@ function createFirstAccount(){
   localStorage.setItem('oci_session',btoa(user+':'+Date.now()));
   localStorage.setItem('oci_current_user',user);
   // Enregistrer "se souvenir"
-  localStorage.setItem('oci_remember',JSON.stringify({user,pass}));
+  localStorage.setItem('oci_remember',btoa(encodeURIComponent(JSON.stringify({u:user,p:pass}))));
   qs('login-screen').style.display='none';
   document.body.style.overflow='';
   showToast(`Bienvenue ${user} ! Compte créé avec succès.`);
@@ -4850,7 +4943,7 @@ function doLogin(){
     localStorage.setItem('oci_session',btoa(user+':'+Date.now()));
     localStorage.setItem('oci_current_user',user);
     if(remember){
-      localStorage.setItem('oci_remember',JSON.stringify({user,pass}));
+      localStorage.setItem('oci_remember',btoa(encodeURIComponent(JSON.stringify({u:user,p:pass}))));
     } else {
       localStorage.removeItem('oci_remember');
     }
@@ -4910,7 +5003,7 @@ function checkSession(){
   const remembered=localStorage.getItem('oci_remember');
   if(remembered){
     try{
-      const {user,pass}=JSON.parse(remembered);
+      let _rem; try{_rem=JSON.parse(decodeURIComponent(atob(remembered)));}catch{try{_rem=JSON.parse(remembered);}catch{_rem=null;}} const {u:user,p:pass}=_rem||{};
       const accounts=getAccounts()||{admin:'admin'};
       if(accounts[user]&&accounts[user]===pass){
         _currentUser=user;
@@ -4934,7 +5027,7 @@ function checkSession(){
   const rem=localStorage.getItem('oci_remember');
   if(rem){
     try{
-      const {user}=JSON.parse(rem);
+      let _r2;try{_r2=JSON.parse(decodeURIComponent(atob(rem)));}catch{try{_r2=JSON.parse(rem);}catch{_r2=null;}} const {u:user}=_r2||{};
       if(qs('login-user')) qs('login-user').value=user;
       if(qs('login-remember')) qs('login-remember').checked=true;
     }catch{}
