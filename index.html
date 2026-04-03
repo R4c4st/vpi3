@@ -376,7 +376,7 @@ button{cursor:pointer}
 .hero.compact .hero-strip button,.hero.compact .hero-strip .hbtn{padding:6px 11px;font-size:11px}
 
 /* Status bar */
-.statusbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:16px}
+.statusbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:16px}
 .status-card{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);
   border-radius:16px;padding:12px 14px;backdrop-filter:blur(3px)}
 .status-card .k{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.72);font-weight:600}
@@ -385,7 +385,7 @@ button{cursor:pointer}
 
 /* ══════════ MODULE SWITCHER ══════════ */
 .workspace-shell{display:grid;gap:16px;margin:16px 0 0;padding:0 16px 24px}
-.module-switcher{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;
+.module-switcher{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;
   position:sticky;top:74px;z-index:12;transition:top .22s ease}
 .module-switcher.compact{
   display:flex!important;gap:0;padding:4px;
@@ -396,20 +396,20 @@ button{cursor:pointer}
 
 /* Tiles - normal mode */
 .module-tile{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
-  box-shadow:var(--shadow);padding:14px;cursor:pointer;
+  box-shadow:var(--shadow);padding:12px;cursor:pointer;
   transition:all .28s cubic-bezier(.4,0,.2,1)}
 .module-tile:hover{box-shadow:0 18px 36px rgba(11,25,45,.12);transform:translateY(-1px)}
 .module-tile.active{
   background:linear-gradient(135deg,#132742 0%,#0f4b80 58%,#1d78c6 100%);
   color:#fff;border-color:transparent;box-shadow:0 18px 46px rgba(10,33,61,.22)}
-.module-tile h4{margin:0 0 5px;font-size:16px;font-weight:700}
-.module-tile p{margin:0;font-size:12px;color:var(--muted);min-height:32px}
+.module-tile h4{margin:0 0 4px;font-size:14px;font-weight:700}
+.module-tile p{margin:0;font-size:11px;color:var(--muted);min-height:28px;line-height:1.4}
 .module-tile.active p{color:rgba(255,255,255,.8)}
-.module-tile .mini{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
-.module-tile .mini span{display:block;padding:7px 8px;border-radius:10px;
+.module-tile .mini{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.module-tile .mini span{display:block;padding:6px 7px;border-radius:10px;
   background:#f3f8fd;font-size:11px;font-weight:700;color:#24496a;text-align:center}
 .module-tile.active .mini span{background:rgba(255,255,255,.14);color:#fff}
-.module-health-bar{height:6px;border-radius:999px;background:#e7eef7;overflow:hidden;margin-top:8px}
+.module-health-bar{height:5px;border-radius:999px;background:#e7eef7;overflow:hidden;margin-top:7px}
 .module-health-bar span{display:block;height:100%;
   background:linear-gradient(90deg,#0f4f84,#35a6ff);width:0;transition:width .6s}
 
@@ -425,7 +425,7 @@ button{cursor:pointer}
 .module-switcher.compact .module-tile h4{font-size:12px!important;font-weight:700!important;margin:0!important}
 .module-switcher.compact .module-tile p,.module-switcher.compact .module-tile .mini,.module-switcher.compact .module-tile .module-health-bar{display:none!important}
 .module-switcher.compact .module-tile:not(:last-child){border-right:1px solid rgba(255,255,255,.1)!important;border-radius:18px 0 0 18px!important}
-.module-switcher.compact .module-tile:last-child{border-radius:0 18px 18px 0!important}
+.module-switcher.compact .module-tile:last-child{border-radius:0 18px 18px 0!important;border-right:none!important}
 
 /* Rings */
 .ring-wrap{display:none;position:relative;flex-shrink:0;width:38px;height:38px;align-items:center;justify-content:center}
@@ -986,6 +986,7 @@ canvas{display:block;touch-action:none;width:100%}
     <div class="statusbar">
       <div class="status-card"><div class="k">Avant-vente / VPI</div><div class="v" id="heroVpiPct">0%</div><div class="m" id="heroVpiMeta">0 capture · 0 matériel</div></div>
       <div class="status-card"><div class="k">Dossier technique</div><div class="v" id="heroTechPct">0%</div><div class="m" id="heroTechMeta">0 jour · 0 fourniture</div></div>
+      <div class="status-card"><div class="k">Fin de chantier</div><div class="v" id="heroRfcPct">0%</div><div class="m" id="heroRfcMeta">0 jour · 0 photo</div></div>
       <div class="status-card"><div class="k">DOE</div><div class="v" id="heroDoePct">0%</div><div class="m" id="heroDoeMeta">0 document · 0 recette</div></div>
       <div class="status-card"><div class="k">État global</div><div class="v" id="heroGlobalPct">0%</div><div class="m" id="heroGlobalMeta">Base prête</div></div>
     </div>
@@ -1032,6 +1033,24 @@ canvas{display:block;touch-action:none;width:100%}
       <p>Reprise du VPI, planning, fournitures, plans et documents.</p>
       <div class="mini"><span id="tileTechPct">0%</span><span id="tileTechDays">0 jour</span></div>
       <div class="module-health-bar"><span id="barTech" style="width:0"></span></div>
+    </div>
+
+    <!-- RFC TILE -->
+    <div class="module-tile" id="tile-rfc" onclick="focusModule('rfc')">
+      <div class="ring-wrap">
+        <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="3"/>
+        <circle id="ringRfc" cx="18" cy="18" r="14" fill="none" stroke="#b46bff" stroke-width="3" stroke-linecap="round" stroke-dasharray="87.96 87.96" stroke-dashoffset="87.96" transform="rotate(-90 18 18)" style="transition:stroke-dashoffset .6s"/></svg>
+        <span class="ring-pct" id="ringPctRfc">0%</span>
+      </div>
+      <div class="tile-compact-info">
+        <span class="tile-compact-label">RFC</span>
+        <span class="tile-compact-meta" id="tileRfcMeta2">0 jour · 0 photo</span>
+      </div>
+      <div class="tile-active-dot"></div>
+      <h4>Fin de chantier</h4>
+      <p>Synthèse travaux, matériel installé, photos et validation client.</p>
+      <div class="mini"><span id="tileRfcPct">0%</span><span id="tileRfcDays">0 jour</span></div>
+      <div class="module-health-bar"><span id="barRfc" style="width:0;background:#b46bff"></span></div>
     </div>
 
     <!-- DOE TILE -->
@@ -1771,6 +1790,151 @@ canvas{display:block;touch-action:none;width:100%}
     </div>
   </section>
 
+  <!-- ══ MODULE RFC ══ -->
+  <section class="module" id="module-rfc">
+    <div class="module-header" style="background:linear-gradient(135deg,#2d1a4a 0%,#1e1030 100%);border-bottom:1px solid rgba(180,107,255,.25)">
+      <div class="module-header-top">
+        <div>
+          <h3 style="color:#e8d5ff">4. RFC — Rapport de Fin de Chantier</h3>
+          <p style="color:#a88fc7">Synthèse des travaux réalisés, matériel installé, photos et validation client. Fourni si le DOE complet n'est pas levé.</p>
+        </div>
+        <span class="chip" style="background:rgba(180,107,255,.2);color:#d0a8ff;border:1px solid rgba(180,107,255,.3)">Document de clôture · Livrable light</span>
+      </div>
+      <div class="module-kpi-row">
+        <div class="module-kpi"><div class="k">Chantier</div><div class="v" id="kpiRfcClient">—</div></div>
+        <div class="module-kpi"><div class="k">Journées</div><div class="v" id="kpiRfcDays">0</div></div>
+        <div class="module-kpi"><div class="k">Équipements</div><div class="v" id="kpiRfcEquip">0</div></div>
+        <div class="module-kpi"><div class="k">Photos</div><div class="v" id="kpiRfcPhotos">0</div></div>
+      </div>
+    </div>
+    <div class="module-body">
+
+      <div class="soft-banner" style="background:linear-gradient(135deg,rgba(180,107,255,.1),rgba(100,60,200,.08));border:1px solid rgba(180,107,255,.2)">
+        <div>
+          <div class="title" style="color:#c490ff">Rapport de Fin de Chantier — version allégée</div>
+          <div class="desc">Ce document est une alternative au DOE complet. Il récupère automatiquement les informations du Dossier Technique (planning, matériel, réseau) et permet d'ajouter le compte-rendu des travaux réalisés, les photos finales et la validation client.</div>
+        </div>
+        <div class="quick-actions">
+          <button class="btn" style="background:rgba(180,107,255,.2);color:#d0a8ff;border:1px solid rgba(180,107,255,.3)" onclick="rfcImportFromTech()">⬇ Reprendre depuis DT</button>
+          <button class="btn" onclick="triggerPhoto('rfc')">+ Photo chantier</button>
+          <button class="btn warn" onclick="addRfcJourRow()">+ Journée</button>
+        </div>
+      </div>
+
+      <div class="metric-row">
+        <div class="metric"><div class="k">Complétude RFC</div><div class="v" id="metRfcPct">0%</div></div>
+        <div class="metric"><div class="k">Journées renseignées</div><div class="v" id="metRfcDays">0</div></div>
+        <div class="metric"><div class="k">Équipements installés</div><div class="v" id="metRfcEquip">0</div></div>
+        <div class="metric"><div class="k">Photos annexe</div><div class="v" id="metRfcPhotos">0</div></div>
+      </div>
+
+      <!-- BLOC 1 : Identification chantier -->
+      <div class="card">
+        <div class="card-hdr">
+          <div>
+            <div class="card-title">1. Identification du chantier</div>
+            <div class="card-sub">Informations reprises du dossier technique ou saisies manuellement.</div>
+          </div>
+          <div class="card-acts">
+            <button class="btn primary" onclick="rfcImportFromTech()">↓ Reprendre depuis DT</button>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field s6"><label>Client / Société</label><input id="rfcClient" oninput="rfcFc('client',this.value)" placeholder="ex : ACME Industries SAS"/></div>
+          <div class="field s6"><label>Adresse du site</label><input id="rfcAddress" oninput="rfcFc('address',this.value)" placeholder="ex : 12 rue des Artisans, 54000 Nancy"/></div>
+          <div class="field s12"><label>Objet des travaux</label><input id="rfcObjet" oninput="rfcFc('objet',this.value)" placeholder="ex : Installation système de contrôle d'accès — Bâtiment B, niveaux 1 et 2"/></div>
+          <div class="field s4"><label>Prestataire</label><input id="rfcPrestataire" oninput="rfcFc('prestataire',this.value)" value="OCI Connect Nancy"/></div>
+          <div class="field s4"><label>Équipe technique</label><input id="rfcEquipe" oninput="rfcFc('equipe',this.value)" placeholder="ex : S. RACADOT — R. CASTELLANOS"/></div>
+          <div class="field s4"><label>Date du rapport</label><input id="rfcDateRapport" type="date" oninput="rfcFc('dateRapport',this.value)"/></div>
+          <div class="field s6"><label>Contact client (nom, email, téléphone)</label><input id="rfcContactClient" oninput="rfcFc('contactClient',this.value)" placeholder="ex : Jean DUPONT — j.dupont@acme.fr — 06 12 34 56 78"/></div>
+          <div class="field s6"><label>Contact IT / technique client</label><input id="rfcContactIT" oninput="rfcFc('contactIT',this.value)" placeholder="ex : Marie MARTIN — 07 00 11 22 33"/></div>
+          <div class="field s4"><label>Durée d'intervention</label><input id="rfcDuree" oninput="rfcFc('duree',this.value)" placeholder="ex : 4 jours (J1 à J4)"/></div>
+          <div class="field s4"><label>N° dossier / devis</label><input id="rfcNumDossier" oninput="rfcFc('numDossier',this.value)"/></div>
+          <div class="field s4"><label>Chargé d'affaires</label><input id="rfcManager" oninput="rfcFc('manager',this.value)"/></div>
+        </div>
+      </div>
+
+      <!-- BLOC 2 : Récapitulatif journalier -->
+      <div class="card">
+        <div class="card-hdr">
+          <div>
+            <div class="card-title">2. Récapitulatif des travaux réalisés</div>
+            <div class="card-sub">Détail journalier des prestations et leur statut. Repris automatiquement depuis le planning DT.</div>
+          </div>
+          <div class="card-acts">
+            <button class="btn" onclick="rfcImportJoursFromTech()">↓ Reprendre planning DT</button>
+            <button class="btn primary" onclick="addRfcJourRow()">+ Journée</button>
+          </div>
+        </div>
+        <div id="rfc-jours-list"></div>
+        <div class="tbl-foot"><button class="btn" onclick="addRfcJourRow()">+ Ajouter une journée</button></div>
+      </div>
+
+      <!-- BLOC 3 : Matériel installé -->
+      <div class="card">
+        <div class="card-hdr">
+          <div>
+            <div class="card-title">3. Matériel installé</div>
+            <div class="card-sub">Liste des équipements posés et mis en service. Repris depuis les fournitures DT.</div>
+          </div>
+          <div class="card-acts">
+            <button class="btn" onclick="rfcImportEquipFromTech()">↓ Reprendre fournitures DT</button>
+            <button class="btn primary" onclick="addRfcEquipRow()">+ Ligne</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>Désignation</th>
+              <th>Référence / Modèle</th>
+              <th style="width:60px">Qté</th>
+              <th>Observations</th>
+              <th style="width:34px"></th>
+            </tr></thead>
+            <tbody id="rfc-equip-table"></tbody>
+          </table>
+        </div>
+        <div class="tbl-foot"><button class="btn" onclick="addRfcEquipRow()">+ Ajouter un équipement</button></div>
+      </div>
+
+      <!-- BLOC 4 : Annexe photo(s) -->
+      <div class="card">
+        <div class="card-hdr">
+          <div>
+            <div class="card-title">4. Annexe Photo(s)</div>
+            <div class="card-sub">Photos finales de chantier à inclure dans le rapport. Peuvent être reprises depuis le Dossier Technique.</div>
+          </div>
+          <div class="card-acts">
+            <button class="btn" onclick="rfcImportPhotosFromTech()">↓ Reprendre photos DT</button>
+            <button class="btn primary" onclick="triggerPhoto('rfc')">+ Ajouter photo</button>
+          </div>
+        </div>
+        <div class="photo-grid" id="photos-rfc"></div>
+        <div id="photos-rfc-empty" class="photo-empty">Aucune photo — ajoutez des clichés du chantier finalisé</div>
+      </div>
+
+      <!-- BLOC 5 : Export PDF -->
+      <div class="card">
+        <div class="card-hdr">
+          <div>
+            <div class="card-title">Export &amp; impression</div>
+            <div class="card-sub">Génère le rapport au format PDF, calqué sur la structure OCI Connect.</div>
+          </div>
+          <div class="card-acts">
+            <button class="btn primary" onclick="printRfc()" style="background:linear-gradient(135deg,#7c3aed,#9f5ff8)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              Imprimer / Export PDF
+            </button>
+          </div>
+        </div>
+        <div style="padding:8px 0;font-size:13px;color:var(--muted)">
+          Le rapport inclura : identification du chantier · récapitulatif journalier · matériel installé · annexe photo(s).
+        </div>
+      </div>
+
+    </div>
+  </section>
+
 </div><!-- /workspace-shell -->
 
 <!-- ══════════ MODAL : CATALOGUE ══════════ -->
@@ -2280,36 +2444,424 @@ const FICON={'Vidéoprotection':'camera','Contrôle d\'accès':'reader','Réseau
 // DEFAULT CATALOG
 // ═══════════════════════════════════════
 const DEFAULT_CAT=[
-  {id:'c1',code:'DAH-IPC-HDW2831T',name:'Caméra dôme Dahua 8MP IP67 IR30m',family:'Vidéoprotection',unit:'pce'},
-  {id:'c2',code:'DAH-IPC-HFW2831T',name:'Caméra bullet Dahua 8MP IP67',family:'Vidéoprotection',unit:'pce'},
-  {id:'c3',code:'DAH-IPC-PTZ30X',name:'Caméra PTZ Dahua 2MP 30x optique',family:'Vidéoprotection',unit:'pce'},
-  {id:'c4',code:'DAH-LAPI-8MP',name:'Caméra LAPI Dahua reconnaissance plaque',family:'Vidéoprotection',unit:'pce'},
-  {id:'c5',code:'DAH-NVR4108',name:'NVR Dahua 8 voies',family:'Vidéoprotection',unit:'pce'},
-  {id:'c6',code:'STID-ARCH-BLE',name:'Lecteur STid Architect Bluetooth OSDP',family:'Contrôle d\'accès',unit:'pce'},
-  {id:'c7',code:'EDEN-LX2',name:'Centrale Eden Ligard 2 portes',family:'Contrôle d\'accès',unit:'pce'},
-  {id:'c8',code:'VIRO-MAG-12V',name:'Gâche électrique Viro 12V',family:'Contrôle d\'accès',unit:'pce'},
-  {id:'c9',code:'CAME-ELEC-300',name:'Électroaimant 300kg encastré',family:'Contrôle d\'accès',unit:'pce'},
-  {id:'c10',code:'MIFARE-1K',name:'Badge Mifare Classic 1K',family:'Contrôle d\'accès',unit:'pce'},
-  {id:'c11',code:'RM-FP-24P',name:'Panneau brassage R&M 24p Cat6A STP',family:'Réseau / VDI',unit:'pce'},
-  {id:'c12',code:'GIGA-12U-600',name:'Baie rack Gigamedia 12U prof. 600mm',family:'Réseau / VDI',unit:'pce'},
-  {id:'c13',code:'GIGA-19U-600',name:'Baie rack Gigamedia 19U prof. 600mm',family:'Réseau / VDI',unit:'pce'},
-  {id:'c14',code:'UBI-USW-24P',name:'Switch PoE+ Ubiquiti UniFi 24p 250W',family:'Réseau / VDI',unit:'pce'},
-  {id:'c15',code:'UBI-UAP-AC-PRO',name:'Borne Wi-Fi Ubiquiti UniFi AP-AC-Pro',family:'Réseau / VDI',unit:'pce'},
-  {id:'c16',code:'CAMB-EPMP450M',name:'Pont radio Cambium ePMP 450M',family:'Réseau / VDI',unit:'pce'},
-  {id:'c17',code:'CAT6A-SFTP',name:'Câble réseau Cat6A S/FTP (touret 305m)',family:'Réseau / VDI',unit:'m'},
-  {id:'c18',code:'JARR-SC-SC',name:'Jarretière fibre SC/SC 9/125 duplex 3m',family:'Réseau / VDI',unit:'pce'},
-  {id:'c19',code:'2N-IP-VERSO',name:'Interphone 2N IP Verso 1 bouton',family:'Interphonie',unit:'pce'},
-  {id:'c20',code:'2N-IP-SOLO',name:'Interphone 2N IP Solo',family:'Interphonie',unit:'pce'},
-  {id:'c21',code:'2N-IP-FORCE',name:'Interphone 2N IP Force robuste',family:'Interphonie',unit:'pce'},
-  {id:'c22',code:'EAT-9PX-1500',name:'Onduleur Eaton 9PX 1500VA rack 2U',family:'Énergie',unit:'pce'},
-  {id:'c23',code:'APC-SMT1000I',name:'Onduleur APC Smart-UPS 1000VA',family:'Énergie',unit:'pce'},
-  {id:'c24',code:'AJAX-HUB2',name:'Centrale alarme Ajax Hub 2',family:'Alarme / Détection',unit:'pce'},
-  {id:'c25',code:'AJAX-PIR',name:'Détecteur IR Ajax MotionProtect',family:'Alarme / Détection',unit:'pce'},
-  {id:'c26',code:'AJAX-GLASS',name:'Détecteur bris de vitre Ajax GlassProtect',family:'Alarme / Détection',unit:'pce'},
-  {id:'c27',code:'BFT-MOOVI-50',name:'Barrière automatique BFT MOOVI 50',family:'Accès véhicules',unit:'pce'},
-  {id:'c28',code:'BOUCLE-IND',name:'Boucle de détection inductrice',family:'Accès véhicules',unit:'pce'},
-  {id:'c29',code:'CHEMIN-40X60',name:'Chemin de câbles en U 40×60',family:'Infrastructure',unit:'m'},
-  {id:'c30',code:'GOUL-PVC-40X20',name:'Goulotte PVC 40×20 avec couvercle',family:'Infrastructure',unit:'m'},
+  {id:'c1',code:'9156111CB',name:'Interphone 2N IP Base Helios 2 Boutons , camera',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c2',code:'9156020',name:'Plaque de montage 2N IP Base Helios',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c3',code:'91378802',name:'2N, support de table pour les postes intérieurs',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c4',code:'91378501WH',name:'Ecran couleur 2N Vidéo intercom',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c5',code:'9137421E',name:'Lecteur RFID 13.56MHz pour ordinateur (interface U',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c6',code:'91550945',name:'module combiné avec Bluetooth et lecteur RFID',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c7',code:'10600536',name:'Portier 2N 9155211C',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c8',code:'10600232',name:'2N, lecteur de carte pour système vidéophone',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c9',code:'10600008',name:'2N, cadre pour installation superficielle de Helio',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c10',code:'10600108',name:'2N, cadre pour installation superficielle de Helio',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c11',code:'10600058',name:'2N, plaque de montage pour un système Helios IP',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c12',code:'10600201',name:'2N 9155086 Module de lecteur de cartes RFID',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c13',code:'10600309',name:'2N, Indoor Compact, poste intérieur vidéo',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c14',code:'10600319',name:'2N, support de table pour poste intérieur',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c15',code:'9155301CBS',name:'2N® IP Solo with camera - black, surface mount',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c16',code:'9155068',name:'2N Helios Ip Solo - Surface installation backplate',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c17',code:'91378501',name:'2N® INDOOR COMPACT - NOIR',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c18',code:'9137957',name:'Licence 2N pour application mobile / An',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c19',code:'9155211C',name:'2N IP VERSO 2.0 MAIN Unit witch caméra',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c20',code:'SL-800900-BK',name:'Speedlink Excedo/ Support casque',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c21',code:'9155037',name:'2N® Helios IP Verso - Acces Unit - Module Wiegand',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c22',code:'NN9159014EU',name:'2N 2Wire Convertisseur 2 fils kit de 2 adaptateurs',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c23',code:'91378601',name:'2N, Indoor View, unité intérieure, noir, écran',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c24',code:'91378800',name:'Kit boitier d\'encastrement',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c25',code:'INTER 2N COMP',name:'Interphone 2N config complete',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c26',code:'TABLETTE + SUP',name:'Tablette indoor avec support',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c27',code:'9155051',name:'2N, bouton poussoir factice',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c28',code:'9155034',name:'2N® Helios IP Verso - module entrée / sortie',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c29',code:'9151101RPW',name:'2N, module extérieure anti-vandale Helios IP Force',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c30',code:'9151101W',name:'2N, module extérieure anti-vandale Helios IP Force',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c31',code:'9155072',name:'2N, acc. montage pour Verso IP 25°, 2 modules',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c32',code:'10600176',name:'2N, IP OEM Audio Kit',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c33',code:'9155021',name:'2N, cadre pour installation superficielle de Helio',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c34',code:'91378803',name:'Support pour 2N Indoor Compact et 2N Indoor View',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c35',code:'9137958',name:'Licence My2N Mobile Video, pour un maximum de 4',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c36',code:'9137921',name:'2N® IP Intercom - MS Teams license',brand:'2N',family:'Interphonie',unit:'pce'},
+  {id:'c37',code:'KITSECARD-B T-V3',name:'Kit de programmation 13.56MHz DESFire EV2',brand:'ARC ONE',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c38',code:'LEC ARC1MF',name:'Lecteur Architect One CSN+Mifare classic sector',brand:'ARC ONE',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c39',code:'5450APG',name:'PMP 100 - POINT D\'ACCES 5.4 GHZ 14 MBP/S AVEC CRYP',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c40',code:'5450SMG',name:'PMP 100 - MODULE CLIENT 5.4 GHZ 14 MBP/S AVEC CRYP',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c41',code:'C050900H013A',name:'ePMP 1000 :100 MBits 5 GHz Modem radio externe',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c42',code:'C054045B003A',name:'LIEN PTP 450S - 5.4 GHZ -125 MBP/S - ANT. INTEGREE',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c43',code:'N000900L001A',name:'INJECTEUR DE PUISSANCE POUR PTP450',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c44',code:'C050900C033A',name:'ePMP 1000 5Ghz - Antenne intégrée Garantie 1 an',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c45',code:'N000900L008A',name:'CABLE, UL POWER SUPPLY CORD SET, EU',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c46',code:'CANOPY PTP100',name:'CANOPY PTP100',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c47',code:'C050900C073A',name:'ePMP 1000 - 5 GHz Force 180 Integrated Radio (EU)',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c48',code:'C050065H027A',name:'PTP 650S END with AC+DC Enhanced Supply (EU)',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c49',code:'C054045B001A',name:'Cambium Networks PTP450 5GHz Point-to-Point',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c50',code:'C050900A023A',name:'ePMP 1000: 5 GHz Connectorized Radio (EU) [3,4]',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c51',code:'C050045B006A',name:'5 GHz PTP 450i END, Integrated High Gain Antenna',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c52',code:'N000045L002A',name:'New Tilt Bracket Assembly should cover most',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c53',code:'N000065L001B',name:'PTP 650 AC Power Injector',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c54',code:'C050065H020',name:'PTP 650 Integrated END with AC+DC Enhanced Supply',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c55',code:'C054045B001A-',name:'PTP 450 5 GHz END - Integrated (ROW)',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c56',code:'C-ALIM-TRIPOLAIRE',name:'C-ALIM-TRIPOLAIRE',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c57',code:'N000900L001B',name:'PoE Gigabit DC Injector, 15W Output at 30V, Energy',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c58',code:'C050900P071A',name:'PONT RADIO CAMBIUM Epmp force 180 antenne',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c59',code:'SUPPORT',name:'Support pour module ePMP 180',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c60',code:'01-TVS-RNL-0050ING-01',name:'LICENCE ANNUELLE CYBEROAM CR 50iNG',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c61',code:'C050065H023A',name:'PTP 650s END with AC+DC Enhanced Supply',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c62',code:'C050067H022A',name:'PTP 670 Integrated 23dBi END with AC+DC Enhanced',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c63',code:'N000900L002A',name:'ePMP 1000: Spare Power Supply Radio With 100Mb',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c64',code:'C000000L065',name:'Gigabit Surge Suppressor (30V)',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c65',code:'C050910C213',name:'ePMP 5 GHz Force 300-16 Radio (EU) (EU cord)',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c66',code:'C050910C213A.',name:'ePMP 5 GHz Force 300-16, 500+ Mbps, 2x2 MIMO/OFDM',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c67',code:'C050055H009A',name:'PTP 550 Integrated 5 GHz (EU) with EU Line Cord',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c68',code:'C050045B034A',name:'5 GHz 450b - Mid-Gain - EU',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c69',code:'C000045K009',name:'Licence - 256-bit AES Enable Key for 450 Platform',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c70',code:'C000065L007B',name:'PTP 650/670 LPU and Grounding 1 kit/ODU',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c71',code:'C000065L002C',name:'AC+DC Enhanced Power Injector 56V',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c72',code:'600SSH',name:'PARASURTENSEUR ETHERNET POUR SM & PTP100/200/230',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c73',code:'C050900D003A',name:'ePMP 1000 : 5 Ghz Antenne sectorielle 90° Gar. 1an',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c74',code:'SMMB1A',name:'SUPPORT MURAL POUR MODULE CLIENT PMP100/430/450',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c75',code:'C000000L033A',name:'Cambium - Gigabit Surge Suppressor (56V)',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c76',code:'N000000L034A',name:'POWER SUPPLY, 30W, 56V - Gbps support',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c77',code:'C000065L007A',name:'PTP 650 LPU AND GROUNDING KIT (1KIT PER ODU)',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c78',code:'C054025B005A',name:'LIEN PTP 250-5.4/5.8GHZ-250MBP/S-ANTENNE INTEGREE',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c79',code:'C054050B005A',name:'LIEN PTP 500-5.4 GHZ OFDM-25MBP/S ANTENNE INTEGREE',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c80',code:'C050910C213A',name:'ePMP 5 GHz Force 300-16, 500+ Mbps, 2x2 MIMO/OFDM',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c81',code:'N000900L001C',name:'PoE Gigabit DC Injector CAMBIUM, 15W Output',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c82',code:'C000000L065A',name:'Parasurtenseur Gigabit Ethernet 30V pour gamme ePM',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c83',code:'N000900L001D',name:'PoE Gigabit DC Injector, 15W , Output at',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c84',code:'C000065L002B',name:'PTP 650 AC+DC Enhanced power Injector',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c85',code:'C000065L002D',name:'AC+DC Enhanced Power Injector 56V',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c86',code:'C050055H009',name:'Cambium PTP Integrated 5 GHz with EU Line Cord',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c87',code:'N000045L002A.',name:'Tilt Bracket Assembly pour SM450i',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c88',code:'C050045B006A.',name:'5 GHz PTP/PMP 450i Subcriber Module',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c89',code:'EW-E2EPF300-WW',name:'CAMBIUM ePMP Force 300 Extended Warranty 2',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c90',code:'C050900B073A',name:'CAMBIUM ePMP Bridge in a Box 5 GHz EU',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c91',code:'C050045B006B',name:'Cambium Networks 5 GHz PTP 450i END, Integrated',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c92',code:'N000000L034B',name:'Cambium Networks POWER SUPPLY, 30W 56V - Gbps supp',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c93',code:'C050067H021',name:'PTP 670 Integrated 23dBi END with AC+DC Enhanced',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c94',code:'AC7605C',name:'Support mural pour ponts radio gamme ePMP',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c95',code:'C050067H016A',name:'PTP 670 Int. 23dBi END with AC+DC Enhanced Supply',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c96',code:'C600510C014A',name:'V1000-60GHz Bridge in a Box 1Gb with no Cord. Kit',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c97',code:'C000000L033B',name:'Cambium Networks Gigabit Surge Suppressor (56V)',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c98',code:'C000000L138A',name:'Cambium Networks Grounding Cable, 0.6m',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c99',code:'C600510C003A',name:'CAMBIUM 60GHz Bridge in a Box 1Go with EU cord',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c100',code:'C600510C014',name:'Cambium Networks 60GHz Bridge in a Box 1Gb with no',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c101',code:'C000000L033',name:'Cambium Networks Gigabit Ethernet Surge Suppressor',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c102',code:'C000000L138',name:'Cambium Networks Grounding Cable, 0.6m with M6 rin',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c103',code:'C600500C003A',name:'60GHz cnWave V1000 Client Node',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c104',code:'C000065K021A',name:'PTP 650 LITE (UP TO 125MBPS) TO MID (UP TO 250MBPS',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c105',code:'C050065H019A',name:'PTP 650 INTEGRATED END WITH AC SUPPLY (EU) GAR 1AN',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c106',code:'C050065H026A',name:'PONT RADIO PTP650S AVEC INJECTEUR DE PUISSANCE AC',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c107',code:'C054050B001A',name:'LIEN PTP 500-5.4GHZ OFDM -25MBP/S-ANTENNE INTEGREE',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c108',code:'C050900A013A',name:'EPMP 1000: INJECTEUR DE PUISSANCE POUR C050900H033',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c109',code:'SMMB2A',name:'SUPPORT MURAL RENFORCE POUR MODULE CLIENT',brand:'CAMBIUM',family:'Réseau / VDI',unit:'pce'},
+  {id:'c110',code:'IPC-PDBW5831-B360',name:'Caméra réseau dôme IR 4 Objectifs x 2MP',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c111',code:'PFB303W',name:'Support camera',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c112',code:'PFA108',name:'Coupole pour camera',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c113',code:'PFA151',name:'Support d\'angle dimensions 243x1470x138mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c114',code:'NVR5432-4KS2',name:'NVR 32 voies IP jusqu\'à 12MP 320Mbit/s',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c115',code:'PFS3106-4T-60-V2',name:'Switch Indus 4 ports PoE + 1 SFP GIGA',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c116',code:'IPC-HFW5442EP-ZE',name:'Caméra IP WizMind 4MP Obj 2.7-12mm IR50M IP67 IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c117',code:'IPC-HDBW3441R-ZS',name:'Dôme IPWizSense 4MP Obj 2.7-13.5m IR40M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c118',code:'HAC-HFW2241T-Z-A',name:'Caméra HDCVI Starlight 2MP Obj 2.7 - 13.5mm IR80m',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c119',code:'HAC-HDBW2241R-Z',name:'Dôme HDCVI Starlight 2MP Obj 2.7 - 13.5mm IR30m',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c120',code:'IPC-HDW5442TP-ZE',name:'Dahua, WizMind series 4MP Starlight+',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c121',code:'PFB203W',name:'Dahua - Support de fixation murale pour caméra',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c122',code:'IPC-HDBW5442E-ZE',name:'Dahua Dôme IP WizMind 4MP Obj 2.7-12mm IR45M IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c123',code:'PFB211W',name:'Support mural alliage alu 235.4 x 180.3 x 84.2 mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c124',code:'IPC-HDW3449H-AS-PV',name:'Dôme IP TiOC 4MP Obj 2.8mm LED40M IP67 Micro/HP',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c125',code:'PC-HDW3549H-AS-PV',name:'Dôme IP TiOC 5MP Obj 2.8mm LED30M IP67 POE',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c126',code:'IPC-HDBW3441FP-AS-M',name:'Dôme IP WizSense 4MP Obj 2.8mm IR50M IP67 IK10 PoE',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c127',code:'PFA139',name:'Embase de fixation caméras Dahua',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c128',code:'ITC237-PW6M-LZF1050-B-C2',name:'Camera ANPR Lecture de plaques 2MP Obj 10-50mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c129',code:'IPC-HDW3549H-AS-PV-S3-28',name:'Caméra Dome IP TiOC 2.0 5MP Obj 2.8mm LED et',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c130',code:'PFA152-E',name:'Support avec collier, dimension 125.6mmx114mmx20mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c131',code:'SD6CE445XA-HNR',name:'Dome IP PTZ 4MP Zoom x45 IR 250m Poe+',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c132',code:'PFA150',name:'Support poteau pour PTZ',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c133',code:'PSDX2402.75',name:'Alimentation Rail Din 5M 230Vac / 24Vdc/ 2.75A',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c134',code:'PFA137',name:'Boîte jonction aluminum blanc diamètre 12x34.2m',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c135',code:'IPC-HFW5442E-ZE',name:'Caméra IP WizMind 4MP Obj 2.7-12mm IR50M IP67 IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c136',code:'IPC-HFW5442E-Z4E',name:'Caméra IP WizMind 4MP Obj 8-32mm IR120M IP67 IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c137',code:'IPC-HFW5842H-ZHE',name:'Caméra IP WizMind 8MP Obj 2.7-12mm IR60M IP67 IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c138',code:'IPC-HDBW7442H-Z',name:'Dome IP WizSense 4MP Obj 2.8mm WDR120dB IR40M IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c139',code:'IPC-HDBW2431E-S-S2',name:'Dome IP Starlight 4MP Obj 2.8mm IR30M IK10b IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c140',code:'PFA138',name:'boîtier de derivation apparent à utiliser avec',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c141',code:'IPC-HDBW2431R-ZS-S2',name:'Camera Dôme IP Starlight 4MP Obj 2.8-13.5mm IR40M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c142',code:'IPC-HDW3541TM-AS',name:'Dôme IP WizSense 5MP Obj 2.8mm IR50M IP67 POE',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c143',code:'IPC-HDW3549H-AS-PV',name:'Dôme IP TiOC 4MP Obj 2.8mm LED40M IP67 POE',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c144',code:'IPC-HDW8341X-3D-S2',name:'Caméra IP FullColor 4MP Obj 3.6mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c145',code:'IPC-HDPW5442G-ZE',name:'Dôme IP encastrable WizMind 4MP Obj 2.7-12mm IR40M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c146',code:'IPC-EB5541-AS',name:'Dôme IP FishEye WizMind 5MPObj 1.4mm PoE IP67 IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c147',code:'NVR5432-16P-4KS2E',name:'NVR 32 voies IP jusqu\'à 12MP 320 Mbit/s',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c148',code:'NVR4116-4KS2/L',name:'NVR 16 voies IP jusqu\'à 8MP 80 Mbit/s',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c149',code:'IPC-HDW3441E',name:'M-S-0280B-S Dôme IP WizSense 4MP Obj 2.8mm IR50M I',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c150',code:'PFA I 52-E',name:'Support pour caméras et dômes 12,6cmx11,4cmx2cm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c151',code:'DHI-LM32-F200-C1',name:'Dahua Light Series 32 inch FHD/1080P 16:9 LED',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c152',code:'DH- IPC-HDW3541TP-ZS-S2',name:'Dahua WizSense series Caméra reseau 5MP',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c153',code:'PFB300C',name:'Support plafond (22cm)',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c154',code:'PFA113',name:'tube d\'extension pour support plafond (42cm)',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c155',code:'PFA100',name:'Support supendu',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c156',code:'DH-IPC-PFW5849-A180-E2-ASTE',name:'Cam 8mp Starlight IR 40 m',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c157',code:'PFA5300R',name:'Boite de Jonction',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c158',code:'PFA157',name:'Suport poteau',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c159',code:'IPC-HDW3441TP-ZS-S2',name:'Dôme OP 4MP Obj 2.7-13.5mm Led 40M PoE',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c160',code:'NVR4204-P-4KS2/L',name:'NVR 4 voies IP 8Mp 4 ports PoE 160 Mbits/s',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c161',code:'IPC-HFW5541E-ZE-S3',name:'Caméra IP WizMind S 5MP Obj 2.7-13.5mm IR50M IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c162',code:'SD4A425DB-HNY',name:'Dôme IP PTZ WizSense 4MP Obj 4.8-120mm 25x IR100M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c163',code:'IPC-HFW5449T1-ZE-LED',name:'Camera IP 4MP Obj 2.7-12mm LED 70M IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c164',code:'IPC-HDBW3441F-AS-02',name:'Dôme IP WizSense 4MP Obj 2.8mm IR50M IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c165',code:'PFA136',name:'BOÎTE DE JONCTION ALUMINIUM BLANC DIAM 110X33.5MM',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c166',code:'LM32-F200-V2',name:'Moniteur FHD 32Pouces',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c167',code:'IPC-HFW3441T',name:'Caméra IP WizSense 4MP Obj 2.7-13.5mm IR60M IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c168',code:'IPC-HFW5449T',name:'Camera IP FullColor 2.0 4MP Obj 2.7-12mm LED70M IP',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c169',code:'PFA130-E',name:'Boîte de jonction aluminium blanc diam138x42mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c170',code:'HDBW3441E-S-0280B',name:'S2Dôme IP WizSense 4MP Obj 2.8mm IR50M IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c171',code:'IPC-HFW3441T-ZS-S2',name:'Caméra IP WizSense 4MP Obj 2.7-13.5mm IR60M IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c172',code:'LM24-B201S-B3',name:'Moniteur FHD 24 pouces',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c173',code:'DHI-NVR4208-8P-EI',name:'Stockeur WizSense 1U NVR 8 canaux avec PoE',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c174',code:'DH-IPC-HFW3841TP-ZS',name:'Bullet 8MP avec IR, starlight, obj 2.7-13.5mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c175',code:'DH-PFA130-E',name:'Boite de Jonction IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c176',code:'IPC-HFW3541TP-ZS-S2',name:'Bullet 5MP avec IR, Winsens obj 2.7-13.5mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c177',code:'DHI-LM24-F200-C4',name:'Ecran FULL HD 24 pouces 24/7',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c178',code:'PFA101',name:'Coupole pour adaptation, diamètre 159x35mm, 0.24KG',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c179',code:'PFS3110-8ET-96-V2',name:'Switch 8 ports PoE 2.0 10/100Mbps + uplink 1 x RJ4',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c180',code:'IPC-HDBW5442E-ZE-S3',name:'Dôme IP WizMind S 4MP Obj 2.7-12mm IR45M IP67 IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c181',code:'IPC-PDW5849-A180-E2',name:'Caméra IP Full color pano 2x4MP Obj 3,6 mm LED 40M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c182',code:'IPC-HFW3549T1-AS-PV-S4-2',name:'Camera IP TiOC 2.0 5MP Obj 2.8mm IR et LED 30M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c183',code:'IPC-HDW3549H-AS-PV-S4',name:'Dôme IP TiOC2.0 5MP Obj 2.8mm LED IR30M IP67 POE',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c184',code:'IPC-EBW8842P-AS',name:'Dôme 8MP IR10m Fisheye WizMind IP67 et IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c185',code:'PFA132-E',name:'Boîte de jonction aluminium blanc 156mmx39.8mm 3kg',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c186',code:'SD1A404XB-GNR',name:'Dôme IP PTZ WizSense 4MP Obj 2.8-12mm ZoomX4 IR15M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c187',code:'IPC-HDBW5441FP-AS-E2-028',name:'Dôme IP WizMind 4 MP double objectif 2.8mm IR30M I',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c188',code:'IPC-EB5541P-AS',name:'Dôme IP FishEye WizMind 5MPObj 1.4mm PoE IP67 IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c189',code:'IPC-PFW5849P-A180-E2-AST',name:'Caméra IP WizMind et Full-Color 2X 4MP Obj 3.6mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c190',code:'IPC-HDBW3441F-AS-2.8',name:'Dôme IP WizSense 4MP Obj 2.8mm IR50M IP67 IK10-PoE',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c191',code:'NVR5216-EI',name:'NVR 16 voies IP WizSense Jusqu\'à 32Mp 384 Mbit/s',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c192',code:'IPC-HFW3841E-S-S2',name:'Caméra IP WizSense 8MP Obj 2.8mm IR50M IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c193',code:'IPC-PFW3849S-A180-E2-AS',name:'Caméra IP TiOC pano 2x4MP Obj 2.8 mm LED 20M IR 25',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c194',code:'HDD8TO VX',name:'Disque dur 24/7 Seagate 8To SATA 6Gb/s 128 Mo de C',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c195',code:'LDH55-LAI400L',name:'Système de publication multimédia',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c196',code:'DH-PFA134',name:'Boite de Jonction',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c197',code:'IPC-HDBW3841E-AS-S2-28',name:'Doe IP WizSense 8MP Obj 8mm IR30M WDR 120dB IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c198',code:'TPC-DF1241-TB2F2-DW-S2',name:'Dôme IP thermique/thermo WizSense Obj 2mm IR30M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c199',code:'SDT6C425-4P-GB-APV-0280',name:'Dome Pano PTZ WizSense 4MP Obj 2.8mm IR30M et PTZ',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c200',code:'PFA126',name:'Boîte jonction alu blanc étanche 228.4x160.4x84.7',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c201',code:'IPC-HDW3849H-AS-PV-S4-28',name:'Dôme IP TiOC 2.0 8MP Obj 2.8mm IR et LED 30M IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c202',code:'PFB205W-E',name:'Support mural blanc alu 161.6 × 125.6 × 76 mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c203',code:'DHI-DS04-AI400',name:'Dahua Box Multimedia DAHUA sous Android 8.1',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c204',code:'IPC-HFW2849SP-S-IL-28',name:'Caméra IP WizSense 8MP obj 2.8mm IR et LED 30M IP6',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c205',code:'IPC-HUM8441-E1-L4',name:'Caméra IP Pinhole 4MP + boitier',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c206',code:'DHI-ITC416-PL8I-IZ',name:'DAHUA Camera ANPR 4MP Obj 2.7-12mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c207',code:'DH-IPC-HDBW2531RP-ZS-S2',name:'Dôme IP 5MP Obj 2.8-12mm IR40M IP67 IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c208',code:'IPC-HDBW2531R-ZS-S2-B',name:'Dôme IP NOIR 5MP Obj 2.8-12mm IR40M IP67 IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c209',code:'IPC-HDW2541T-ZS-S2',name:'Dôme IP 5MP Ogj 2.7-13.5 mm IR40M IP67 PoE',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c210',code:'IPC-HDBW2441R-ZS',name:'Dôme IP WizSense 4MP Obj 2.7-13.5mm IR40M PoE IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c211',code:'IPC-HDBW2441R-ZS-S2-B',name:'Dôme IP NOIR 5MP Obj 2.8-12mm IR40M IP67 IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c212',code:'PFA137-B',name:'Boîte jonction aluminum NOIR diamètre 12x34.2m',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c213',code:'IPC-PFW3849SP-A180-E2-AS-PV',name:'Caméra Dahua IPC 2x4MP Tioc Dual Lens réseau 180°',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c214',code:'HDW5449HP-ZE-LED-S2',name:'caméra Turret Full color led 4 MP Triple Streeming',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c215',code:'IPC-PDW3849P-A180-E2-AS-PV',name:'camera 180° - 8MP avec 2 x capteurs 4mp',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c216',code:'DHI-LM43-F200-V2',name:'Ecran 43\'\' Dahua Light Series 16:9',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c217',code:'DHI-NVR5208-8P-EI/2TB',name:'NVR 8 canaux 1U avec PoE (e-PoE), AI',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c218',code:'CS420-16GT-240',name:'switch 16 ports POE Dahua',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c219',code:'IPC-HDBW5842E-Z4E-S3',name:'Dôme IP WizSense 5MP Obj 2.8mm IR50M IP66 IK10 PoE',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c220',code:'ITC413-PW4D-IZ1',name:'Caméra IP ANPR 80 km/h 4MP Obj 2.7-12mm IR10M IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c221',code:'PFA156',name:'Support avec collier, dimension 140.0mm×130.4mm× 4',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c222',code:'IPC-PFW5849-A180-E2-ASTE',name:'Caméra IP DAHUA Turret Double Objectif 2 x 4MP Ful',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c223',code:'IPC-PDBW82041-B360-S2',name:'Dôme IP panoramique 4x5MP Obj 2.8-12mm IR30M IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c224',code:'PFA111',name:'Adaptateur de montage Aluminium',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c225',code:'DH-IPC-HDW3549HP-ZAS-PV-27135',name:'WizSense TIOC 2.0 5MP Smart Dual Illumination Camé',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c226',code:'DH-PFA109',name:'adaptateur a utiliser avec support mural ou plafon',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c227',code:'DH-IPC-HDW3549H-AS-PV',name:'CAMÉRA DAHUA DÔME 5M TIOC 2.0 DH-IPC-',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c228',code:'IPC-HFW3541T-ZS-S2',name:'Caméra de surveillance Dahua',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c229',code:'IPC-HDW2449T-S-IL',name:'Dahua IPC-HDW2449T-S-IL Dôme IP 4M H265',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c230',code:'PFA13G',name:'boite de jonction PFA13G',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c231',code:'IPC- HFW5541E-ZE',name:'Dôme IP Wizmind 5MP Obj 2.7-13.5mm IR40M IP67 ePOE',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c232',code:'NVR4204-P-4KS3',name:'NVR Dahua Série 4 - Jusqu\'a 4 caméras',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c233',code:'IPC-HDW2441TMP-S',name:'Mini dôme IP 4 MP Obj 2.8mm IP 67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c234',code:'IPC-PDW3849-A180-AS-PV',name:'Caméra IP TiOC pano 2x4MP Obj 2.8 mm LED 20M IR 25',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c235',code:'DH-IPC-HFW5541E-ZE-27135-S3',name:'Caméra IP WizMind 5MP Obj 2.8-12mm IR60M IP67 IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c236',code:'IPC-HDW3441T-ZS-S2-B',name:'Dôme IP WizSense NOIR 4MP Obj 2.7-13.5mm IR40M PoE',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c237',code:'XVR5108HS-5M-I3',name:'XVR Serveur Dahua 8 canaux',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c238',code:'IPC-HFW5241E-Z12E-S3',name:'Caméra IP WizMind 2MP Obj 5.3-64mm IR150M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c239',code:'IPC-HFW3541E-S-S2',name:'Caméra IP WizSense 5MP Obj 2.8mm IR50M PoE IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c240',code:'LR1002-1ET-V3',name:'Extender Ethernet over Coax -PoE via BNC Récepteur',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c241',code:'DH-IPC-HFW5442EP-ZE-2712-S3',name:'Dahua, WizMind S series, AcuPick, 4MP low light IR',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c242',code:'DH-IPC-HDW3449TP-ZS-IL-27135-B',name:'Dahua WizSense series Caméra reseau4MP Smart Dual',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c243',code:'DH-IPC-EBW81242P-AS-S2',name:'Dahua, Fisheye WizMind, CaméraFisheye 12MP avec IR',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c244',code:'LR1002-1EC-V3',name:'Prolongateur Ethernet Coaxial DAHUA (émetteur)',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c245',code:'IPC-HFW3441T-ZAS-S2',name:'Caméra IP WizSense 4MP Obj 2.7-13.5mm IR60M IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c246',code:'IPC-HFW5442EP-ZE-2712-S3',name:'Caméra Bullet 4MP varifocale 2.7-12 AcuPick IR60m',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c247',code:'DAHUA DH-IPC-HDBW5241EP-ZE-271',name:'Dome camera, objectif 2.7-13,5 mm éclairge IR 40m',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c248',code:'IPC-HDBW3441R-ZS-S2-BL',name:'Dôme IP WizSense Noir 4MP Obj 2.7-13.5mm IR40M IP',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c249',code:'IPC-HFW5842EP-Z4E-S3',name:'Dahua DH-IPC-HFW5842EP-Z4E-S3',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c250',code:'IPC-HDBW3441E-S-0280B-S2',name:'Dôme IP WizSense 4MP Obj 2.8mm IR50M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c251',code:'LR1002-EC-V3',name:'Prolongateur Ethernet Coaxial DAHUA (récepteur)',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c252',code:'DH-IPC-HFW5842EP-ZE-2712-S3',name:'Caméra Bullet 8MP varifocale 2.7-12 AcuPick IR60m',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c253',code:'DH-IPC-PDW5849-A180-E2-ASTE',name:'Camera 180° Type Thuret 2x4MP Led 40M WizMind',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c254',code:'IPC-MFW5241T2P-E3-ASE-0360/120',name:'Caméra réseau Bullet WizMind 3 × 2 MP à triple',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c255',code:'NVR4104HS-P-4K S3',name:'NVR 4 voies IP jusqu\'à 8Mp 4ports PoE 80Mbit/s',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c256',code:'902101T',name:'Ecran Full HD portable tactile 15.6 pouces',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c257',code:'IPC-HDBW3449R1-ZAS-PV-S5',name:'Dôme IP TioC 3.0 Acupick 4MP Obj 2.7-13.5mm IR 50M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c258',code:'IPC-PFW3849S-A180-AS-PV',name:'Caméra IP TiOC pano 2x4MP Obj 2.8 mm LED 20M IR25M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c259',code:'IPC-HFW3541T-ZAS-S2(2.7-',name:'Caméra IP WizSense 5 Mégapixels DAHUA',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c260',code:'IPC-HDBW5241E-ZE-S3',name:'Dôme IP WizMind S 2MP Obj 2.7-13.5mm IR40M IP67 IK',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c261',code:'IPC-HFW5842H-ZHE-S3',name:'Caméra IP WizMind 8MP Obj 2.7-12mm IR60M IP67 IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c262',code:'DH-IPC-HFW5842HP-ZHE-S3',name:'Caméra bullet IP 8MP Obj 2.7-12mm IR60M IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c263',code:'PFA154',name:'support de montage sur poteau utilisé',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c264',code:'IPC-HDBW5441EP-ZE-HDMI',name:'Camera Dome 4Mp 2.7-13mm IR 40m Acupick',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c265',code:'IPC-HDBW3449RP-ZS-IL-27135',name:'Camera dome 4MP 2.7-13mmdual light Quick Pick',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c266',code:'IPC-HFW5842EP-ZHE',name:'Camera 8MP Bullet 8-32mm IR 120m Acupick',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c267',code:'IPC-MFW5241T2-E3-ASE',name:'Camera 3 objectifs périmétrique 3x2MP longue porté',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c268',code:'PFA124',name:'Boite de jonction',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c269',code:'DH-IPC-HFW5541E-Z5E',name:'Caméra DAHUA Compacte Réseau AI IR WDR 5 MpxIR130m',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c270',code:'TPC-DF1241-TB2F2-DW-S8',name:'Caméra thermique 2mm DAHUA',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c271',code:'DH-IPC-HFW2441TP-ZS-27135',name:'Dahua WizSense 2 series Caméra reseau 4MP WDR',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c272',code:'DH-IPC-HFW5241EP-Z5E-S3',name:'Caméra DAHUA WizMind S series, 2MP, IR Bullet cam',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c273',code:'IPC-HDW5449HP-ZE-LED-S2',name:'Camera Dahua Turret 4MP objectif 2.7-12 mm Led',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c274',code:'20321393',name:'Dahua DH-SDT6C425-4P-GB-APV-0280',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c275',code:'20321394',name:'Dahua DH-SDT4E425-4F-GB-A-PV1-0400',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c276',code:'IGS4215-16P2T2S',name:'Switch Indus L2 16 ports Giga PoE at 320W 2xSFP',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c277',code:'10320147',name:'Dahua PFA 126',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c278',code:'PFA134',name:'Boîte de jonction aluminium blanc Diamètre 90x35mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c279',code:'20321300',name:'Dahua DH-TAM1GT1GT-30',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c280',code:'10320116',name:'DAHUA PFM320-030-EN-S',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c281',code:'PFB206W',name:'Dahua DH-PFB206W-B',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c282',code:'G3416GW',name:'Presse étoupe blanc',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c283',code:'DH-IPC-HDBW3449R-ZAS-IL',name:'Caméra IP Smart Dual Light 4MP Obj 2.7-13mm IR et',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c284',code:'IPC-HDBW3249R-ZS-IL',name:'Caméra Dome Dahua',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c285',code:'DH-IPC-HFW5842EP-Z4E-S3',name:'WizMind S series, AcuPick, 8MP low light IR Bullet',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c286',code:'DH-IPC-MFW5241T2P-E3-ASE',name:'Dahua Caméra réseau Bullet WizMind 3 × 2 MP',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c287',code:'NVR5208-EI',name:'DAHUA NVR 8 voies IP WizSense jusquà 32MP 384Mbits',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c288',code:'IPC-HDBW3541R-ZS-S2',name:'Dôme IP 5MP Obj 2.7-13.5mm IR 40M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c289',code:'20321553',name:'Dahua SDT4E425-8P-GB-APV1-0280-S2',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c290',code:'DHI-ITC413-PW4D-IZ1',name:'Dahua AI acces Smart ANPR 4 Megapixel WDR 2,7-12 m',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c291',code:'DH-IPC-HFW5842E-Z4E',name:'Dahua, WizMind S series, AcuPick, 8MP low light IR',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c292',code:'DH-IPC-HDBW5842EP-ZE-2712-S3',name:'Caméra Dahua, WizMind S series, AcuPick, 8MP',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c293',code:'DH-IPC-HDBW3449EP-AS-IL-0280B',name:'Caméra 4MP dôme low light',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c294',code:'DH-PFB2203W',name:'Support de fixation',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c295',code:'IPC-HFW5442EP-ZHE-2712-S',name:'Caméra 4MP bullet',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c296',code:'DH-SD5A445GB-HNR',name:'Dôme IP PTZ Starlight 4Mp Obj 3.95-117.7mm ZoomX45',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c297',code:'IPC-HFW5449T1P-ZE-LED',name:'Camera IP FullColor 2.0 4MP Obj 2.7-12mm LED70M IP',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c298',code:'PFB303S',name:'support mural col de signe pour speeddome dahua',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c299',code:'PFA120',name:'boîtier de derivation apparent à utiliser avec',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c300',code:'IPC-HFW5442E-Z4E-S3',name:'Caméra IP WizMind S 4MP Obj 8-32mm IR120M IP67 IK1',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c301',code:'DH-IPC-EBW8842-AS-IVC',name:'Caméra IP Fisheye 8MP Obj 1.29mm IR 10M IP67IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c302',code:'DH-SD6CE445GB-HNR',name:'Caméra reseau Starlight PTZ 4MP IR speeddome',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c303',code:'DH-IPC-HFW5442HP-Z4HE-S3',name:'Caméra 4MP IR Bullet camera objectif 8-32 mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c304',code:'DH-IPC-HFW5442HP-ZHE-S3',name:'caméra bullet 4MP objectif 2.7-12 mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c305',code:'DH-IPC-PDBW82041P-B360-S2',name:'caméra dôme 4x5 MP objectif multi capteurs avec IR',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c306',code:'DH-SD4D825MB-HNR',name:'Dahua WizSense series, 8MP 25x Smart Dual Light Wi',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c307',code:'DH-IPC-MFW5241T2-E3-ASE',name:'Dahua , Caméra réseau Bullet WizMind 3 × 2 MP à tr',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c308',code:'IPC-HFW5459E1-Z4E-IL',name:'Caméra IP WizMind S 4MP Obj 2.7-12 mm IR50M IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c309',code:'DH-IPC-HFW3449T1P-ZAS-PV',name:'Camera IP TioC 2.0 4MP Obj 2.7-12mm IR 30M LED70M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c310',code:'PFA135',name:'Boîte de jonction aluminium blanc Diamètre 90x33.7',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c311',code:'DH-SD3E405DB-GNY-A-PV1',name:'Dome IP TIOC 4MP 5X obj 2.7-13.5MM IR50M IP66',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c312',code:'DH-IPC-EB5541P-AS',name:'Dôme IP FishEye WizMind 5MPObj 1.4mm PoE IP67 IK10',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c313',code:'DHI-TPC-BF1241-TB3F4-DW-S8',name:'Caméra IP thermique/thermo WizSense 256×192 Obj3mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c314',code:'DH-IPC-EBW8842P-AS',name:'Caméra Dahua - Fisheye - 1Obj 8Mp total - IA',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c315',code:'DH-IPC-HDBW5441FP-AS-E2-0280B',name:'Caméra Dahua - Multicapteurs - 2Obj 8p total',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c316',code:'MONOBRA 360',name:'Support MONOBRA 360 LCD max 30kg VESA 50/75/100',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c317',code:'PFA197R',name:'Boîte de jonction noire',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c318',code:'DH-IPC-PDW3849-A180-AS-PV',name:'Caméra DAHUA',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c319',code:'NVR5216-16P-EI',name:'NVR 16 voies IP WizSense 32 MP 16 ports PoE',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c320',code:'PFA130-E-V2',name:'Boîte de jonction aluminium blanc diamètre138x42mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c321',code:'PFB2203W',name:'Support mural blanc aluminium 161.6×125.6×76.0mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c322',code:'IPC-EBW81242-AS-IVC-S2',name:'Dome IR Fisheye WizMind 12MP objectif panomorphe',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c323',code:'DH-IPC-HDBW5441E-ZE-HDMI',name:'Dahua, série WizMind S, AcuPick, caméra dôme',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c324',code:'PFT1300',name:'Extension IP POE max 8W 1 E/S RJ45 + 1 port RJ45',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c325',code:'DH-IPC-HDW3449T-ZS-IL',name:'Dahua Caméra Eyeball IP Smart Dual Light 4MP',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c326',code:'DH-PSDW81642M-A360-D440-S3',name:'Dahua WizMind Multisensor, 8x2MP Multi-Sensor Pano',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c327',code:'IPC-HFW3649T-ZS-IL',name:'Caméra IP Smart Dual Light 6MP Obj 2.7-13.5mm IR e',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c328',code:'IPC-PDBW82041P-B360-S2',name:'Dahua WizMind Dome Multi objectif multi capteur 4x',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c329',code:'TPC-BF1241-TB3F4-DW-S8',name:'Dahua DHI-TPC-BF1241-TB3F4-DW-S8',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c330',code:'TPC-BF5441-B25F12-DC-S5-V1',name:'Caméra BiSpectrum capteur therm 400 x 300, obj 25',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c331',code:'TPC-BF5441-B35Z3-DC-S5-V1',name:'Caméra BiSPectrum 400 x 300, objectif 35 mm',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c332',code:'IPC-HFW5442H-ZHE',name:'Caméra Réseau type Bullet Varifocale WizMind 4 Mpx',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c333',code:'IPC-HDBW5441EP-ZE-HDMI-27135',name:'Caméra Dôme 4MP',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c334',code:'IPC-HFW5559E1-Z5E-IL',name:'Caméra Bullet IP WizMind 5MP Obj 7-35mm IR120M',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c335',code:'IPC-HFW5459E1-ZHE-IL',name:'Camera bullet IP WizMind AI 4MP Obj 2.7-12mm IP67',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c336',code:'PFM2900',name:'DAHUA Testeur de montage intégré',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c337',code:'IPC-HFW3449T-ZS-IL',name:'Caméra Bullet IP Smart Dual Light 4MP Obj 2.7-13.5',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c338',code:'DH-PFM321D-EN',name:'Adaptateur d\'alimentation 12Vcc 1A',brand:'DAHUA',family:'Vidéoprotection',unit:'pce'},
+  {id:'c339',code:'SENATORFX.NET',name:'Logiciel de contrôle d\'accès pour gestion',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c340',code:'SOLOPLUS500',name:'Lecteur SOLO PLUS Biométrique 500 utilisateurs',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c341',code:'SOLOPLUSPROTECT',name:'CASQUETTE METAL POUR SOLOPLUS',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c342',code:'10273',name:'Liguard 6 Alim ELS',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c343',code:'INFXV2',name:'Module bus RS485 en boitier 10 ENT',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c344',code:'10329',name:'ONE SYNC (activ directory)',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c345',code:'OPTIMA-VM',name:'Optima VM',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c346',code:'LIGUARD6-20',name:'Centrale IPEDN, 6 portes, Bus et IP en coffret',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c347',code:'ALIM-BT',name:'Alim coffret 13.8V 5A pour UTL LIGUARD/ACCES EDEN',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c348',code:'SHIELD-ARC1-B',name:'Bouclier équipé pour lecteurs',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c349',code:'OPTIMABOX +',name:'Solution logiciel pré-installé sur une Box secouru',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c350',code:'ARCSW35GBT15AA1',name:'Encodeur USB Bluetooth',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c351',code:'20048 LECTEUR',name:'Lecteur ArcOne std sécurisé TTL-W26 à 32 DESFIRE',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c352',code:'66171',name:'Carte SD Oubuntu Optima box',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c353',code:'LIGUARD6-220',name:'Centrale IP EDEN, 6 portes 220v',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c354',code:'SLIM+',name:'Emetteur 4 canaux 433 MHs Eden',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c355',code:'DONG-WI-500',name:'Dongle Optima Wi 500 - Licence jusqu\'à 500 lecteur',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c356',code:'ONE-MOD-4',name:'4 modules avancés Optima Wi',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c357',code:'TESTAC',name:'Divers ac',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c358',code:'ARC1R31BPH13LA1',name:'Lecteur 13.56Mhz Architect® One CSN + MIFARE®',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c359',code:'LIGUARDX2-12',name:'Centrale 2 lecteurs sans alimentation secourue',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c360',code:'BPC-DFEV2-4K',name:'Badge 13.56 Mhz Mifare Desfire 4K metal gris',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c361',code:'ENCOD-DES-IP',name:'Encodeur DESFire + convertisseur IP',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c362',code:'40501184',name:'Eden Liguard X6-Alim',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c363',code:'EDN-KR602-MF',name:'Lect clavier+Mifare/ DESFIRE',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c364',code:'LEC-ARC1-MF',name:'ARC1 - Lecteur ArcOne (connecteur) MIFARE®',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c365',code:'ENCOD-DES-USB',name:'Encodeur DESFire USB',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c366',code:'DONGLE OPTIMA VM',name:'Licence logiciel 4 lecteurs Optima WI',brand:'EDEN',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c367',code:'DS-2CD2745FWD',name:'Camera dome 4MP VF IR 30 M IK10 IP67',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c368',code:'DS-2CD4A26FWD',name:'Camera à lecture de plaques ENTREE',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c369',code:'DS-1275ZJ',name:'Support Camera HIK VISION LPI',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c370',code:'DS-7732NXI-I4/16P/4S',name:'Stockeur NVR 32 Canaux 12MP H.265+ 4K',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c371',code:'DS-2CD2746G2-IZS (C)',name:'Dôme IP AcuSense 4MP Obj moto 2.8-12mm IR40M IP67',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c372',code:'DS-2CD7A46G0/P-IZHS',name:'Bullet IP 4MP DeepinView ANPR Obj VFM2.8-12mm IP67',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c373',code:'DS-2CD2387G2P-LSU/SL',name:'CAMÉRA PANORAMIQUE 4K IP 180°',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c374',code:'DS-2TD2628T-3/QA',name:'Caméra IPthermique 256 ×192 Obj3.6m et4MP',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c375',code:'DS-1260ZJ',name:'Boîte djonction aluminum blanc 8.5 x36m.',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c376',code:'DS-2TD1228T-2/QA(B)',name:'Dôme Therm. bi-spectre 256 ×192',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c377',code:'DS-1273ZJ-140B',name:'Suport mural vec boiter écartemnt pour alimentaion',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c378',code:'DS-1280ZJ-DM21',name:'Boîte jonction 135m pour dôme fixe',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c379',code:'DS-1271ZJ-140',name:'Suport plafond pendant 150 m ×54 mm',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c380',code:'DS-1275ZJ-S-SUS',name:'Suport poteaux acier noxydable blanc127 x46 x250mm',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c381',code:'DS-2CD2143G2-I',name:'DS-2CD2143G2-I(2.8MM) CAMERA DOME 4MP ACUSENSE',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c382',code:'DS-2TD2628T-7/QA',name:'Bullet réseau thermographique bi-spectre 256x192',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c383',code:'DS-2TD1228T-2/QA',name:'Dôme Therm. bi-spectre 256 ×192',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c384',code:'DS-1005KI',name:'HIKVISION Clavier Joystick USB',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c385',code:'W128915832',name:'Hikvision 4 MP Indoor Audio Fixed Human Body',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c386',code:'IDS-2CD7T46G2/VX3-IHSY',name:'Caméra Bullet',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c387',code:'DS-1275ZJ-SUS',name:'Adaptateur poteau, en inox, blanc',brand:'HIKVIS',family:'Vidéoprotection',unit:'pce'},
+  {id:'c388',code:'RSX2402.5C',name:'Alimentation chargeur en coffret 24Vdc 2,5A',brand:'IZYX',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c389',code:'EMM60035C',name:'Ventouse 300 kg encastré',brand:'IZYX',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c390',code:'EMS600APH',name:'Armature et support pour ventouse 300 kio',brand:'IZYX',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c391',code:'14AXB86K',name:'Gâche électrique pour barre antipanique à émission',brand:'IZYX',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c392',code:'IZYPSWB406025',name:'Coffret étanche PSWB IP 66 en métal',brand:'IZYX',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c393',code:'IZYDRS350',name:'Rail DIN omega en acier 35 x 7,5 mm long 0.35m',brand:'IZYX',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c394',code:'40009303',name:'Alimentation stabilisée 12VDC/3A en boîtier',brand:'SEWOSY',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c395',code:'40009141',name:'Ventouse INOX (530DaN) apparent avec contact -IP65',brand:'SEWOSY',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c396',code:'40009143',name:'Z- support pour plaques d\'ancrage pour série',brand:'SEWOSY',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c397',code:'40009142',name:'Equerre L ajustable pour série EXT750.',brand:'SEWOSY',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c398',code:'DLI7',name:'PASSE-CÂBLE 9/7 MM, GAINE MÉTAL (FLEXIBLE 30CM)',brand:'SEWOSY',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c399',code:'EF550CTC',name:'Ventouse 500Kg applique 12-24V DC+CTC+LEDS',brand:'SEWOSY',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c400',code:'EF550C',name:'Capot alu adaptable sur kits L et Z',brand:'SEWOSY',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c401',code:'EF550L',name:'Equerre ajustable en L',brand:'SEWOSY',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c402',code:'COF-IPG1',name:'Boîtier IP66, avec 2 rails DIN pour vidéo',brand:'SEWOSY',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c403',code:'EF300ZL',name:'Kit L et Z ajustable pour Ventouse EF300',brand:'SEWOSY',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c404',code:'CPREG2N/40AS',name:'Bandeau ventouse Sewosy 300kg 12/24 vdc',brand:'SEWOSY',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c405',code:'EF300ENC',name:'Ventouse électromagnétique à encastrer 300KG',brand:'SEWOSY',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c406',code:'MS2-OEM',name:'Module OEM 13,56 MHz DESFire EV2 WIEGAND 32Bit',brand:'STID',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c407',code:'CREDIT-BLUETOOTH',name:'Crédit Badge Virtuel Bluetooth 5 unités par badges',brand:'STID',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c408',code:'ARCS-R35-H/BT1-5AQ/1',name:'Lecteur de bureau ARC-H BLUE + Mifare',brand:'STID',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c409',code:'ANT-SPECTRE-A',name:'Antenne UHF Spectre - 865-868 MHz',brand:'STID',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c410',code:'CAB-SPECTRE-9M',name:'Câble 9m pour antenne SPECTRE UHF',brand:'STID',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c411',code:'TLTA-W75B-943P_S',name:'Tag métal durci UHF - Broadband - Monza 4 QT',brand:'STID',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c412',code:'20122',name:'Exo 2000 - Tag métal durci UHF - Broadband - Monza',brand:'STID',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c413',code:'KIT-ULTRYSV3-ETSI',name:'Kit de programmation UHF SPECTRE -V3.1.0 ETSI',brand:'STID',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c414',code:'LEC-ARC1S-BT',name:'Lecteur étroit 13.56 MHz Desfire',brand:'STID',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c415',code:'40060455',name:'STid CABLE_ARC1_3M',brand:'STID',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c416',code:'40060004',name:'STid ARC1S-R31-B/BT1-3La/1',brand:'STID',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c417',code:'LEC-ARCA-MF',name:'Lecteur badge Mifare STID Large',brand:'STID',family:'Contrôle d\'accès',unit:'pce'},
+  {id:'c418',code:'ARC-R31-A/103-3LA/1',name:'Lecteur badge Mifare STID Large',brand:'STID',family:'Contrôle d\'accès',unit:'pce'}
 ];
 
 // ═══════════════════════════════════════
@@ -2333,8 +2885,12 @@ const S={
     // ca.groupes: [{id,nom,lecteurs}]
     // ca.usagers: [{id,nom,prenom,groupe,badge}]
     // ca.plages: [{id,type,cible,lvDebut,lvFin,samDebut,samFin,dimDebut,dimFin}]
-  doe:{ref:'',version:'',date:'',summary:'',docs:[],tests:[],techSheets:[]}
+  doe:{ref:'',version:'',date:'',summary:'',docs:[],tests:[],techSheets:[]},
   // techSheets : [{id, libId, name, family, fileName, fileUrl, note}]
+  rfc:{client:'',address:'',objet:'',prestataire:'OCI Connect Nancy',equipe:'',dateRapport:'',
+    contactClient:'',contactIT:'',duree:'',numDossier:'',manager:'',
+    observations:'',validationStatus:'',validePar:'',dateValidation:'',commentaireValidation:'',
+    jours:[],equip:[],reserves:[]}
 };
 
 const CE={canvas:null,ctx:null,bgImg:null,photoId:null,target:'',
@@ -2377,7 +2933,7 @@ function initHeroObserver(){
 // ═══════════════════════════════════════
 function focusModule(mod){
   currentModule=mod;
-  ['vpi','tech','doe'].forEach(m=>{
+  ['vpi','tech','doe','rfc'].forEach(m=>{
     qs(`module-${m}`)?.classList.toggle('active',m===mod);
     qs(`tile-${m}`)?.classList.toggle('active',m===mod);
   });
@@ -2488,7 +3044,8 @@ function renderMetrics(){
   qset('kpiDoeTests','textContent',dTests);
 
   // Global
-  const gPct=Math.round((vPct+tPct+dPct)/3);
+  const rfcPct=S.rfc?Math.round([S.rfc.client,S.rfc.address,S.rfc.objet,S.rfc.dateRapport,S.rfc.equipe].filter(x=>x&&x.trim()).length/5*100):0;
+  const gPct=Math.round((vPct+tPct+dPct+rfcPct)/4);
   qset('heroGlobalPct','textContent',gPct+'%');
   qset('heroGlobalMeta','textContent',gPct<30?'Démarrage du projet':gPct<70?'En cours de constitution':'Dossier avancé');
 }
@@ -3658,6 +4215,10 @@ function nouveauProjet(){
     vigilance:[],cables:[],prep:[],prepChecks:{},ecarts:[],equipment:[]};
   S.tech={number:'',clientRef:'',manager:'',contact:'',address:'',context:'',scope:'',prereq:'',notes4:'',planning:[],equipment:[],network:[],ca:{reseau:[],groupes:[],usagers:[],plages:[],attach:{fileName:'',fileUrl:'',mimeType:''}}};
   S.doe={ref:'',version:'',date:'',summary:'',docs:[],tests:[],techSheets:[]};
+  S.rfc={client:'',address:'',objet:'',prestataire:'OCI Connect Nancy',equipe:'',dateRapport:'',
+    contactClient:'',contactIT:'',duree:'',numDossier:'',manager:'',
+    observations:'',validationStatus:'',validePar:'',dateValidation:'',commentaireValidation:'',
+    jours:[],equip:[],reserves:[]};
   renderAll();
   qs('preview-pane').innerHTML='<em style="color:var(--muted)">Nouveau projet initialisé.</em>';
   setFaisabilite('',true);
@@ -3689,14 +4250,14 @@ function renderCatalogGrid(){
   const q=(qs('cat-search')?.value||'').toLowerCase();
   const items=S.catalog.filter(c=>{
     const mc=catFilter==='all'||c.family===catFilter;
-    const mq=!q||(c.code.toLowerCase().includes(q)||c.name.toLowerCase().includes(q)||c.family.toLowerCase().includes(q));
+    const mq=!q||(c.code.toLowerCase().includes(q)||c.name.toLowerCase().includes(q)||c.family.toLowerCase().includes(q)||(c.brand||'').toLowerCase().includes(q));
     return mc&&mq;
   });
   qs('cat-grid').innerHTML=items.length?items.map(c=>`<div class="cat-item" onclick="selectCatItem('${c.id}')">
     <div class="ci-icon">${IC[FICON[c.family]||'rack']}</div>
     <div class="ci-code">${esc(c.code)}</div>
     <div class="ci-name">${esc(c.name)}</div>
-    <span class="ci-tag">${esc(c.family)}</span>
+    <span class="ci-tag">${esc(c.brand||c.family)}</span>
   </div>`).join(''):`<div style="grid-column:1/-1;padding:20px;text-align:center;color:var(--muted)">Aucun résultat</div>`;
 }
 function selectCatItem(catId){
@@ -4267,6 +4828,7 @@ function refreshPreview(){openPreviewModal();}
 // ═══════════════════════════════════════
 function printCurrentModule(){
   const t=currentModule;
+  if(t==='rfc'){printRfc();return;}
   let html=t==='vpi'?buildPrintVPI():t==='tech'?buildPrintTech():buildPrintDoe();
   qs('printRoot').innerHTML=html;window.print();
 }
@@ -4667,6 +5229,16 @@ function loadSession(){
       if(!Array.isArray(S.doe.tests)) S.doe.tests=[];
       if(!Array.isArray(S.doe.techSheets)) S.doe.techSheets=[];
     }
+    if(data.rfc){
+      if(!S.rfc) S.rfc={client:'',address:'',objet:'',prestataire:'OCI Connect Nancy',equipe:'',dateRapport:'',
+        contactClient:'',contactIT:'',duree:'',numDossier:'',manager:'',
+        observations:'',validationStatus:'',validePar:'',dateValidation:'',commentaireValidation:'',
+        jours:[],equip:[],reserves:[]};
+      Object.assign(S.rfc,data.rfc);
+      if(!Array.isArray(S.rfc.jours)) S.rfc.jours=[];
+      if(!Array.isArray(S.rfc.equip)) S.rfc.equip=[];
+      if(!Array.isArray(S.rfc.reserves)) S.rfc.reserves=[];
+    }
   }catch(e){console.error(e);}
 }
 function restaurerSauvegarde(e){
@@ -4730,6 +5302,16 @@ function restaurerSauvegarde(e){
         if(!Array.isArray(S.doe.docs)) S.doe.docs=[];
         if(!Array.isArray(S.doe.tests)) S.doe.tests=[];
         if(!Array.isArray(S.doe.techSheets)) S.doe.techSheets=[];
+      }
+      if(d.rfc){
+        if(!S.rfc) S.rfc={client:'',address:'',objet:'',prestataire:'OCI Connect Nancy',equipe:'',dateRapport:'',
+          contactClient:'',contactIT:'',duree:'',numDossier:'',manager:'',
+          observations:'',validationStatus:'',validePar:'',dateValidation:'',commentaireValidation:'',
+          jours:[],equip:[],reserves:[]};
+        Object.assign(S.rfc,d.rfc);
+        if(!Array.isArray(S.rfc.jours)) S.rfc.jours=[];
+        if(!Array.isArray(S.rfc.equip)) S.rfc.equip=[];
+        if(!Array.isArray(S.rfc.reserves)) S.rfc.reserves=[];
       }
       renderAll();
       saveSession(true);
@@ -4840,8 +5422,14 @@ function renderAll(){
   renderVigilanceTable();renderCableTable();renderPrepTable();renderPrepChecklist();renderEcartTable();
   renderEquipTable('vpi');renderEquipTable('tech');
   renderNetTable();renderPlanTable();renderAllCa();renderDoeDocs();renderTests();renderDoeSheets();
-  renderPhotos('vpi');renderPhotos('tech');renderPhotos('doe');
+  renderPhotos('vpi');renderPhotos('tech');renderPhotos('doe');renderPhotos('rfc');
+  if(!S.rfc) S.rfc={client:'',address:'',objet:'',prestataire:'OCI Connect Nancy',equipe:'',dateRapport:'',
+    contactClient:'',contactIT:'',duree:'',numDossier:'',manager:'',
+    observations:'',validationStatus:'',validePar:'',dateValidation:'',commentaireValidation:'',
+    jours:[],equip:[],reserves:[]};
+  renderRfcJours();renderRfcEquip();rfcSyncFields();
   renderMetrics();
+  renderRfcMetrics();
 }
 
 // ═══════════════════════════════════════
@@ -5047,7 +5635,7 @@ async function saveSessionWithUser(silent=false){
   try{
     const data={catalog:S.catalog,techLibrary:S.techLibrary,clientDB:S.clientDB,
       photos:S.photos,notebookPages:S.notebookPages,activeNote:S.activeNote,
-      vpi:S.vpi,tech:S.tech,doe:S.doe,
+      vpi:S.vpi,tech:S.tech,doe:S.doe,rfc:S.rfc||{},
       savedBy:user,savedAt:new Date().toISOString()};
     const json=JSON.stringify(data);
     // localStorage toujours
@@ -5226,8 +5814,341 @@ function downloadVpiPdf(){
 }
 
 // ═══════════════════════════════════════
-// THÈME (auto / clair / sombre)
+// RFC — RAPPORT DE FIN DE CHANTIER
 // ═══════════════════════════════════════
+
+function rfcFc(key, val){
+  if(!S.rfc) S.rfc={client:'',address:'',objet:'',prestataire:'OCI Connect Nancy',equipe:'',dateRapport:'',
+    contactClient:'',contactIT:'',duree:'',numDossier:'',manager:'',
+    observations:'',validationStatus:'',validePar:'',dateValidation:'',commentaireValidation:'',
+    jours:[],equip:[],reserves:[]};
+  S.rfc[key]=val;
+  scheduleAutosave();
+  renderRfcMetrics();
+}
+
+function rfcImportFromTech(){
+  const t=S.tech;
+  const v=S.vpi;
+  if(!S.rfc.client && (t.contact||v.clientCompany)) S.rfc.client=v.clientCompany||t.contact||'';
+  if(!S.rfc.address && (t.address||v.clientAddress)) S.rfc.address=t.address||v.clientAddress||'';
+  if(!S.rfc.objet && t.context) S.rfc.objet=t.context||'';
+  if(!S.rfc.manager && t.manager) S.rfc.manager=t.manager||'';
+  if(!S.rfc.numDossier && t.number) S.rfc.numDossier=t.number||'';
+  if(!S.rfc.contactClient && t.contact) S.rfc.contactClient=t.contact||'';
+  if(!S.rfc.dateRapport) S.rfc.dateRapport=todayISO();
+  rfcSyncFields();
+  rfcImportJoursFromTech();
+  rfcImportEquipFromTech();
+  renderRfcMetrics();
+  scheduleAutosave();
+  showToast('Données reprises depuis le Dossier Technique.');
+}
+
+function rfcSyncFields(){
+  const r=S.rfc||{};
+  const m={rfcClient:r.client,rfcAddress:r.address,rfcObjet:r.objet,
+    rfcPrestataire:r.prestataire,rfcEquipe:r.equipe,rfcDateRapport:r.dateRapport,
+    rfcContactClient:r.contactClient,rfcContactIT:r.contactIT,rfcDuree:r.duree,
+    rfcNumDossier:r.numDossier,rfcManager:r.manager,rfcObservations:r.observations,
+    rfcValidePar:r.validePar,rfcDateValidation:r.dateValidation,
+    rfcCommentaireValidation:r.commentaireValidation};
+  Object.entries(m).forEach(([id,v])=>{const el=qs(id);if(el&&!el.matches(':focus'))el.value=v||'';});
+  const sel=qs('rfcValidationStatus');
+  if(sel&&!sel.matches(':focus')) sel.value=r.validationStatus||'';
+}
+
+function rfcImportJoursFromTech(){
+  const plan=S.tech.planning||[];
+  if(!plan.length){showToast('Aucun planning dans le Dossier Technique.');return;}
+  // Only import if RFC jours is empty
+  if(S.rfc.jours.length && !confirm('Le planning RFC sera écrasé par celui du DT. Continuer ?')) return;
+  S.rfc.jours=plan.map(p=>({
+    id:uid(),
+    label:p.date?`Journée du ${p.date}`:(p.label||'Journée'),
+    techniciens:p.tech||p.techniciens||'',
+    rows:[{id:uid(),prestation:p.tasks||p.taches||'',localisation:p.zone||p.site||'',statut:'ok'}]
+  }));
+  renderRfcJours();
+  scheduleAutosave();
+  showToast('Planning DT importé dans le RFC.');
+}
+
+function rfcImportEquipFromTech(){
+  const equip=S.tech.equipment||[];
+  if(!equip.length){showToast('Aucun équipement dans le Dossier Technique.');return;}
+  if(S.rfc.equip.length && !confirm('Le matériel RFC sera écrasé par celui du DT. Continuer ?')) return;
+  S.rfc.equip=equip.map(e=>({
+    id:uid(),
+    designation:e.name||e.designation||'',
+    reference:e.code||e.ref||e.reference||'',
+    qty:e.qty||e.qte||1,
+    observation:e.note||e.observation||''
+  }));
+  renderRfcEquip();
+  scheduleAutosave();
+  showToast('Fournitures DT importées dans le RFC.');
+}
+
+function rfcImportPhotosFromTech(){
+  const techPhotos=S.photos.filter(p=>p.target==='tech');
+  if(!techPhotos.length){showToast('Aucune photo dans le Dossier Technique.');return;}
+  techPhotos.forEach(p=>{
+    const exists=S.photos.find(x=>x.target==='rfc'&&x.src===p.src);
+    if(!exists) S.photos.push({...p,id:uid(),target:'rfc'});
+  });
+  renderPhotos('rfc');
+  scheduleAutosave();
+  showToast(`${techPhotos.length} photo(s) DT copiées dans le RFC.`);
+}
+
+// ── RFC Jours ──
+function addRfcJourRow(){
+  const n=S.rfc.jours.length+1;
+  S.rfc.jours.push({id:uid(),label:`J${n} — Journée ${n}`,techniciens:'',rows:[{id:uid(),prestation:'',localisation:'',statut:'ok'}]});
+  renderRfcJours();scheduleAutosave();
+}
+function removeRfcJour(id){S.rfc.jours=S.rfc.jours.filter(j=>j.id!==id);renderRfcJours();renderRfcMetrics();scheduleAutosave();}
+function rfcJourField(id,key,val){const j=S.rfc.jours.find(x=>x.id===id);if(j){j[key]=val;scheduleAutosave();}}
+function addRfcJourDetailRow(jourId){
+  const j=S.rfc.jours.find(x=>x.id===jourId);
+  if(j){j.rows.push({id:uid(),prestation:'',localisation:'',statut:'ok'});renderRfcJours();scheduleAutosave();}
+}
+function removeRfcJourDetailRow(jourId,rowId){
+  const j=S.rfc.jours.find(x=>x.id===jourId);
+  if(j){j.rows=j.rows.filter(r=>r.id!==rowId);renderRfcJours();scheduleAutosave();}
+}
+function rfcDetailField(jourId,rowId,key,val){
+  const j=S.rfc.jours.find(x=>x.id===jourId);
+  if(j){const r=j.rows.find(x=>x.id===rowId);if(r){r[key]=val;scheduleAutosave();}}
+}
+
+const RFC_STATUT={ok:['#e8f5e9','#1b5e20','✔ Réalisé'],partial:['#fff8e1','#e65100','⚠ Partiel'],pending:['#fce4ec','#880e4f','✗ Non réalisé']};
+
+function renderRfcJours(){
+  const el=qs('rfc-jours-list');if(!el) return;
+  const jours=S.rfc.jours||[];
+  if(!jours.length){el.innerHTML='<div style="padding:16px;text-align:center;color:var(--muted);font-size:13px">Aucune journée — utilisez le bouton + ou reprenez le planning DT</div>';return;}
+  el.innerHTML=jours.map(j=>`
+    <div style="border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--tbl-hdr);border-bottom:1px solid var(--line)">
+        <input value="${esc(j.label)}" oninput="rfcJourField('${j.id}','label',this.value)"
+          style="flex:1;font-weight:700;font-size:13px;background:transparent;border:none;color:var(--text);outline:none"
+          placeholder="Libellé de la journée (ex: J1 — Dépose et préparation)"/>
+        <input value="${esc(j.techniciens)}" oninput="rfcJourField('${j.id}','techniciens',this.value)"
+          style="width:220px;font-size:12px;background:var(--input-bg);border:1px solid var(--line);border-radius:8px;padding:5px 8px;color:var(--text)"
+          placeholder="Technicien(s)"/>
+        <button class="btn sm danger" onclick="removeRfcJour('${j.id}')">✕</button>
+      </div>
+      <div class="tbl-wrap" style="margin:0">
+        <table>
+          <thead><tr>
+            <th>Prestation / localisation</th>
+            <th>Travaux réalisés</th>
+            <th style="width:110px">Statut</th>
+            <th style="width:34px"></th>
+          </tr></thead>
+          <tbody>
+            ${(j.rows||[]).map(r=>{
+              const [bg,fg,lb]=RFC_STATUT[r.statut]||RFC_STATUT['ok'];
+              return`<tr>
+                <td><input value="${esc(r.prestation)}" oninput="rfcDetailField('${j.id}','${r.id}','prestation',this.value)" placeholder="Poste / zone" style="min-width:160px"/></td>
+                <td><input value="${esc(r.localisation)}" oninput="rfcDetailField('${j.id}','${r.id}','localisation',this.value)" placeholder="Description des travaux réalisés" style="min-width:220px"/></td>
+                <td>
+                  <select onchange="rfcDetailField('${j.id}','${r.id}','statut',this.value)" style="background:${bg};color:${fg};border-color:transparent;font-weight:700;font-size:11px">
+                    ${Object.entries(RFC_STATUT).map(([k,[b,c,l]])=>`<option value="${k}"${r.statut===k?' selected':''}>${l}</option>`).join('')}
+                  </select>
+                </td>
+                <td><button class="btn sm danger" onclick="removeRfcJourDetailRow('${j.id}','${r.id}')">✕</button></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div class="tbl-foot"><button class="btn sm" onclick="addRfcJourDetailRow('${j.id}')">+ Ligne</button></div>
+    </div>
+  `).join('');
+}
+
+// ── RFC Équipements ──
+function addRfcEquipRow(){
+  S.rfc.equip.push({id:uid(),designation:'',reference:'',qty:1,observation:''});
+  renderRfcEquip();scheduleAutosave();
+}
+function removeRfcEquipRow(id){S.rfc.equip=S.rfc.equip.filter(r=>r.id!==id);renderRfcEquip();renderRfcMetrics();scheduleAutosave();}
+function rfcEquipField(id,key,val){const r=S.rfc.equip.find(x=>x.id===id);if(r){r[key]=val;scheduleAutosave();renderRfcMetrics();}}
+function renderRfcEquip(){
+  const tbody=qs('rfc-equip-table');if(!tbody) return;
+  tbody.innerHTML=(S.rfc.equip||[]).map(r=>`<tr>
+    <td><input value="${esc(r.designation)}" oninput="rfcEquipField('${r.id}','designation',this.value)" placeholder="Désignation" style="min-width:200px"/></td>
+    <td><input value="${esc(r.reference)}" oninput="rfcEquipField('${r.id}','reference',this.value)" placeholder="Référence / modèle" style="min-width:140px"/></td>
+    <td><input type="number" min="0" value="${r.qty||1}" oninput="rfcEquipField('${r.id}','qty',this.value)" style="width:55px"/></td>
+    <td><input value="${esc(r.observation)}" oninput="rfcEquipField('${r.id}','observation',this.value)" placeholder="Observations…" style="min-width:180px"/></td>
+    <td><button class="btn sm danger" onclick="removeRfcEquipRow('${r.id}')">✕</button></td>
+  </tr>`).join('');
+}
+
+// ── RFC Metrics ──
+function renderRfcMetrics(){
+  const r=S.rfc||{};
+  const fields=[r.client,r.address,r.objet,r.dateRapport,r.equipe];
+  const pct=Math.round(fields.filter(x=>x&&x.trim()).length/fields.length*100);
+  const days=(r.jours||[]).length;
+  const equip=(r.equip||[]).length;
+  const photos=S.photos.filter(p=>p.target==='rfc').length;
+
+  setRing('ringRfc',pct);
+  ['ringPctRfc','tileRfcPct'].forEach(id=>{const e=qs(id);if(e)e.textContent=pct+'%'});
+  const bar=qs('barRfc');if(bar) bar.style.width=pct+'%';
+  qset('tileRfcMeta2','textContent',`${days} jour · ${photos} photo`);
+  qset('tileRfcDays','textContent',days+' jour'+(days>1?'s':''));
+  qset('kpiRfcClient','textContent',r.client||'—');
+  qset('kpiRfcDays','textContent',days);
+  qset('kpiRfcEquip','textContent',equip);
+  qset('kpiRfcPhotos','textContent',photos);
+  qset('metRfcPct','textContent',pct+'%');
+  qset('metRfcDays','textContent',days);
+  qset('metRfcEquip','textContent',equip);
+  qset('metRfcPhotos','textContent',photos);
+  qset('heroRfcPct','textContent',pct+'%');
+  qset('heroRfcMeta','textContent',`${days} jour · ${photos} photo`);
+}
+
+function renderRfc(){
+  rfcSyncFields();
+  renderRfcJours();
+  renderRfcEquip();
+  renderPhotos('rfc');
+  renderRfcMetrics();
+}
+
+// ── RFC PDF Print ──
+function printRfc(){
+  const r=S.rfc||{};
+  const rfcPhotos=S.photos.filter(p=>p.target==='rfc');
+
+  const joursHtml=(r.jours||[]).map((j,ji)=>`
+    <div style="margin-bottom:20px">
+      <div style="background:#f0f4fb;padding:8px 14px;border-left:4px solid #0f4f84;font-weight:700;font-size:13px;color:#0f4f84;margin-bottom:0">
+        ${esc(j.label)}${j.techniciens?` <span style="font-weight:400;color:#6a7c92;font-size:11px">— ${esc(j.techniciens)}</span>`:''}
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#f7fbff">
+          <th style="border:1px solid #d9e4f0;padding:6px 10px;text-align:left;color:#365170;font-size:11px;width:35%">Prestation / Localisation</th>
+          <th style="border:1px solid #d9e4f0;padding:6px 10px;text-align:left;color:#365170;font-size:11px">Travaux réalisés</th>
+          <th style="border:1px solid #d9e4f0;padding:6px 10px;text-align:center;color:#365170;font-size:11px;width:110px">Statut</th>
+        </tr></thead>
+        <tbody>
+          ${(j.rows||[]).map((row,ri)=>{
+            const [bg,fg,lb]=RFC_STATUT[row.statut]||RFC_STATUT['ok'];
+            return`<tr style="background:${ri%2?'#fafcff':'#fff'}">
+              <td style="border:1px solid #d9e4f0;padding:6px 10px">${esc(row.prestation||'—')}</td>
+              <td style="border:1px solid #d9e4f0;padding:6px 10px">${esc(row.localisation||'—')}</td>
+              <td style="border:1px solid #d9e4f0;padding:6px 10px;text-align:center;background:${bg};color:${fg};font-weight:700;font-size:11px">${lb}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `).join('');
+
+  const equipHtml=(r.equip||[]).length?`
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:6px">
+      <thead><tr style="background:#f7fbff">
+        <th style="border:1px solid #d9e4f0;padding:6px 10px;text-align:left;color:#365170;font-size:11px">Désignation</th>
+        <th style="border:1px solid #d9e4f0;padding:6px 10px;text-align:left;color:#365170;font-size:11px">Référence / Modèle</th>
+        <th style="border:1px solid #d9e4f0;padding:6px 10px;text-align:center;color:#365170;font-size:11px;width:55px">Qté</th>
+        <th style="border:1px solid #d9e4f0;padding:6px 10px;text-align:left;color:#365170;font-size:11px">Observations</th>
+      </tr></thead>
+      <tbody>
+        ${(r.equip||[]).map((e,i)=>`<tr style="background:${i%2?'#fafcff':'#fff'}">
+          <td style="border:1px solid #d9e4f0;padding:6px 10px">${esc(e.designation||'—')}</td>
+          <td style="border:1px solid #d9e4f0;padding:6px 10px;font-family:monospace;font-size:11px">${esc(e.reference||'—')}</td>
+          <td style="border:1px solid #d9e4f0;padding:6px 10px;text-align:center">${e.qty||1}</td>
+          <td style="border:1px solid #d9e4f0;padding:6px 10px;color:#6a7c92">${esc(e.observation||'—')}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`:'<p style="font-size:12px;color:#888">Aucun équipement renseigné.</p>';
+
+  const photosHtml=rfcPhotos.length?`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px">
+      ${rfcPhotos.map(p=>`<div>
+        <img src="${p.src}" style="width:100%;max-height:320px;object-fit:cover;border-radius:8px;border:1px solid #d9e4f0"/>
+        ${p.caption?`<p style="font-size:11px;color:#6a7c92;text-align:center;margin:4px 0 0">${esc(p.caption)}</p>`:''}
+      </div>`).join('')}
+    </div>`:'<p style="font-size:12px;color:#888">Aucune photo annexée.</p>';
+
+  const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"/>
+  <title>RFC — ${esc(r.client||'Chantier')} — OCI Connect</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'IBM Plex Sans',sans-serif;color:#15263a;background:#fff;font-size:13px;line-height:1.5}
+    .page{max-width:800px;margin:0 auto;padding:32px 40px}
+    .page-break{page-break-before:always;padding-top:24px}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0f4f84;padding-bottom:14px;margin-bottom:24px}
+    .header-left h1{font-size:18px;font-weight:700;color:#0f4f84}
+    .header-left .sub{font-size:11px;color:#6a7c92;margin-top:3px}
+    .header-right{text-align:right;font-size:11px;color:#6a7c92}
+    .section-title{font-size:14px;font-weight:700;color:#0f4f84;border-left:4px solid #0f4f84;padding:5px 10px;background:#f0f4fb;margin:24px 0 12px}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-bottom:16px}
+    .info-item label{font-size:10px;font-weight:700;color:#6a7c92;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:2px}
+    .info-item span{font-size:13px;color:#15263a}
+    .footer{margin-top:40px;padding-top:12px;border-top:1px solid #d9e4f0;font-size:10px;color:#888;display:flex;justify-content:space-between}
+    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  </style>
+  </head><body><div class="page">
+
+    <!-- EN-TÊTE -->
+    <div class="header">
+      <div class="header-left">
+        <div style="font-size:16px;font-weight:700;color:#0f4f84;letter-spacing:.02em">OCI Connect</div>
+        <h1 style="margin-top:4px">Rapport de fin de chantier</h1>
+        <div class="sub">OCI Connect Nancy — Document interne</div>
+      </div>
+      <div class="header-right">
+        <div style="font-size:11px">Date : ${r.dateRapport?new Date(r.dateRapport).toLocaleDateString('fr-FR'):today()}</div>
+        ${r.numDossier?`<div>Dossier : ${esc(r.numDossier)}</div>`:''}
+      </div>
+    </div>
+
+    <!-- 1. IDENTIFICATION -->
+    <div class="section-title">1. IDENTIFICATION DU CHANTIER</div>
+    <div class="info-grid">
+      <div class="info-item"><label>Client</label><span>${esc(r.client||'—')}</span></div>
+      <div class="info-item"><label>Adresse</label><span>${esc(r.address||'—')}</span></div>
+      <div class="info-item" style="grid-column:1/-1"><label>Objet des travaux</label><span>${esc(r.objet||'—')}</span></div>
+      <div class="info-item"><label>Prestataire</label><span>${esc(r.prestataire||'OCI Connect Nancy')}</span></div>
+      <div class="info-item"><label>Équipe technique</label><span>${esc(r.equipe||'—')}</span></div>
+      <div class="info-item"><label>Contact client</label><span>${esc(r.contactClient||'—')}</span></div>
+      <div class="info-item"><label>Contact IT / technique</label><span>${esc(r.contactIT||'—')}</span></div>
+      <div class="info-item"><label>Durée d'intervention</label><span>${esc(r.duree||'—')}</span></div>
+      <div class="info-item"><label>Chargé d'affaires</label><span>${esc(r.manager||'—')}</span></div>
+    </div>
+
+    <!-- 2. RÉCAPITULATIF TRAVAUX -->
+    <div class="section-title">2. RÉCAPITULATIF DES TRAVAUX RÉALISÉS</div>
+    ${joursHtml||'<p style="font-size:12px;color:#888">Aucune journée renseignée.</p>'}
+
+    <!-- 3. MATÉRIEL -->
+    <div class="section-title page-break-inside-avoid">3. MATÉRIEL INSTALLÉ</div>
+    <p style="font-size:11px;color:#6a7c92;margin-bottom:6px">Nota : les équipements déplacés ou réutilisés sont signalés en observations.</p>
+    ${equipHtml}
+
+    <!-- 4. ANNEXE PHOTO(S) -->
+    ${rfcPhotos.length?`<div class="section-title page-break">4. ANNEXE PHOTO(S)</div>${photosHtml}`:''}
+
+    <div class="footer">
+      <span>Document établi le ${today()} — OCI Connect Nancy</span>
+      <span>OCI Connect Nancy</span>
+    </div>
+  </div></body></html>`;
+
+  qs('printRoot').innerHTML=html;
+  window.print();
+  showToast('RFC envoyé à l\'impression — enregistrez en PDF depuis la boîte de dialogue.');
+}
+
 const THEMES=['light','dark'];
 const THEME_META={
   light:{icon:'☀️',label:'Clair'},
