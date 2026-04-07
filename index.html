@@ -863,6 +863,59 @@ canvas{display:block;touch-action:none;width:100%}
   </div>
 </div>
 
+<!-- ══════════ MODAL : À PROPOS ══════════ -->
+<div class="modal" id="modal-about" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box" style="max-width:420px;width:95vw">
+    <div class="modal-hdr">
+      <h3>À propos</h3>
+      <button class="btn ghost" onclick="document.getElementById('modal-about').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:24px 28px 28px">
+      <!-- Logo + nom -->
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--line)">
+        <div style="width:48px;height:48px;border-radius:12px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <div>
+          <div style="font-size:16px;font-weight:700;color:var(--text)">OCI Connect · VPI &amp; Dossier</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">Application terrain courant faible</div>
+        </div>
+      </div>
+      <!-- Infos -->
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:13px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="color:var(--muted)">Version</span>
+          <span style="font-weight:700;color:var(--text);background:var(--panel-soft);border:1px solid var(--line);border-radius:6px;padding:2px 9px;font-size:12px">v17b <span style="color:var(--warn);font-weight:600">β bêta</span></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="color:var(--muted)">Développé par</span>
+          <span style="font-weight:600;color:var(--text)">Raphaël C. — OCI Connect Nancy</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="color:var(--muted)">Modules</span>
+          <span style="font-weight:600;color:var(--text)">VPI · DT · DOE · RFC</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="color:var(--muted)">Compatibilité</span>
+          <span style="font-weight:600;color:var(--text)">Chrome · Edge · Safari</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="color:var(--muted)">Stockage</span>
+          <span style="font-weight:600;color:var(--text)">Local (navigateur)</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="color:var(--muted)">Réseau requis</span>
+          <span style="font-weight:600;color:var(--ok)">✔ Fonctionne hors ligne</span>
+        </div>
+      </div>
+      <!-- Badge bêta -->
+      <div style="margin-top:20px;padding:10px 14px;background:rgba(209,134,16,.08);border:1px solid rgba(209,134,16,.25);border-radius:10px;font-size:11.5px;color:var(--warn);line-height:1.5">
+        ⚠ Version bêta — usage interne uniquement.<br/>Les données restent sur votre appareil et ne sont pas transmises.
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════ MODAL : GESTION COMPTES ══════════ -->
 <div class="modal" id="modal-accounts" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="modal-box sm">
@@ -970,6 +1023,12 @@ canvas{display:block;touch-action:none;width:100%}
           <span id="theme-icon" style="font-size:14px">🌓</span>
           <span id="theme-label">Auto</span>
         </button>
+        <button onclick="document.getElementById('modal-about').classList.add('open')" title="À propos" style="
+          display:inline-flex;align-items:center;justify-content:center;
+          width:34px;height:34px;border-radius:999px;
+          background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+          color:#fff;font-size:15px;font-weight:700;cursor:pointer;
+          transition:background .18s;flex-shrink:0">ℹ</button>
       </div>
       <div class="hero-strip">
         <button class="hbtn hbtn-warn" onclick="openNotebook()">Bloc-notes terrain</button>
