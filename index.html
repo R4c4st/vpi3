@@ -626,94 +626,400 @@ canvas{display:block;touch-action:none;width:100%}
 .nb-item .nb-title{font-size:12px;font-weight:700}
 .nb-item .nb-tag{font-size:10px;color:var(--muted);margin-top:2px}
 
-/* ══════════ PRINT ══════════ */
-@media print{
-  body *{visibility:hidden!important}
-  #printRoot,#printRoot *{visibility:visible!important}
-  #printRoot{position:absolute;inset:0;background:#fff;padding:0}
-  .dt-print-hdr-fixed{position:fixed;top:0;left:0;right:0}
-  .dt-print-footer-fixed{position:fixed;bottom:0;left:0;right:0}
-  @page{margin:22mm 18mm 18mm 18mm}
+/* ══════════ PRINT — géré dans les styles DT ci-dessous ══════════ */
+
+/* ══════════════════════════════════════════════════════
+   DT PRINT STYLES — fidèle au modèle Sofidel OCI Connect
+   ══════════════════════════════════════════════════════ */
+
+/* Conteneur principal */
+.dt-doc {
+  font-family: Arial, 'IBM Plex Sans', sans-serif;
+  font-size: 10pt;
+  color: #1a1a1a;
+  background: #fff;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 0;
+  line-height: 1.4;
 }
 
-/* ── DT PRINT STYLES (matching Sofidel reference doc) ── */
-.dt-doc{font-family:'IBM Plex Sans',Arial,sans-serif;font-size:11.5px;color:#1a2536;background:#fff;
-  max-width:860px;margin:0 auto;padding:0 0 40px}
-/* Running header on every page */
-.dt-run-hdr{
-  display:flex;align-items:stretch;justify-content:space-between;
-  border:1px solid #c0cfe0;margin-bottom:28px;background:#fff;
+/* ── En-tête courant (présent sur chaque page) */
+.dt-run-hdr {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid #cccccc;
+  margin-bottom: 28pt;
 }
-.dt-run-hdr-left{padding:9px 14px;flex:1;border-right:1px solid #c0cfe0}
-.dt-run-hdr-title{font-size:11px;font-weight:700;color:#1a4a7a;text-transform:uppercase;letter-spacing:.04em}
-.dt-run-hdr-sub{font-size:10px;color:#7a8fa8;margin-top:2px}
-.dt-run-hdr-logo{padding:6px 14px;display:flex;align-items:center;min-width:110px;justify-content:center}
-.dt-run-hdr-logo img{height:38px;width:auto}
+.dt-run-hdr-left {
+  flex: 1;
+  padding: 8pt 12pt;
+  border-right: 1px solid #cccccc;
+}
+.dt-run-hdr-title {
+  font-size: 9pt;
+  font-weight: 700;
+  color: #1a4a7a;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+.dt-run-hdr-sub {
+  font-size: 8pt;
+  color: #777777;
+  margin-top: 2pt;
+}
+.dt-run-hdr-logo {
+  padding: 6pt 10pt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80pt;
+}
+.dt-run-hdr-logo img {
+  height: 32pt;
+  width: auto;
+}
 
-/* Cover title */
-.dt-cover-title{font-size:32px;font-weight:900;color:#1a2536;text-align:center;margin:32px 0 8px;letter-spacing:-.02em}
-.dt-cover-sub{font-size:14px;color:#6a7c92;text-align:center;margin-bottom:28px;font-weight:400}
+/* ── Titre principal */
+.dt-main-title {
+  font-size: 26pt;
+  font-weight: 900;
+  color: #1a3a5c;
+  text-align: left;
+  margin: 0 0 6pt;
+  letter-spacing: -.01em;
+  line-height: 1.1;
+}
+.dt-main-sub {
+  font-size: 11pt;
+  color: #777777;
+  text-align: left;
+  margin-bottom: 20pt;
+}
 
-/* Summary table (cover) */
-.dt-summary{width:100%;border-collapse:collapse;margin-bottom:22px;font-size:11.5px}
-.dt-summary td{padding:8px 13px;border:1px solid #c8d8e8;vertical-align:top}
-.dt-summary td:first-child{background:#d6e8f4;color:#1a3a5c;font-weight:600;width:28%;white-space:nowrap}
-.dt-summary td:last-child{background:#fff;color:#1a2536}
+/* ── Tableau d'identification — style Sofidel exact */
+.dt-ident {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20pt;
+  font-size: 9pt;
+}
+.dt-ident td {
+  padding: 6pt 10pt;
+  border: 1px solid #cccccc;
+  vertical-align: top;
+  line-height: 1.4;
+}
+.dt-ident td:first-child {
+  background: #d0e4f7;
+  color: #444;
+  width: 30%;
+  white-space: nowrap;
+}
+.dt-ident td:last-child {
+  background: #fff;
+  color: #1a1a1a;
+}
 
-/* Info / Warning boxes */
-.dt-info-box{display:flex;align-items:flex-start;gap:10px;
-  background:#e8f3fb;border:1px solid #b8d4ea;border-radius:2px;
-  padding:10px 13px;margin:10px 0;font-size:11px;line-height:1.5}
-.dt-info-box-icon{flex-shrink:0;width:20px;height:20px;border-radius:50%;
-  background:#2e74b5;color:#fff;display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:700;margin-top:1px}
-.dt-warn-box{display:flex;align-items:flex-start;gap:10px;
-  background:#fff0d0;border:1px solid #e8c56a;border-radius:2px;
-  padding:10px 13px;margin:10px 0;font-size:11px;line-height:1.5}
-.dt-warn-box-icon{flex-shrink:0;font-size:16px;line-height:1;margin-top:-1px}
+/* ── Boîte avertissement — icône triangle orange */
+.dt-warn {
+  display: flex;
+  align-items: flex-start;
+  gap: 8pt;
+  background: #fffbea;
+  border: 1px solid #e0c040;
+  padding: 7pt 10pt;
+  margin: 8pt 0;
+  font-size: 9pt;
+  line-height: 1.5;
+  color: #7a5000;
+}
+.dt-warn-ico { flex-shrink: 0; font-size: 12pt; line-height: 1; margin-top: 1pt; }
 
-/* Section headings */
-.dt-h1{font-size:17px;font-weight:800;color:#1a3a5c;text-transform:uppercase;letter-spacing:.03em;
-  padding-bottom:7px;border-bottom:2.5px solid #2e74b5;margin:28px 0 18px;page-break-after:avoid}
-.dt-h2{font-size:13px;font-weight:700;color:#2e74b5;margin:18px 0 10px;page-break-after:avoid}
+/* ── Boîte info — icône "i" bleu */
+.dt-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 8pt;
+  background: #eef4fb;
+  border: 1px solid #b8d4ea;
+  padding: 7pt 10pt;
+  margin: 8pt 0;
+  font-size: 9pt;
+  line-height: 1.5;
+  color: #1a3a5c;
+}
+.dt-info-ico {
+  flex-shrink: 0;
+  width: 14pt; height: 14pt;
+  border-radius: 50%;
+  background: #2e74b5;
+  color: #fff;
+  font-size: 8pt;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1pt;
+}
 
-/* Data tables */
-.dt-table{width:100%;border-collapse:collapse;font-size:11px;margin:8px 0 14px;page-break-inside:avoid}
-.dt-table th{background:#2e74b5;color:#fff;padding:7px 10px;text-align:left;font-weight:700;
-  border:1px solid #1e5f9f;font-size:10.5px}
-.dt-table td{padding:6px 10px;border:1px solid #c8d8e8;vertical-align:top;line-height:1.4}
-.dt-table tr:nth-child(even) td{background:#f4f8fd}
-.dt-table .dt-td-label{background:#d6e8f4;color:#1a3a5c;font-weight:600;white-space:nowrap}
+/* ── Bandeau conclusion VPI */
+.dt-conclu {
+  border: 1px solid #b8d4ea;
+  border-left: 3pt solid #1a6bc4;
+  background: #f0f7ff;
+  padding: 9pt 12pt;
+  margin: 14pt 0;
+  font-size: 9pt;
+}
+.dt-conclu-title {
+  font-size: 8pt;
+  font-weight: 700;
+  color: #1a4a7a;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 7pt;
+}
+.dt-conclu-row { display: flex; gap: 0; margin-bottom: 4pt; line-height: 1.4; }
+.dt-conclu-row:last-child { margin-bottom: 0; }
+.dt-conclu-k {
+  color: #2e74b5; font-weight: 700; font-size: 8.5pt;
+  min-width: 110pt; flex-shrink: 0;
+  text-transform: uppercase; letter-spacing: .02em;
+}
+.dt-conclu-v { color: #1a1a1a; white-space: pre-wrap; }
 
-/* Checklist table */
-.dt-checklist{width:100%;border-collapse:collapse;font-size:11px;margin:8px 0 14px}
-.dt-checklist th{background:#2e74b5;color:#fff;padding:7px 10px;font-weight:700;
-  border:1px solid #1e5f9f;text-align:left;font-size:10.5px}
-.dt-checklist td{padding:7px 10px;border:1px solid #c8d8e8;vertical-align:middle}
-.dt-checklist td:first-child{width:30px;text-align:center;font-size:14px;color:#5a6a7a}
-.dt-checklist td:nth-child(3){font-size:10.5px;color:#3a4f6a}
-.dt-checklist td:last-child{font-size:10.5px;color:#5a6a7a}
+/* ── Titres de section — comme Sofidel : grand gras bleu + filet */
+.dt-h1 {
+  font-size: 16pt;
+  font-weight: 700;
+  color: #1a3a5c;
+  border-bottom: 1.5pt solid #1a4a7a;
+  padding-bottom: 5pt;
+  margin: 24pt 0 14pt;
+  page-break-after: avoid;
+}
+.dt-h2 {
+  font-size: 10pt;
+  font-weight: 700;
+  color: #2e74b5;
+  margin: 14pt 0 6pt;
+  page-break-after: avoid;
+}
 
-/* Bullet list */
-.dt-bullets{margin:8px 0 12px;padding-left:0;list-style:none}
-.dt-bullets li{display:flex;align-items:baseline;gap:8px;padding:4px 0;font-size:11.5px;line-height:1.5}
-.dt-bullets li::before{content:'►';color:#2e74b5;font-size:9px;flex-shrink:0;margin-top:2px}
+/* ── Jour journée — sous-titre couleur rouille comme Sofidel */
+.dt-day-title {
+  font-size: 11pt;
+  font-weight: 700;
+  color: #c0532a;
+  margin: 16pt 0 6pt;
+  page-break-after: avoid;
+}
 
-/* Page footer */
-.dt-footer-bar{border-top:1px solid #c0cfe0;padding-top:7px;margin-top:18px;
-  display:flex;justify-content:space-between;align-items:center;
-  font-size:10px;color:#7a8fa8}
+/* ── Tableau de tâches planning — entêtes bleus, 2 colonnes */
+.dt-tasks {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9pt;
+  margin-bottom: 4pt;
+  page-break-inside: avoid;
+}
+.dt-tasks th {
+  background: #2e74b5;
+  color: #fff;
+  padding: 5pt 9pt;
+  text-align: left;
+  font-weight: 700;
+  border: 1pt solid #1e5f9f;
+  font-size: 8.5pt;
+}
+.dt-tasks td {
+  padding: 4pt 9pt;
+  border: 1pt solid #cccccc;
+  vertical-align: top;
+  line-height: 1.4;
+}
+.dt-tasks tr:nth-child(even) td { background: #f4f8fd; }
+.dt-tasks td:first-child {
+  width: 25%;
+  background: #eaf2fb;
+  color: #1a3a5c;
+  font-weight: 500;
+}
 
-/* Network table */
-.dt-net-table{width:100%;border-collapse:collapse;font-size:10.5px;margin:8px 0 14px}
-.dt-net-table th{background:#2e74b5;color:#fff;padding:6px 8px;font-weight:700;
-  border:1px solid #1e5f9f;text-align:left}
-.dt-net-table td{padding:5px 8px;border:1px solid #c8d8e8;vertical-align:top}
-.dt-net-table tr:nth-child(even) td{background:#f4f8fd}
-.dt-net-table td:first-child{font-weight:600;color:#1a3a5c;white-space:nowrap}
+/* ── Check-list matériel */
+.dt-chk {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9pt;
+  margin-bottom: 4pt;
+  page-break-inside: avoid;
+}
+.dt-chk th {
+  background: #2e74b5;
+  color: #fff;
+  padding: 5pt 9pt;
+  text-align: left;
+  font-weight: 700;
+  border: 1pt solid #1e5f9f;
+  font-size: 8.5pt;
+}
+.dt-chk td {
+  padding: 4pt 9pt;
+  border: 1pt solid #cccccc;
+  vertical-align: middle;
+  line-height: 1.3;
+}
+.dt-chk tr:nth-child(even) td { background: #f4f8fd; }
+.dt-chk td:first-child { width: 22pt; text-align: center; font-size: 11pt; color: #555; }
+.dt-chk td:nth-child(3) { font-size: 8.5pt; color: #3a5a7a; }
+.dt-chk td:last-child { font-size: 8.5pt; color: #666; }
 
-/* Page break helpers */
-.dt-page-break{page-break-before:always}
+/* ── Tables génériques */
+.dt-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9pt;
+  margin-bottom: 4pt;
+  page-break-inside: avoid;
+}
+.dt-tbl th {
+  background: #2e74b5;
+  color: #fff;
+  padding: 5pt 9pt;
+  text-align: left;
+  font-weight: 700;
+  border: 1pt solid #1e5f9f;
+  font-size: 8.5pt;
+}
+.dt-tbl td {
+  padding: 4pt 9pt;
+  border: 1pt solid #cccccc;
+  vertical-align: top;
+  line-height: 1.4;
+}
+.dt-tbl tr:nth-child(even) td { background: #f4f8fd; }
+
+/* ── Table réseau */
+.dt-net {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8.5pt;
+  margin-bottom: 4pt;
+  page-break-inside: avoid;
+}
+.dt-net th {
+  background: #2e74b5;
+  color: #fff;
+  padding: 4pt 7pt;
+  font-weight: 700;
+  border: 1pt solid #1e5f9f;
+  text-align: left;
+  font-size: 8pt;
+}
+.dt-net td {
+  padding: 3pt 7pt;
+  border: 1pt solid #cccccc;
+  vertical-align: top;
+}
+.dt-net tr:nth-child(even) td { background: #f4f8fd; }
+.dt-net td:first-child { font-weight: 600; color: #1a3a5c; white-space: nowrap; }
+
+/* ── Listes à puces — flèche bleue comme Sofidel */
+.dt-ul {
+  margin: 4pt 0 10pt;
+  padding-left: 0;
+  list-style: none;
+}
+.dt-ul li {
+  display: flex;
+  gap: 8pt;
+  padding: 2pt 0;
+  font-size: 9pt;
+  line-height: 1.45;
+  align-items: baseline;
+}
+.dt-ul li::before {
+  content: '▶';
+  color: #2e74b5;
+  font-size: 7pt;
+  flex-shrink: 0;
+  margin-top: 2pt;
+}
+
+/* ── Photos : grille 2 colonnes */
+.dt-photos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10pt;
+  margin: 8pt 0;
+}
+.dt-photo-cap {
+  font-size: 8pt;
+  color: #888;
+  text-align: center;
+  margin-top: 3pt;
+}
+
+/* ── Pied de page */
+.dt-footer {
+  border-top: 1pt solid #cccccc;
+  padding-top: 6pt;
+  margin-top: 20pt;
+  display: flex;
+  justify-content: space-between;
+  font-size: 8pt;
+  color: #888;
+}
+
+/* ══════════════════════════════════════════════
+   RÈGLES D'IMPRESSION — A4, sans pages vierges
+   ══════════════════════════════════════════════ */
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm 15mm 18mm 15mm;
+  }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+  /* Masquer tout sauf printRoot */
+  body > * { display: none !important; }
+  #printRoot {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  #printRoot * { display: revert !important; }
+
+  .dt-doc {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 9pt !important;
+  }
+
+  /* Éviter les coupures sur les éléments clés */
+  .dt-tasks, .dt-chk, .dt-tbl, .dt-net,
+  .dt-warn, .dt-info, .dt-conclu { page-break-inside: avoid; }
+
+  img {
+    max-width: 100% !important;
+    max-height: 80mm !important;
+    object-fit: contain !important;
+    page-break-inside: avoid !important;
+    display: block !important;
+  }
+
+  .dt-h1, .dt-h2, .dt-day-title { page-break-after: avoid; }
+  .dt-doc > *:last-child { margin-bottom: 0 !important; }
+}
+
+.dt-page-break { page-break-before: always; }
+
 
 .print-hdr{display:flex;align-items:center;justify-content:space-between;
   padding-bottom:14px;border-bottom:3px solid #0f4f84;margin-bottom:18px}
@@ -1478,7 +1784,7 @@ canvas{display:block;touch-action:none;width:100%}
           <div class="right"><button class="btn primary" onclick="addPlanRow()">+ Jour</button></div>
         </div>
         <div class="tbl-wrap">
-          <table><thead><tr><th>Date</th><th>Technicien(s)</th><th>Tâches prévues</th><th>Site / zone</th><th style="width:34px"></th></tr></thead>
+          <table><thead><tr><th>Date</th><th>Technicien(s)</th><th>Site / zone</th><th>Tâches de la journée</th><th style="width:34px"></th></tr></thead>
           <tbody id="planning-table"></tbody></table>
         </div>
         <div class="tbl-foot"><button class="btn" onclick="addPlanRow()">+ Ajouter un jour</button></div>
@@ -2143,51 +2449,84 @@ canvas{display:block;touch-action:none;width:100%}
 </div>
 
 <!-- ══════════ MODAL : PRÉVISUALISATION & ÉDITEUR ══════════ -->
-<div class="modal" id="modal-preview" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal-box" style="width:min(98vw,1400px);height:min(94vh,960px);display:flex;flex-direction:column">
-    <div class="modal-hdr" style="flex-shrink:0">
-      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-        <h3>Prévisualisation &amp; mise en forme</h3>
-        <!-- Sélecteur module -->
-        <div style="display:flex;gap:0;background:var(--panel-soft);border:1px solid var(--line);border-radius:10px;overflow:hidden">
-          <button id="prev-tab-vpi" onclick="switchPreviewModule('vpi')" style="padding:6px 14px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--primary);color:#fff">VPI</button>
-          <button id="prev-tab-tech" onclick="switchPreviewModule('tech')" style="padding:6px 14px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:transparent;color:var(--muted)">Dossier technique</button>
-          <button id="prev-tab-doe" onclick="switchPreviewModule('doe')" style="padding:6px 14px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:transparent;color:var(--muted)">DOE</button>
-        </div>
+<!-- ══════════ ÉDITEUR VISUEL AVANT IMPRESSION ══════════ -->
+<div class="modal" id="modal-preview" style="align-items:stretch;justify-content:stretch;padding:0">
+  <div id="pv-editor" style="width:100vw;height:100vh;display:flex;flex-direction:column;background:#1a1f2e;font-family:'IBM Plex Sans',system-ui,sans-serif">
+
+    <!-- BARRE SUPÉRIEURE -->
+    <div id="pv-topbar" style="display:flex;align-items:center;gap:0;background:#111827;border-bottom:1px solid #2d3748;flex-shrink:0;height:52px;padding:0 16px;gap:12px">
+      <!-- Module tabs -->
+      <div style="display:flex;gap:2px;background:#1e2535;border-radius:8px;padding:3px">
+        <button onclick="pvSetModule('vpi')" id="pv-tab-vpi" style="padding:5px 14px;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;background:#0f4f84;color:#fff">VPI</button>
+        <button onclick="pvSetModule('tech')" id="pv-tab-tech" style="padding:5px 14px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;background:transparent;color:#94a3b8">Dossier Technique</button>
+        <button onclick="pvSetModule('doe')" id="pv-tab-doe" style="padding:5px 14px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;background:transparent;color:#94a3b8">DOE</button>
       </div>
-      <div style="display:flex;gap:7px;flex-shrink:0">
-        <button class="btn warn" onclick="printFromPreview()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-          Imprimer / PDF
-        </button>
-        <button class="btn" onclick="resetPreviewSections()">↺ Réinitialiser</button>
-        <button class="btn ghost" onclick="document.getElementById('modal-preview').classList.remove('open')">✕</button>
+
+      <div style="width:1px;height:28px;background:#2d3748"></div>
+
+      <!-- Zoom -->
+      <div style="display:flex;align-items:center;gap:6px">
+        <button onclick="pvZoom(-10)" style="width:28px;height:28px;border:1px solid #374151;border-radius:6px;background:#1e2535;color:#94a3b8;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit">−</button>
+        <span id="pv-zoom-label" style="font-size:12px;color:#94a3b8;min-width:40px;text-align:center">100%</span>
+        <button onclick="pvZoom(10)" style="width:28px;height:28px;border:1px solid #374151;border-radius:6px;background:#1e2535;color:#94a3b8;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit">+</button>
+        <button onclick="pvZoom(0)" style="padding:4px 8px;border:1px solid #374151;border-radius:6px;background:#1e2535;color:#64748b;font-size:11px;cursor:pointer;font-family:inherit">Ajuster</button>
       </div>
+
+      <div style="width:1px;height:28px;background:#2d3748"></div>
+
+      <!-- Format papier -->
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:11px;color:#64748b">Format</span>
+        <select id="pv-format" onchange="pvRender()" style="background:#1e2535;border:1px solid #374151;border-radius:6px;color:#94a3b8;font-size:11px;padding:4px 8px;font-family:inherit">
+          <option value="a4">A4</option>
+          <option value="a4-paysage">A4 paysage</option>
+          <option value="a3">A3</option>
+        </select>
+      </div>
+
+      <div style="flex:1"></div>
+
+      <!-- Actions -->
+      <button onclick="pvSelectAll(true)" style="padding:5px 11px;border:1px solid #374151;border-radius:6px;background:#1e2535;color:#94a3b8;font-size:11px;cursor:pointer;font-family:inherit">Tout sélectionner</button>
+      <button onclick="pvSelectAll(false)" style="padding:5px 11px;border:1px solid #374151;border-radius:6px;background:#1e2535;color:#94a3b8;font-size:11px;cursor:pointer;font-family:inherit">Tout désélectionner</button>
+      <button onclick="pvResetLayout()" style="padding:5px 11px;border:1px solid #374151;border-radius:6px;background:#1e2535;color:#94a3b8;font-size:11px;cursor:pointer;font-family:inherit">↺ Réinitialiser</button>
+
+      <div style="width:1px;height:28px;background:#2d3748"></div>
+
+      <button onclick="pvPrint()" style="padding:7px 18px;border:none;border-radius:7px;background:linear-gradient(135deg,#0f4f84,#1a6bc4);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:7px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Imprimer / PDF
+      </button>
+      <button onclick="document.getElementById('modal-preview').classList.remove('open')" style="width:36px;height:36px;border:1px solid #374151;border-radius:7px;background:#1e2535;color:#64748b;font-size:18px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center">✕</button>
     </div>
 
-    <!-- Corps : 2 colonnes -->
-    <div style="display:grid;grid-template-columns:300px 1fr;gap:0;flex:1;overflow:hidden;border-top:1px solid var(--line)">
+    <!-- CORPS : panneau gauche + canvas centre + panneau droit -->
+    <div style="display:flex;flex:1;overflow:hidden">
 
-      <!-- Colonne gauche : éditeur de sections -->
-      <div style="display:flex;flex-direction:column;border-right:1px solid var(--line);overflow:hidden">
-        <div style="padding:12px 14px;background:var(--panel-soft);border-bottom:1px solid var(--line);font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">
-          Sections — glisser pour réordonner
-        </div>
-        <div id="preview-sections-list" style="overflow-y:auto;flex:1;padding:10px"></div>
-        <div style="padding:10px 14px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)">
-          Glissez les blocs • Œil = visible/masqué • ✏ = éditer titre
+      <!-- PANNEAU GAUCHE : blocs -->
+      <div id="pv-panel-left" style="width:260px;flex-shrink:0;background:#111827;border-right:1px solid #1e2535;display:flex;flex-direction:column;overflow:hidden">
+        <div style="padding:12px 14px;border-bottom:1px solid #1e2535;font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.08em">Blocs du document</div>
+        <div id="pv-blocks-list" style="flex:1;overflow-y:auto;padding:8px"></div>
+      </div>
+
+      <!-- CANVAS CENTRAL -->
+      <div id="pv-canvas-wrap" style="flex:1;overflow:auto;background:#0d1117;display:flex;align-items:flex-start;justify-content:center;padding:32px 24px;position:relative">
+        <div id="pv-paper" style="position:relative;background:#fff;box-shadow:0 8px 40px rgba(0,0,0,.5);transform-origin:top center;transition:transform .2s">
+          <div id="pv-blocks-container"></div>
         </div>
       </div>
 
-      <!-- Colonne droite : rendu live -->
-      <div style="overflow-y:auto;background:#f0f4f9;padding:24px" id="preview-render-zone">
-        <div id="preview-render" style="background:#fff;max-width:860px;margin:0 auto;
-          box-shadow:0 4px 30px rgba(0,0,0,.12);border-radius:4px;overflow:hidden;
-          font-family:'IBM Plex Sans',Arial,sans-serif;font-size:12px;color:#1a2536"></div>
+      <!-- PANNEAU DROIT : propriétés du bloc sélectionné -->
+      <div id="pv-panel-right" style="width:280px;flex-shrink:0;background:#111827;border-left:1px solid #1e2535;display:flex;flex-direction:column;overflow:hidden">
+        <div style="padding:12px 14px;border-bottom:1px solid #1e2535;font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.08em">Propriétés</div>
+        <div id="pv-props" style="flex:1;overflow-y:auto;padding:14px">
+          <div style="font-size:12px;color:#475569;text-align:center;margin-top:40px">Sélectionnez un bloc<br>pour éditer ses propriétés</div>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
 
 <!-- ══════════ MODAL : BIBLIOTHÈQUE FICHES TECHNIQUES ══════════ -->
 <div class="modal" id="modal-techlib" onclick="if(event.target===this)this.classList.remove('open')">
@@ -3763,17 +4102,55 @@ function renderNetTable(){
 // ═══════════════════════════════════════
 // PLANNING
 // ═══════════════════════════════════════
-function addPlanRow(){S.tech.planning.push({id:uid(),date:'',tech:'',tasks:'',site:''});renderPlanTable();scheduleAutosave();}
+function addPlanRow(){
+  S.tech.planning.push({id:uid(),date:'',tech:'',site:'',taches:[{id:uid(),label:''}]});
+  renderPlanTable();scheduleAutosave();
+}
 function removePlanRow(id){S.tech.planning=S.tech.planning.filter(r=>r.id!==id);renderPlanTable();renderMetrics();scheduleAutosave();}
 function planField(id,key,val){const r=S.tech.planning.find(x=>x.id===id);if(r){r[key]=val;scheduleAutosave();}}
+function addPlanTache(planId){
+  const r=S.tech.planning.find(x=>x.id===planId);if(!r) return;
+  if(!Array.isArray(r.taches)) r.taches=[];
+  r.taches.push({id:uid(),label:''});
+  renderPlanTable();scheduleAutosave();
+}
+function removePlanTache(planId,tacheId){
+  const r=S.tech.planning.find(x=>x.id===planId);if(!r) return;
+  r.taches=(r.taches||[]).filter(t=>t.id!==tacheId);
+  renderPlanTable();scheduleAutosave();
+}
+function planTacheField(planId,tacheId,val){
+  const r=S.tech.planning.find(x=>x.id===planId);if(!r) return;
+  const t=(r.taches||[]).find(x=>x.id===tacheId);if(t){t.label=val;scheduleAutosave();}
+}
 function renderPlanTable(){
   const tbody=qs('planning-table');if(!tbody) return;
-  tbody.innerHTML=S.tech.planning.map(r=>`<tr>
-    <td><input type="date" value="${esc(r.date)}" oninput="planField('${r.id}','date',this.value)"/></td>
-    <td><input value="${esc(r.tech)}" placeholder="Technicien" oninput="planField('${r.id}','tech',this.value)" style="min-width:130px"/></td>
-    <td><input value="${esc(r.tasks)}" placeholder="Tâches prévues" oninput="planField('${r.id}','tasks',this.value)" style="min-width:200px"/></td>
-    <td><input value="${esc(r.site)}" placeholder="Zone / bâtiment" oninput="planField('${r.id}','site',this.value)" style="min-width:130px"/></td>
-    <td><button class="btn sm danger" onclick="removePlanRow('${r.id}')">✕</button></td></tr>`).join('');
+  tbody.innerHTML=S.tech.planning.map((r,idx)=>{
+    // Migration transparente : si tasks (ancien format string) existe, convertir
+    if(r.tasks!==undefined && !Array.isArray(r.taches)){
+      r.taches=r.tasks?r.tasks.split('\n').filter(l=>l.trim()).map(l=>({id:uid(),label:l})):[{id:uid(),label:''}];
+      delete r.tasks;
+    }
+    if(!Array.isArray(r.taches)||!r.taches.length) r.taches=[{id:uid(),label:''}];
+    const tachesHtml=r.taches.map((t,ti)=>`
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:${ti<r.taches.length-1?'5px':'0'}">
+        <span style="font-size:11px;color:var(--muted);flex-shrink:0;width:16px;text-align:right">${ti+1}.</span>
+        <input value="${esc(t.label)}" placeholder="Tâche ${ti+1}…"
+          oninput="planTacheField('${r.id}','${t.id}',this.value)"
+          style="flex:1;min-width:120px"/>
+        ${r.taches.length>1?`<button class="btn sm danger" onclick="removePlanTache('${r.id}','${t.id}')" style="flex-shrink:0">✕</button>`:''}
+      </div>`).join('');
+    return`<tr style="vertical-align:top">
+      <td style="min-width:120px"><input type="date" value="${esc(r.date)}" oninput="planField('${r.id}','date',this.value)"/></td>
+      <td style="min-width:130px"><input value="${esc(r.tech)}" placeholder="Technicien(s)" oninput="planField('${r.id}','tech',this.value)"/></td>
+      <td style="min-width:130px"><input value="${esc(r.site)}" placeholder="Zone / bâtiment" oninput="planField('${r.id}','site',this.value)"/></td>
+      <td style="min-width:220px">
+        <div>${tachesHtml}</div>
+        <button class="btn sm" onclick="addPlanTache('${r.id}')" style="margin-top:6px;font-size:11px">+ Tâche</button>
+      </td>
+      <td style="width:34px"><button class="btn sm danger" onclick="removePlanRow('${r.id}')">✕</button></td>
+    </tr>`;
+  }).join('');
 }
 
 // ═══════════════════════════════════════
@@ -4306,7 +4683,8 @@ function nouveauProjet(){
     observations:'',validationStatus:'',validePar:'',dateValidation:'',commentaireValidation:'',
     jours:[],equip:[],reserves:[]};
   renderAll();
-  if(qs('preview-render')) qs('preview-render').innerHTML='<em style="color:var(--muted)">Nouveau projet initialisé.</em>';
+  // Éditeur visuel : réinitialiser les blocs
+  _pvBlocks={vpi:null,tech:null,doe:null};
   setFaisabilite('',true);
   focusModule('vpi');
   saveSession(true);
@@ -4548,7 +4926,7 @@ const PREVIEW_DEFS={
     {id:'vpi-notes',   title:'Notes terrain', fn:pvVpiNotes},
   ],
   tech:[
-    {id:'tech-garde',   title:'Page de garde', fn:pvTechGarde},
+    {id:'tech-garde',   title:'Identification', fn:pvTechGarde},
     {id:'tech-planning',title:'Planning par journée', fn:pvTechPlanning},
     {id:'tech-equip',   title:'Matériels & check-list', fn:pvTechEquip},
     {id:'tech-reseau',  title:'Architecture réseau', fn:pvTechReseau},
@@ -4578,339 +4956,877 @@ function getPvSections(mod){
   }
   return _pvSections[mod];
 }
+// ═══════════════════════════════════════════════════════
+// ÉDITEUR VISUEL AVANT IMPRESSION — Moteur complet
+// ═══════════════════════════════════════════════════════
 
+// ── État global de l'éditeur
+// ═══════════════════════════════════════════════════════════════════
+// ÉDITEUR VISUEL v2 — Drag sur feuille, resize, logo, sauvegarde layout
+// ═══════════════════════════════════════════════════════════════════
+
+let _pvMod='tech';
+let _pvZoom=100;
+let _pvSelectedBlock=null;
+let _pvBlocks={vpi:null,tech:null,doe:null};
+let _pvCustomLogo=null;
+
+// Drag sur canvas
+let _pvDragging=null; // {blockId, startY, startSpacing}
+// Resize sur canvas
+let _pvResizing=null; // {blockId, startY, startSpacing}
+
+const PV_FORMATS={
+  'a4':        {w:794, h:1123, label:'A4 Portrait'},
+  'a4-paysage':{w:1123,h:794,  label:'A4 Paysage'},
+  'a3':        {w:1123,h:1587, label:'A3 Portrait'},
+};
+
+const NUMBERED_TYPES=['planning','equip','cables','reseau','prep','param','photos','notes',
+  'vpi_ident','vpi_faisab','vpi_cables','vpi_prep','vpi_equip','vpi_ecarts','vpi_photos','vpi_conclu',
+  'doe_infos','doe_docs','doe_tests','doe_sheets','doe_photos'];
+
+const PV_BLOCK_DEFS={
+  tech:[
+    {id:'hdr',      label:'En-tête OCI Connect',     type:'header',   locked:true,  visible:true},
+    {id:'title',    label:'Titre principal',           type:'title',    locked:false, visible:true},
+    {id:'ident',    label:'Identification chantier',   type:'ident',    locked:false, visible:true},
+    {id:'conclu',   label:'Conclusion VPI',            type:'conclu',   locked:false, visible:true},
+    {id:'planning', label:'Planning par journée',      type:'planning', locked:false, visible:true},
+    {id:'equip',    label:'Matériels & check-list',    type:'equip',    locked:false, visible:true},
+    {id:'cables',   label:'Passages de câbles',        type:'cables',   locked:false, visible:true},
+    {id:'reseau',   label:'Configuration réseau',      type:'reseau',   locked:false, visible:true},
+    {id:'prep',     label:'Travaux préparatoires',     type:'prep',     locked:false, visible:true},
+    {id:'param',    label:'Paramétrage & MES',         type:'param',    locked:false, visible:true},
+    {id:'photos',   label:'Photos de chantier',        type:'photos',   locked:false, visible:true},
+    {id:'notes',    label:'Notes techniques',          type:'notes',    locked:false, visible:true},
+    {id:'footer',   label:'Pied de page',              type:'footer',   locked:true,  visible:true},
+  ],
+  vpi:[
+    {id:'hdr',    label:'En-tête OCI Connect',    type:'header',    locked:true,  visible:true},
+    {id:'title',  label:'Titre principal',          type:'title',     locked:false, visible:true},
+    {id:'ident',  label:'Identification',           type:'vpi_ident', locked:false, visible:true},
+    {id:'faisab', label:'Faisabilité & vigilances', type:'vpi_faisab',locked:false, visible:true},
+    {id:'cables', label:'Passages de câbles',       type:'vpi_cables',locked:false, visible:true},
+    {id:'prep',   label:'Travaux préparatoires',    type:'vpi_prep',  locked:false, visible:true},
+    {id:'equip',  label:'Matériel de pose',         type:'vpi_equip', locked:false, visible:true},
+    {id:'ecarts', label:'Écarts & corrections',     type:'vpi_ecarts',locked:false, visible:true},
+    {id:'photos', label:'Photos terrain',           type:'vpi_photos',locked:false, visible:true},
+    {id:'conclu', label:'Conclusion & transmission',type:'vpi_conclu',locked:false, visible:true},
+    {id:'footer', label:'Pied de page',             type:'footer',    locked:true,  visible:true},
+  ],
+  doe:[
+    {id:'hdr',    label:'En-tête OCI Connect', type:'header',    locked:true,  visible:true},
+    {id:'title',  label:'Titre principal',      type:'title',     locked:false, visible:true},
+    {id:'infos',  label:'Informations DOE',     type:'doe_infos', locked:false, visible:true},
+    {id:'docs',   label:'Documents & notices',  type:'doe_docs',  locked:false, visible:true},
+    {id:'tests',  label:'Recettage',            type:'doe_tests', locked:false, visible:true},
+    {id:'sheets', label:'Fiches techniques',    type:'doe_sheets',locked:false, visible:true},
+    {id:'photos', label:'Photos',               type:'doe_photos',locked:false, visible:true},
+    {id:'footer', label:'Pied de page',         type:'footer',    locked:true,  visible:true},
+  ]
+};
+
+function pvGetBlocks(mod){
+  if(!_pvBlocks[mod]){
+    // Charger depuis localStorage si disponible
+    const saved=pvLoadLayout(mod);
+    _pvBlocks[mod]=saved||(PV_BLOCK_DEFS[mod]||PV_BLOCK_DEFS.tech).map(b=>({...b,
+      style:{fontFamily:'Arial',fontSize:9,color:'#1a1a1a',opacity:1,
+        spacing:6,bgColor:'transparent',borderColor:'transparent',borderRadius:0}
+    }));
+  }
+  return _pvBlocks[mod];
+}
+
+// ── Sauvegarde / chargement layout
+function pvSaveLayout(mod){
+  try{
+    const blocks=_pvBlocks[mod];
+    if(!blocks) return;
+    // On sauve uniquement les propriétés de layout (pas le contenu)
+    const layout=blocks.map(b=>({
+      id:b.id,visible:b.visible,style:{...b.style}
+    }));
+    localStorage.setItem('oci_pv_layout_'+mod,JSON.stringify({layout,logo:_pvCustomLogo||null}));
+    showToast('Mise en page sauvegardée.');
+  }catch(e){console.error(e);}
+}
+
+function pvLoadLayout(mod){
+  try{
+    const raw=localStorage.getItem('oci_pv_layout_'+mod);
+    if(!raw) return null;
+    const {layout,logo}=JSON.parse(raw);
+    if(logo) _pvCustomLogo=logo;
+    // Fusionner les blocs définis avec les styles sauvegardés
+    const defs=(PV_BLOCK_DEFS[mod]||PV_BLOCK_DEFS.tech).map(b=>{
+      const saved=layout.find(l=>l.id===b.id);
+      return{...b,
+        visible:saved?saved.visible:b.visible,
+        style:saved?{...saved.style}:{fontFamily:'Arial',fontSize:9,color:'#1a1a1a',opacity:1,spacing:6,bgColor:'transparent',borderColor:'transparent',borderRadius:0}
+      };
+    });
+    return defs;
+  }catch{return null;}
+}
+
+function pvAutoSave(){
+  // Sauvegarde auto silencieuse à chaque modification
+  try{
+    const blocks=_pvBlocks[_pvMod];
+    if(!blocks) return;
+    const layout=blocks.map(b=>({id:b.id,visible:b.visible,style:{...b.style}}));
+    localStorage.setItem('oci_pv_layout_'+_pvMod,JSON.stringify({layout,logo:_pvCustomLogo||null}));
+  }catch{}
+}
+
+// ── Init éditeur
 function openPreviewModal(){
-  _pvModule=currentModule;
-  switchPreviewModule(_pvModule);
-  qs('modal-preview').classList.add('open');
+  document.getElementById('modal-preview').classList.add('open');
+  pvSetModule(_pvMod||'tech');
 }
+function switchPreviewModule(mod){pvSetModule(mod);}
 
-function switchPreviewModule(mod){
-  _pvModule=mod;
+function pvSetModule(mod){
+  _pvMod=mod;_pvSelectedBlock=null;
   ['vpi','tech','doe'].forEach(m=>{
-    const btn=qs(`prev-tab-${m}`);
-    if(btn){
-      btn.style.background=m===mod?'var(--primary)':'transparent';
-      btn.style.color=m===mod?'#fff':'var(--muted)';
-    }
+    const btn=document.getElementById('pv-tab-'+m);
+    if(!btn) return;
+    btn.style.background=m===mod?'#0f4f84':'transparent';
+    btn.style.color=m===mod?'#fff':'#94a3b8';
   });
-  renderPvSectionsList();
-  renderPvPreview();
+  pvRender();pvRenderBlocksList();pvRenderProps(null);
 }
 
-// ── Rendu de la liste de sections (panneau gauche) ──
-let _pvDragSrc=null;
+// ── Rendu du canvas
+function pvRender(){
+  const fmt=document.getElementById('pv-format')?.value||'a4';
+  const {w,h}=PV_FORMATS[fmt]||PV_FORMATS.a4;
+  const paper=document.getElementById('pv-paper');
+  if(!paper) return;
 
-function renderPvSectionsList(){
-  const list=qs('preview-sections-list');if(!list) return;
-  const secs=getPvSections(_pvModule);
-  list.innerHTML=secs.map((s,i)=>`
-    <div id="pvs-${s.id}" draggable="true"
-      ondragstart="pvDragStart(event,'${s.id}')"
-      ondragover="pvDragOver(event,'${s.id}')"
-      ondrop="pvDrop(event,'${s.id}')"
-      ondragend="pvDragEnd()"
-      style="display:flex;align-items:center;gap:8px;padding:9px 10px;margin-bottom:6px;
-        border:1px solid var(--line);border-radius:11px;background:var(--panel);
-        cursor:grab;transition:all .18s;opacity:${s.visible?1:.4};
-        ${s.visible?'':'text-decoration:line-through'}">
-      <!-- Drag handle -->
-      <span style="color:var(--muted);cursor:grab;font-size:14px;flex-shrink:0;user-select:none" title="Glisser pour réordonner">⠿</span>
-      <!-- Titre -->
-      <span id="pvs-title-${s.id}" style="flex:1;font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-        ${esc(s.customTitle||s.title)}
-      </span>
-      <!-- Boutons -->
-      <button onclick="pvToggle('${s.id}')" title="${s.visible?'Masquer':'Afficher'}"
-        style="border:none;background:none;cursor:pointer;font-size:14px;padding:2px 3px;flex-shrink:0;color:${s.visible?'var(--ok)':'var(--muted)'}">
-        ${s.visible?'👁':'🚫'}
+  if(_pvZoom===0){
+    const wrap=document.getElementById('pv-canvas-wrap');
+    const avail=wrap?wrap.clientWidth-48:800;
+    _pvZoom=Math.round(Math.min(100,(avail/w)*100));
+  }
+
+  paper.style.width=w+'px';
+  paper.style.minHeight=h+'px';
+  paper.style.transform=`scale(${_pvZoom/100})`;
+  paper.style.marginBottom=(-(h*(1-_pvZoom/100)))+'px';
+  const zl=document.getElementById('pv-zoom-label');
+  if(zl) zl.textContent=_pvZoom+'%';
+
+  const blocks=pvGetBlocks(_pvMod).filter(b=>b.visible);
+  const container=document.getElementById('pv-blocks-container');
+  if(!container) return;
+
+  container.innerHTML='';
+  container.style.cssText=`padding:20mm 15mm 18mm 15mm;box-sizing:border-box;min-height:${h}px;width:100%;position:relative`;
+
+  let secCounter=0;
+  blocks.forEach((block,idx)=>{
+    const isNumbered=NUMBERED_TYPES.includes(block.type);
+    if(isNumbered) secCounter++;
+    const html=pvBlockHTML(block,secCounter);
+    if(!html&&block.type!=='header'&&block.type!=='footer') return;
+
+    const s=block.style||{};
+    const isSel=_pvSelectedBlock===block.id;
+    const wrapper=document.createElement('div');
+    wrapper.dataset.bid=block.id;
+    wrapper.style.cssText=`
+      position:relative;
+      font-family:${s.fontFamily||'Arial'},sans-serif;
+      font-size:${s.fontSize||9}pt;
+      color:${s.color||'#1a1a1a'};
+      opacity:${s.opacity!==undefined?s.opacity:1};
+      margin-bottom:${s.spacing||6}pt;
+      background:${s.bgColor||'transparent'};
+      ${s.borderColor&&s.borderColor!=='transparent'?`border:1px solid ${s.borderColor};`:''}
+      border-radius:${s.borderRadius||0}px;
+      outline:${isSel?'2px solid #1a6bc4':'none'};
+      outline-offset:2px;
+      user-select:none;
+    `;
+
+    // Contenu du bloc
+    const contentDiv=document.createElement('div');
+    contentDiv.innerHTML=html||'';
+    wrapper.appendChild(contentDiv);
+
+    // ── OVERLAY d'interaction (visible au hover/select)
+    if(!block.locked){
+      const overlay=document.createElement('div');
+      overlay.style.cssText=`
+        position:absolute;inset:0;pointer-events:none;
+        border-radius:${s.borderRadius||0}px;
+        outline:${isSel?'2px solid #1a6bc4':'1px dashed transparent'};
+        outline-offset:1px;transition:outline .1s;
+      `;
+      wrapper.appendChild(overlay);
+
+      // ── POIGNÉE DE DRAG (haut du bloc) — déplace l'espacement du bloc PRÉCÉDENT
+      const dragHandle=document.createElement('div');
+      dragHandle.title='Glisser pour ajuster l\'espace au-dessus';
+      dragHandle.style.cssText=`
+        position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+        width:48px;height:14px;
+        background:#1a6bc4;border-radius:7px;
+        display:flex;align-items:center;justify-content:center;
+        cursor:ns-resize;pointer-events:auto;z-index:10;
+        opacity:0;transition:opacity .15s;
+      `;
+      dragHandle.innerHTML=`<svg width="18" height="6" viewBox="0 0 18 6" fill="none"><rect y="0" width="18" height="1.5" rx=".75" fill="white"/><rect y="4" width="18" height="1.5" rx=".75" fill="white"/></svg>`;
+      wrapper.appendChild(dragHandle);
+
+      // ── POIGNÉE DE RESIZE (bas du bloc) — ajuste l'espacement BAS de ce bloc
+      const resizeHandle=document.createElement('div');
+      resizeHandle.title='Glisser pour ajuster l\'espace en dessous';
+      resizeHandle.style.cssText=`
+        position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+        width:48px;height:14px;
+        background:#0f4f84;border-radius:7px;
+        display:flex;align-items:center;justify-content:center;
+        cursor:s-resize;pointer-events:auto;z-index:10;
+        opacity:0;transition:opacity .15s;
+      `;
+      resizeHandle.innerHTML=`<svg width="14" height="8" viewBox="0 0 14 8" fill="none"><path d="M1 1l6 6 6-6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      wrapper.appendChild(resizeHandle);
+
+      // Afficher les poignées au hover
+      wrapper.addEventListener('mouseenter',()=>{
+        dragHandle.style.opacity='1';
+        resizeHandle.style.opacity='1';
+        if(!isSel) overlay.style.outline='1px dashed #4a9eff';
+      });
+      wrapper.addEventListener('mouseleave',()=>{
+        dragHandle.style.opacity='0';
+        resizeHandle.style.opacity='0';
+        if(!isSel) overlay.style.outline='1px dashed transparent';
+      });
+
+      // ── DRAG POIGNÉE HAUT — modifie l'espacement du bloc précédent visible
+      dragHandle.addEventListener('mousedown',(e)=>{
+        e.preventDefault();e.stopPropagation();
+        // Trouver le bloc précédent visible
+        const allVisible=pvGetBlocks(_pvMod).filter(b=>b.visible);
+        const myIdx=allVisible.findIndex(b=>b.id===block.id);
+        if(myIdx<=0) return; // pas de bloc précédent
+        const prevBlock=allVisible[myIdx-1];
+        const startY=e.clientY;
+        const startSpacing=prevBlock.style.spacing||6;
+        _pvDragging={blockId:prevBlock.id,startY,startSpacing};
+
+        // Curseur global
+        document.body.style.cursor='ns-resize';
+
+        const onMove=ev=>{
+          const delta=Math.round((ev.clientY-startY)/(_pvZoom/100));
+          const newSpacing=Math.max(0,Math.min(300,startSpacing+delta));
+          prevBlock.style.spacing=newSpacing;
+          // Mise à jour live sans re-render complet (juste margin)
+          const prevWrapper=container.querySelector(`[data-bid="${prevBlock.id}"]`);
+          if(prevWrapper) prevWrapper.style.marginBottom=newSpacing+'pt';
+          // Mettre à jour le slider dans le panneau si ce bloc est sélectionné
+          if(_pvSelectedBlock===prevBlock.id){
+            const sl=document.getElementById('sl_sp_'+prevBlock.id);
+            const slv=document.getElementById('sl_sp_'+prevBlock.id+'_v');
+            if(sl) sl.value=newSpacing;
+            if(slv) slv.value=newSpacing;
+          }
+        };
+        const onUp=()=>{
+          document.body.style.cursor='';
+          _pvDragging=null;
+          pvAutoSave();
+          document.removeEventListener('mousemove',onMove);
+          document.removeEventListener('mouseup',onUp);
+        };
+        document.addEventListener('mousemove',onMove);
+        document.addEventListener('mouseup',onUp);
+      });
+
+      // ── RESIZE POIGNÉE BAS — modifie l'espacement de CE bloc
+      resizeHandle.addEventListener('mousedown',(e)=>{
+        e.preventDefault();e.stopPropagation();
+        const startY=e.clientY;
+        const startSpacing=block.style.spacing||6;
+        _pvResizing={blockId:block.id,startY,startSpacing};
+        document.body.style.cursor='s-resize';
+
+        const onMove=ev=>{
+          const delta=Math.round((ev.clientY-startY)/(_pvZoom/100));
+          const newSpacing=Math.max(0,Math.min(300,startSpacing+delta));
+          block.style.spacing=newSpacing;
+          wrapper.style.marginBottom=newSpacing+'pt';
+          if(_pvSelectedBlock===block.id){
+            const sl=document.getElementById('sl_sp_'+block.id);
+            const slv=document.getElementById('sl_sp_'+block.id+'_v');
+            if(sl) sl.value=newSpacing;
+            if(slv) slv.value=newSpacing;
+          }
+        };
+        const onUp=()=>{
+          document.body.style.cursor='';
+          _pvResizing=null;
+          pvAutoSave();
+          document.removeEventListener('mousemove',onMove);
+          document.removeEventListener('mouseup',onUp);
+        };
+        document.addEventListener('mousemove',onMove);
+        document.addEventListener('mouseup',onUp);
+      });
+    }
+
+    // Clic sur le bloc → sélection
+    wrapper.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      pvSelectBlock(block.id);
+    });
+
+    container.appendChild(wrapper);
+  });
+
+  // Déselectionner en cliquant sur le fond
+  container.addEventListener('click',()=>pvSelectBlock(null));
+}
+
+// ── HTML de chaque bloc (identique à avant, factorisé)
+function pvBlockHTML(block,secNum=1){
+  const t=S.tech, v=S.vpi, d=S.doe;
+  const e2=x=>esc(x||'');
+  const logoUrl='https://r4c4st.github.io/vpi/oci_logo_transparent.png';
+  const W=txt=>`<div style="display:flex;gap:8px;background:#fffbea;border:1px solid #e0c040;border-left:3px solid #d18610;padding:7px 10px;margin:6px 0;font-size:.9em;line-height:1.5;color:#7a5000"><span style="flex-shrink:0;font-weight:900">⚠</span><div>${txt}</div></div>`;
+  const I=txt=>`<div style="display:flex;gap:8px;background:#eef4fb;border:1px solid #b8d4ea;border-left:3px solid #2e74b5;padding:7px 10px;margin:6px 0;font-size:.9em;line-height:1.5;color:#1a3a5c"><div style="flex-shrink:0;width:14px;height:14px;border-radius:50%;background:#2e74b5;color:#fff;font-size:.75em;font-weight:700;display:flex;align-items:center;justify-content:center">i</div><div>${txt}</div></div>`;
+  const clientLine=[v.clientCompany||t.clientRef,v.clientAddress||t.address].filter(Boolean).join(' — ');
+
+  switch(block.type){
+    case 'header': return`
+      <div style="display:flex;align-items:stretch;border:1px solid #ccc;margin-bottom:16pt">
+        <div style="flex:1;padding:8pt 12pt;border-right:1px solid #ccc">
+          <div style="font-size:.9em;font-weight:700;color:#1a4a7a;text-transform:uppercase;letter-spacing:.03em">Dossier technique — Usage interne</div>
+          <div style="font-size:.78em;color:#777;margin-top:2pt">${e2(clientLine)}</div>
+        </div>
+        <div style="padding:6pt 12pt;display:flex;align-items:center;justify-content:center;min-width:70pt">
+          <img src="${_pvCustomLogo||logoUrl}" onerror="this.src='${logoUrl}'" style="height:30pt;width:auto;max-width:80pt;object-fit:contain"/>
+        </div>
+      </div>`;
+
+    case 'title': return`
+      <div style="margin-bottom:14pt">
+        <div style="font-size:2em;font-weight:900;color:#1a3a5c;line-height:1.1;margin-bottom:4pt">DOSSIER TECHNIQUE D'INTERVENTION</div>
+        <div style="font-size:1em;color:#777">Usage interne — Équipe technique</div>
+      </div>`;
+
+    case 'ident':{
+      const rows=[
+        ['Client',v.clientCompany||t.clientRef],['Adresse',v.clientAddress||t.address],
+        ['Nature',v.need||t.context],['N° dossier',t.number],['Réf. commande',v.orderRef],
+        ['Durée estimée',t.planning.length?`${t.planning.length} jour${t.planning.length>1?'s':''} d'intervention`:''],
+        ['Chargé d\'affaires',t.manager||v.salesRef],
+        ['Contact site',v.clientContact?(v.clientContact+(v.clientPhone?' — '+v.clientPhone:'')):''],
+      ].filter(([,val])=>val&&val.trim());
+      if(!rows.length) return null;
+      return`<table style="width:100%;border-collapse:collapse;page-break-inside:avoid;margin-bottom:10pt">
+        ${rows.map(([k,val])=>`<tr>
+          <td style="padding:5pt 9pt;border:1px solid #ccc;background:#d0e4f7;width:33%;white-space:nowrap">${e2(k)}</td>
+          <td style="padding:5pt 9pt;border:1px solid #ccc;background:#fff">${e2(val)}</td>
+        </tr>`).join('')}
+      </table>`;
+    }
+
+    case 'conclu':{
+      const hasC=v.conclusion||v.instructions||v.suite||v.visePar;
+      const hasB=v.ecarts&&v.ecarts.filter(e=>e.impact==='bloquant').length;
+      if(!hasC&&!hasB) return null;
+      let h=`<div style="border:1px solid #b8d4ea;border-left:3px solid #1a6bc4;background:#f0f7ff;padding:9pt 12pt;margin-bottom:8pt">`;
+      h+=`<div style="font-size:.78em;font-weight:700;color:#1a4a7a;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6pt">Conclusion &amp; transmission — VPI</div>`;
+      if(v.suite) h+=`<div style="display:flex;gap:0;margin-bottom:3pt"><div style="color:#2e74b5;font-weight:700;font-size:.85em;min-width:100pt;text-transform:uppercase">Suite donnée</div><div>${e2(v.suite)}</div></div>`;
+      if(v.visePar) h+=`<div style="display:flex;gap:0;margin-bottom:3pt"><div style="color:#2e74b5;font-weight:700;font-size:.85em;min-width:100pt;text-transform:uppercase">Visé par</div><div>${e2(v.visePar)}</div></div>`;
+      if(v.conclusion) h+=`<div style="display:flex;gap:0;margin-bottom:3pt"><div style="color:#2e74b5;font-weight:700;font-size:.85em;min-width:100pt;text-transform:uppercase">Synthèse</div><div style="white-space:pre-wrap">${e2(v.conclusion)}</div></div>`;
+      if(v.instructions) h+=`<div style="display:flex;gap:0"><div style="color:#2e74b5;font-weight:700;font-size:.85em;min-width:100pt;text-transform:uppercase">Instructions</div><div style="white-space:pre-wrap">${e2(v.instructions)}</div></div>`;
+      h+=`</div>`;
+      if(hasB) v.ecarts.filter(e=>e.impact==='bloquant').forEach(ec=>{h+=W(`<strong>Point bloquant :</strong> ${e2(ec.constat)}${ec.action?' → '+e2(ec.action):''}`);});
+      return h;
+    }
+
+    case 'planning':{
+      if(!t.planning.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:12pt">${secNum}. Planning détaillé par journée</div>`;
+      t.planning.forEach((r,i)=>{
+        const taches=Array.isArray(r.taches)?r.taches.filter(x=>x.label.trim()):(r.tasks?r.tasks.split('\n').filter(l=>l.trim()).map(l=>({label:l})):[]);
+        let dateLabel='';
+        if(r.date){try{const dd=new Date(r.date+'T00:00:00');dateLabel=dd.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});dateLabel=dateLabel.charAt(0).toUpperCase()+dateLabel.slice(1);}catch{dateLabel=r.date;}}
+        const parts=[`Jour ${i+1}`,dateLabel||'',r.site?`Accès : ${r.site}`:''].filter(Boolean);
+        h+=`<div style="font-size:1.05em;font-weight:700;color:#c0532a;margin:12pt 0 5pt">${parts.join(' — ')}</div>`;
+        if(r.tech) h+=I(`Équipe : ${e2(r.tech)}`);
+        if(taches.length){
+          h+=`<table style="width:100%;border-collapse:collapse;margin-bottom:4pt;page-break-inside:avoid">
+            <thead><tr>
+              <th style="background:#2e74b5;color:#fff;padding:4pt 8pt;text-align:left;font-size:.88em;border:1pt solid #1e5f9f;width:28%">Tâche</th>
+              <th style="background:#2e74b5;color:#fff;padding:4pt 8pt;text-align:left;font-size:.88em;border:1pt solid #1e5f9f">Détail / Action</th>
+            </tr></thead><tbody>`;
+          taches.forEach((ta,ti)=>{
+            const parts2=ta.label.split(/\s+—\s+/);
+            const lbl=parts2.length>1?parts2[0]:'';
+            const det=parts2.length>1?parts2.slice(1).join(' — '):ta.label;
+            h+=`<tr style="background:${ti%2?'#f4f8fd':'#fff'}"><td style="padding:4pt 8pt;border:1pt solid #ccc;background:${ti%2?'#edf5fd':'#eaf2fb'};color:#1a3a5c;font-weight:500">${e2(lbl)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(det)}</td></tr>`;
+          });
+          h+=`</tbody></table>`;
+        }
+      });
+      return h;
+    }
+
+    case 'equip':{
+      if(!t.equipment.length&&!v.equipment.length) return null;
+      const renderChk=items=>`<table style="width:100%;border-collapse:collapse;margin-bottom:6pt;page-break-inside:avoid">
+        <thead><tr>
+          <th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;width:20pt;text-align:center">✓</th>
+          <th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em">Désignation</th>
+          <th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em;width:28%">Référence / Modèle</th>
+          <th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:center;font-size:.88em;width:7%">Qté</th>
+          <th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em;width:22%">Remarque</th>
+        </tr></thead><tbody>
+        ${items.map((r,i)=>`<tr style="background:${i%2?'#f4f8fd':'#fff'}">
+          <td style="padding:4pt 8pt;border:1pt solid #ccc;text-align:center;font-size:1.1em">☐</td>
+          <td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.name)}</td>
+          <td style="padding:4pt 8pt;border:1pt solid #ccc;font-size:.88em;color:#3a5a7a">${e2(r.code)}</td>
+          <td style="padding:4pt 8pt;border:1pt solid #ccc;text-align:center;font-weight:700">${e2(r.qty)}</td>
+          <td style="padding:4pt 8pt;border:1pt solid #ccc;font-size:.88em;color:#555">${e2(r.note)}</td>
+        </tr>`).join('')}
+        </tbody></table>`;
+      const techNames=new Set(t.equipment.map(x=>x.name+'|'+x.code));
+      const vpiExtra=v.equipment.filter(x=>!techNames.has(x.name+'|'+x.code));
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Matériels &amp; consommables — check-list</div>`;
+      if(t.equipment.length) h+=renderChk(t.equipment);
+      if(vpiExtra.length) h+=`<div style="font-size:.95em;font-weight:700;color:#2e74b5;margin:8pt 0 4pt;padding-bottom:3pt;border-bottom:1pt solid #d9e8f5">Matériel de pose (relevé VPI)</div>`+renderChk(vpiExtra);
+      if(!t.equipment.length&&v.equipment.length) h+=renderChk(v.equipment);
+      return h;
+    }
+
+    case 'cables':{
+      if(!v.cables.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Passages de câbles</div>`;
+      h+=`<table style="width:100%;border-collapse:collapse;margin-bottom:6pt;page-break-inside:avoid">
+        <thead><tr>${['Destination','De','Vers','Type','Long.','Chemin','État'].map(x=>`<th style="background:#2e74b5;color:#fff;padding:4pt 7pt;border:1pt solid #1e5f9f;text-align:left;font-size:.85em">${x}</th>`).join('')}</tr></thead><tbody>`;
+      v.cables.forEach((r,i)=>{
+        const [,,l]=CABLE_STATUS[r.status]||CABLE_STATUS['a_verifier'];
+        h+=`<tr style="background:${i%2?'#f4f8fd':'#fff'}"><td style="padding:4pt 7pt;border:1pt solid #ccc;font-weight:700;color:#1a4a7a">${e2(r.dest||'—')}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.from)}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.to)}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.type)}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.length)}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.path)}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${l}</td></tr>`;
+      });
+      return h+`</tbody></table>`;
+    }
+
+    case 'reseau':{
+      if(!t.network.length) return null;
+      let h=`<div style="font-size:.95em;font-weight:700;color:#2e74b5;margin:8pt 0 4pt;padding-bottom:3pt;border-bottom:1pt solid #d9e8f5">${secNum}. Configuration réseau</div>`;
+      h+=`<table style="width:100%;border-collapse:collapse;font-size:.88em;page-break-inside:avoid">
+        <thead><tr>${['Équipement','N° Série','IP','Masque','Passerelle','Login/Pass'].map(x=>`<th style="background:#2e74b5;color:#fff;padding:4pt 7pt;border:1pt solid #1e5f9f;text-align:left">${x}</th>`).join('')}</tr></thead><tbody>`;
+      t.network.forEach((r,i)=>{h+=`<tr style="background:${i%2?'#f4f8fd':'#fff'}"><td style="padding:4pt 7pt;border:1pt solid #ccc;font-weight:600">${e2(r.equipment)}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.serial)||'—'}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.ip)||'À compléter'}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.mask)||'255.255.255.0'}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.gateway)||'—'}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.credentials)||'—'}</td></tr>`;});
+      return h+`</tbody></table>`;
+    }
+
+    case 'prep':{
+      if(!v.prep||!v.prep.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Travaux préparatoires</div>`;
+      h+=`<table style="width:100%;border-collapse:collapse;page-break-inside:avoid"><thead><tr>${['Type','Description','Prise en charge','Qté','Remarque'].map(x=>`<th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em">${x}</th>`).join('')}</tr></thead><tbody>`;
+      v.prep.forEach((r,i)=>{h+=`<tr style="background:${i%2?'#f4f8fd':'#fff'}"><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.type)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.desc)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.charge)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc;text-align:center">${e2(r.qty)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.note)}</td></tr>`;});
+      return h+`</tbody></table>`;
+    }
+
+    case 'param':{
+      if(!t.notes4) return null;
+      const sn=v.prep&&v.prep.length?secNum:secNum;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Paramétrage &amp; mise en service</div>`;
+      const lines=t.notes4.split('\n').filter(l=>l.trim());
+      h+=`<ul style="margin:4pt 0 10pt;padding:0;list-style:none">`;
+      lines.forEach(l=>{
+        if(l.startsWith('⚠️')||l.toLowerCase().startsWith('attention')){h+=`</ul>${W(e2(l.replace(/^⚠️\s*/,'').trim()))}<ul style="margin:4pt 0 10pt;padding:0;list-style:none">`;}
+        else h+=`<li style="display:flex;gap:7pt;padding:2pt 0;align-items:baseline"><span style="color:#2e74b5;font-size:.7em;flex-shrink:0">▶</span>${e2(l)}</li>`;
+      });
+      return h+`</ul>`;
+    }
+
+    case 'photos':{
+      const techPh=S.photos.filter(p=>p.target==='tech'&&p.src);
+      const vpiPh=S.photos.filter(p=>p.target==='vpi'&&p.src);
+      const all=[...techPh,...vpiPh];
+      if(!all.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Photos de chantier</div>`;
+      h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10pt">`;
+      all.forEach(p=>{h+=`<div style="page-break-inside:avoid"><img src="${p.src}" style="width:100%;max-height:200px;object-fit:contain;border:1px solid #ccc;display:block"/>${p.caption?`<div style="font-size:.78em;color:#888;text-align:center;margin-top:3pt">${e2(p.caption)}</div>`:''}</div>`;});
+      return h+`</div>`;
+    }
+
+    case 'notes':{
+      const notes=S.notebookPages.filter(p=>p.target==='tech'&&p.content.trim());
+      if(!notes.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Notes techniques</div>`;
+      notes.forEach(n=>{
+        if(n.title) h+=`<div style="font-size:.95em;font-weight:700;color:#2e74b5;margin:8pt 0 4pt;padding-bottom:3pt;border-bottom:1pt solid #d9e8f5">${e2(n.title)}</div>`;
+        h+=`<p style="font-size:.9em;line-height:1.5;white-space:pre-wrap;margin:4pt 0">${e2(n.content)}</p>`;
+      });
+      return h;
+    }
+
+    case 'footer': return`
+      <div style="border-top:1pt solid #ccc;padding-top:6pt;margin-top:16pt;display:flex;justify-content:space-between;font-size:.78em;color:#888">
+        <span>OCI Connect Nancy — Confidentiel usage interne</span>
+        <span>Dossier technique · ${today()}</span>
+      </div>`;
+
+    case 'vpi_ident':{
+      const rows=[['Client',v.clientCompany],['Adresse',v.clientAddress],['N° commande',v.orderRef],
+        ['Date visite',v.visitDate],['Chargé d\'affaires',v.salesRef],
+        ['Contact',v.clientContact+(v.clientPhone?' — '+v.clientPhone:'')],
+        ['Nature du besoin',v.need]].filter(([,val])=>val&&val.trim());
+      if(!rows.length) return null;
+      return`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Identification</div>
+      <table style="width:100%;border-collapse:collapse;page-break-inside:avoid">
+        ${rows.map(([k,val])=>`<tr><td style="padding:5pt 9pt;border:1px solid #ccc;background:#d0e4f7;width:33%">${e2(k)}</td><td style="padding:5pt 9pt;border:1px solid #ccc">${e2(val)}</td></tr>`).join('')}
+      </table>`;
+    }
+    case 'vpi_faisab':{
+      if(!v.faisabilite&&!v.vigilance?.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Faisabilité &amp; vigilances</div>`;
+      if(v.faisabilite) h+=`<div style="font-size:1.1em;font-weight:700;color:#1a4a7a;margin-bottom:8pt">${e2(v.faisabilite)}</div>`;
+      v.vigilance?.filter(x=>x.description).forEach(x=>{h+=W(`<strong>${e2(x.label||'Vigilance')} :</strong> ${e2(x.description)}`);});
+      return h;
+    }
+    case 'vpi_cables':{
+      if(!v.cables?.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Passages de câbles</div>`;
+      h+=`<table style="width:100%;border-collapse:collapse;page-break-inside:avoid"><thead><tr>${['Destination','De','Vers','Type','Long.','Chemin'].map(x=>`<th style="background:#2e74b5;color:#fff;padding:4pt 7pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em">${x}</th>`).join('')}</tr></thead><tbody>`;
+      v.cables.forEach((r,i)=>{h+=`<tr style="background:${i%2?'#f4f8fd':'#fff'}"><td style="padding:4pt 7pt;border:1pt solid #ccc;font-weight:700;color:#1a4a7a">${e2(r.dest)}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.from)}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.to)}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.type)}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.length)}</td><td style="padding:4pt 7pt;border:1pt solid #ccc">${e2(r.path)}</td></tr>`;});
+      return h+`</tbody></table>`;
+    }
+    case 'vpi_prep':{if(!v.prep?.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Travaux préparatoires</div>`;
+      h+=`<table style="width:100%;border-collapse:collapse;page-break-inside:avoid"><thead><tr>${['Type','Description','Prise en charge','Qté'].map(x=>`<th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em">${x}</th>`).join('')}</tr></thead><tbody>`;
+      v.prep.forEach((r,i)=>{h+=`<tr style="background:${i%2?'#f4f8fd':'#fff'}"><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.type)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.desc)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.charge)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc;text-align:center">${e2(r.qty)}</td></tr>`;});
+      return h+`</tbody></table>`;
+    }
+    case 'vpi_equip':{if(!v.equipment?.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Matériel de pose</div>`;
+      h+=`<table style="width:100%;border-collapse:collapse;page-break-inside:avoid"><thead><tr>${['✓','Désignation','Référence','Qté'].map(x=>`<th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em">${x}</th>`).join('')}</tr></thead><tbody>`;
+      v.equipment.forEach((r,i)=>{h+=`<tr style="background:${i%2?'#f4f8fd':'#fff'}"><td style="padding:4pt 8pt;border:1pt solid #ccc;text-align:center">☐</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.name)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc;font-size:.88em">${e2(r.code)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc;text-align:center">${e2(r.qty)}</td></tr>`;});
+      return h+`</tbody></table>`;
+    }
+    case 'vpi_ecarts':{if(!v.ecarts?.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Écarts &amp; corrections</div>`;
+      v.ecarts.forEach(ec=>{h+=`<div style="border:1px solid #ccc;border-left:3px solid ${ec.impact==='bloquant'?'#c53737':'#d18610'};padding:7pt 10pt;margin-bottom:5pt;background:${ec.impact==='bloquant'?'#fff5f5':'#fffbea'}"><strong>${e2(ec.type)}</strong>: ${e2(ec.constat)}${ec.action?' → '+e2(ec.action):''}</div>`;});
+      return h;
+    }
+    case 'vpi_photos':{
+      const ph=S.photos.filter(p=>p.target==='vpi'&&p.src);
+      if(!ph.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Photos terrain</div>`;
+      h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10pt">`;
+      ph.forEach(p=>{h+=`<div><img src="${p.src}" style="width:100%;max-height:200px;object-fit:contain;border:1px solid #ccc;display:block"/>${p.caption?`<div style="font-size:.78em;color:#888;text-align:center;margin-top:3pt">${e2(p.caption)}</div>`:''}</div>`;});
+      return h+`</div>`;
+    }
+    case 'vpi_conclu':{
+      if(!v.conclusion&&!v.suite&&!v.visePar) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Conclusion &amp; transmission</div>`;
+      if(v.suite) h+=`<div style="display:flex;gap:0;margin-bottom:4pt"><div style="color:#2e74b5;font-weight:700;font-size:.88em;min-width:110pt;text-transform:uppercase">Suite donnée</div><div>${e2(v.suite)}</div></div>`;
+      if(v.visePar) h+=`<div style="display:flex;gap:0;margin-bottom:4pt"><div style="color:#2e74b5;font-weight:700;font-size:.88em;min-width:110pt;text-transform:uppercase">Visé par</div><div>${e2(v.visePar)}</div></div>`;
+      if(v.conclusion) h+=`<div style="background:#f7fbff;border:1px solid #d9e4f0;padding:8pt 12pt;margin-top:6pt;white-space:pre-wrap;font-size:.9em">${e2(v.conclusion)}</div>`;
+      return h;
+    }
+    case 'doe_infos':{
+      const rows=[['Référence DOE',d.ref],['Version',d.version],['Date remise',d.date],['Résumé',d.summary]].filter(([,val])=>val);
+      if(!rows.length) return null;
+      return`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Informations DOE</div>
+      <table style="width:100%;border-collapse:collapse;page-break-inside:avoid">${rows.map(([k,val])=>`<tr><td style="padding:5pt 9pt;border:1px solid #ccc;background:#d0e4f7;width:30%">${e2(k)}</td><td style="padding:5pt 9pt;border:1px solid #ccc">${e2(val)}</td></tr>`).join('')}</table>`;
+    }
+    case 'doe_docs':{if(!d.docs?.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Documents &amp; notices</div>`;
+      h+=`<table style="width:100%;border-collapse:collapse;page-break-inside:avoid"><thead><tr>${['Nom','Catégorie','Lié à'].map(x=>`<th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em">${x}</th>`).join('')}</tr></thead><tbody>`;
+      d.docs.forEach((r,i)=>{h+=`<tr style="background:${i%2?'#f4f8fd':'#fff'}"><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.name)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.category)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.linkedTo)}</td></tr>`;});
+      return h+`</tbody></table>`;
+    }
+    case 'doe_tests':{if(!d.tests?.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Recettage</div>`;
+      h+=`<table style="width:100%;border-collapse:collapse;page-break-inside:avoid"><thead><tr>${['Test','Équipement','Résultat','Valeur'].map(x=>`<th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em">${x}</th>`).join('')}</tr></thead><tbody>`;
+      d.tests.forEach((r,i)=>{h+=`<tr style="background:${i%2?'#f4f8fd':'#fff'}"><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.test)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.equip)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc;font-weight:700">${e2(r.result)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.value)}</td></tr>`;});
+      return h+`</tbody></table>`;
+    }
+    case 'doe_sheets':{if(!d.techSheets?.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Fiches techniques</div>`;
+      h+=`<table style="width:100%;border-collapse:collapse;page-break-inside:avoid"><thead><tr>${['Référence','Désignation','Famille','Note'].map(x=>`<th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em">${x}</th>`).join('')}</tr></thead><tbody>`;
+      d.techSheets.forEach((r,i)=>{h+=`<tr style="background:${i%2?'#f4f8fd':'#fff'}"><td style="padding:4pt 8pt;border:1pt solid #ccc;font-size:.88em">${e2(r.code)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.name)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.family)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.note)}</td></tr>`;});
+      return h+`</tbody></table>`;
+    }
+    case 'doe_photos':{
+      const ph=S.photos.filter(p=>p.target==='doe'&&p.src);
+      if(!ph.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Photos</div>`;
+      h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10pt">`;
+      ph.forEach(p=>{h+=`<div><img src="${p.src}" style="width:100%;max-height:200px;object-fit:contain;border:1px solid #ccc;display:block"/>${p.caption?`<div style="font-size:.78em;color:#888;text-align:center;margin-top:3pt">${e2(p.caption)}</div>`:''}</div>`;});
+      return h+`</div>`;
+    }
+    default: return null;
+  }
+}
+
+// ── Liste des blocs (panneau gauche)
+function pvRenderBlocksList(){
+  const list=document.getElementById('pv-blocks-list');
+  if(!list) return;
+  const blocks=pvGetBlocks(_pvMod);
+  list.innerHTML=blocks.map((b,i)=>`
+    <div data-bid="${b.id}"
+      onclick="pvSelectBlock('${b.id}')"
+      draggable="${!b.locked}"
+      ondragstart="pvListDragStart(event,'${b.id}')"
+      ondragover="pvListDragOver(event)"
+      ondrop="pvListDrop(event,'${b.id}')"
+      style="display:flex;align-items:center;gap:8px;padding:8px 10px;margin-bottom:3px;border-radius:7px;cursor:pointer;
+        background:${_pvSelectedBlock===b.id?'rgba(26,106,196,.25)':'rgba(255,255,255,.04)'};
+        border:1px solid ${_pvSelectedBlock===b.id?'#1a6bc4':'rgba(255,255,255,.06)'};
+        transition:all .12s;user-select:none;">
+      ${!b.locked?`<span style="color:#374151;font-size:11px;cursor:grab;flex-shrink:0">⠿</span>`:`<span style="color:#1f2937;font-size:11px;flex-shrink:0">🔒</span>`}
+      <button onclick="pvToggleBlock('${b.id}');event.stopPropagation()" style="width:22px;height:22px;border:none;border-radius:4px;cursor:pointer;flex-shrink:0;
+        background:${b.visible?'rgba(46,116,181,.3)':'rgba(255,255,255,.08)'};
+        color:${b.visible?'#60a5fa':'#475569'};font-size:11px;display:flex;align-items:center;justify-content:center;">
+        ${b.visible?'👁':'🚫'}
       </button>
-      <button onclick="pvEditTitle('${s.id}')" title="Modifier le titre"
-        style="border:none;background:none;cursor:pointer;font-size:13px;padding:2px 3px;flex-shrink:0;color:var(--muted)">✏</button>
-      <button onclick="pvDelete('${s.id}')" title="Supprimer cette section"
-        style="border:none;background:none;cursor:pointer;font-size:13px;padding:2px 3px;flex-shrink:0;color:var(--danger)">✕</button>
+      <span style="flex:1;font-size:12px;color:${_pvSelectedBlock===b.id?'#93c5fd':'#94a3b8'};font-weight:${_pvSelectedBlock===b.id?700:400};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${b.label}</span>
+      <div style="display:flex;flex-direction:column;gap:1px;flex-shrink:0">
+        ${i>0&&!b.locked?`<button onclick="pvMoveBlock('${b.id}',-1);event.stopPropagation()" style="width:16px;height:13px;border:none;border-radius:2px;background:rgba(255,255,255,.08);color:#64748b;font-size:8px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center">▲</button>`:'<div style="height:13px;width:16px"></div>'}
+        ${i<blocks.length-1&&!b.locked?`<button onclick="pvMoveBlock('${b.id}',1);event.stopPropagation()" style="width:16px;height:13px;border:none;border-radius:2px;background:rgba(255,255,255,.08);color:#64748b;font-size:8px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center">▼</button>`:'<div style="height:13px;width:16px"></div>'}
+      </div>
     </div>`).join('');
 }
 
-// Drag & drop natif
-function pvDragStart(e,id){
-  _pvDragSrc=id;
-  e.dataTransfer.effectAllowed='move';
-  e.currentTarget.style.opacity='0.4';
-}
-function pvDragOver(e,id){
-  e.preventDefault();
-  e.dataTransfer.dropEffect='move';
-  const el=qs(`pvs-${id}`);
-  if(el&&id!==_pvDragSrc) el.style.borderColor='var(--primary)';
-}
-function pvDrop(e,targetId){
-  e.preventDefault();
-  if(!_pvDragSrc||_pvDragSrc===targetId) return;
-  const secs=getPvSections(_pvModule);
-  const srcIdx=secs.findIndex(s=>s.id===_pvDragSrc);
-  const tgtIdx=secs.findIndex(s=>s.id===targetId);
-  if(srcIdx<0||tgtIdx<0) return;
-  const [moved]=secs.splice(srcIdx,1);
-  secs.splice(tgtIdx,0,moved);
-  renderPvSectionsList();
-  renderPvPreview();
-}
-function pvDragEnd(){
-  _pvDragSrc=null;
-  // Reset borders
-  getPvSections(_pvModule).forEach(s=>{
-    const el=qs(`pvs-${s.id}`);
-    if(el) el.style.borderColor='var(--line)';
-    el && (el.style.opacity= s.visible?'1':'0.4');
+// ── Sélection
+function pvSelectBlock(id){
+  _pvSelectedBlock=id;
+  pvRenderBlocksList();
+  pvRenderProps(id);
+  document.querySelectorAll('#pv-blocks-container > div').forEach(el=>{
+    el.style.outline=el.dataset.bid===id?'2px solid #1a6bc4':'none';
   });
 }
 
-function pvToggle(id){
-  const secs=getPvSections(_pvModule);
-  const s=secs.find(x=>x.id===id);
-  if(s){s.visible=!s.visible;renderPvSectionsList();renderPvPreview();}
-}
-function pvDelete(id){
-  if(!confirm('Supprimer cette section de la prévisualisation ?')) return;
-  _pvSections[_pvModule]=getPvSections(_pvModule).filter(s=>s.id!==id);
-  renderPvSectionsList();renderPvPreview();
-}
-function pvEditTitle(id){
-  const secs=getPvSections(_pvModule);
-  const s=secs.find(x=>x.id===id);if(!s) return;
-  const current=s.customTitle||s.title;
-  const newTitle=prompt('Nouveau titre de section :',current);
-  if(newTitle!==null){s.customTitle=newTitle.trim()||s.title;}
-  renderPvSectionsList();renderPvPreview();
-}
-function resetPreviewSections(){
-  if(!confirm('Réinitialiser l\'ordre et la visibilité des sections ?')) return;
-  _pvSections[_pvModule]=null;
-  renderPvSectionsList();renderPvPreview();
-}
+// ── Panneau propriétés
+function pvRenderProps(id){
+  const panel=document.getElementById('pv-props');
+  if(!panel) return;
+  if(!id){panel.innerHTML=`<div style="font-size:12px;color:#475569;text-align:center;margin-top:40px;line-height:1.7">Sélectionnez un bloc<br>pour éditer ses propriétés</div>`;return;}
+  const blocks=pvGetBlocks(_pvMod);
+  const block=blocks.find(b=>b.id===id);
+  if(!block){panel.innerHTML='';return;}
+  const s=block.style||{};
+  const row=(label,ctrl)=>`<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">${label}</div>${ctrl}</div>`;
+  const select=(opts,val,attr)=>`<select ${attr} style="width:100%;box-sizing:border-box;background:#1e2535;border:1px solid #374151;border-radius:6px;color:#e2e8f0;padding:6px 9px;font-size:12px;font-family:inherit">${opts.map(([v2,l])=>`<option value="${v2}"${v2===val?' selected':''}>${l}</option>`).join('')}</select>`;
 
-// ── Rendu live (panneau droit) ──
-function renderPvPreview(){
-  const zone=qs('preview-render');if(!zone) return;
-  const secs=getPvSections(_pvModule).filter(s=>s.visible);
   const logoUrl='https://r4c4st.github.io/vpi/oci_logo_transparent.png';
-  const labels={vpi:'VPI · Visite Préalable à l\'Installation',tech:'Dossier technique',doe:'DOE · Dossier des Ouvrages Exécutés'};
 
-  let html=`<div style="padding:24px 28px">`;
-  // En-tête
-  html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:3px solid #0f4f84;margin-bottom:20px">
-    <div style="display:flex;align-items:center;gap:12px">
-      <img src="${logoUrl}" onerror="this.style.display='none'" style="height:38px"/>
-      <div><div style="font-size:16px;font-weight:700;color:#0f4f84">OCI Connect</div><div style="font-size:10px;color:#6a7c92">Solutions courant faible & réseaux</div></div>
+  panel.innerHTML=`
+    <div style="padding-bottom:12px;border-bottom:1px solid #1e2535;margin-bottom:14px">
+      <div style="font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:2px">${block.label}</div>
+      <div style="font-size:10px;color:#475569">Bloc ${block.locked?'verrouillé':'modifiable'}</div>
     </div>
-    <div style="text-align:right;font-size:11px;color:#6a7c92">
-      <div>${labels[_pvModule]||''}</div><div style="margin-top:2px">${new Date().toLocaleDateString('fr-FR')}</div>
-    </div>
-  </div>`;
 
-  // Sections visibles
-  secs.forEach(s=>{
-    const title=s.customTitle||s.title;
-    const content=s.fn?s.fn():'';
-    if(!content) return;
-    html+=`<div style="margin-bottom:22px;page-break-inside:avoid">
-      <div style="font-size:13px;font-weight:800;color:#0f4f84;text-transform:uppercase;letter-spacing:.04em;
-        border-bottom:1px solid #d9e4f0;padding-bottom:5px;margin-bottom:10px">${esc(title)}</div>
-      ${content}
+    ${block.id==='hdr'?`
+    <div style="margin-bottom:14px;padding:12px;background:#0d1117;border:1px solid #1e2535;border-radius:8px">
+      <div style="font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px">Logo de l'en-tête</div>
+      <div id="pv-logo-wrap" style="background:#fff;border:1px solid #374151;border-radius:6px;padding:8px;display:flex;align-items:center;justify-content:center;height:52px;margin-bottom:9px;overflow:hidden">
+        <img id="pv-logo-preview" src="${_pvCustomLogo||logoUrl}" style="max-height:40px;max-width:130px;object-fit:contain" onerror="this.src='${logoUrl}'"/>
+      </div>
+      <input type="file" id="pv-logo-input" accept="image/*" style="display:none" onchange="pvUploadLogo(this)"/>
+      <button onclick="document.getElementById('pv-logo-input').click()" style="width:100%;padding:7px;border:1px solid #374151;border-radius:6px;background:#1e2535;color:#94a3b8;font-size:11px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;box-sizing:border-box">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Choisir un logo (PNG, JPG, SVG)
+      </button>
+      ${_pvCustomLogo?`<button onclick="pvRemoveLogo()" style="width:100%;margin-top:5px;padding:6px;border:1px solid #374151;border-radius:6px;background:#1e2535;color:#ef4444;font-size:11px;cursor:pointer;font-family:inherit;box-sizing:border-box">✕ Retirer le logo personnalisé</button>`:''}
+    </div>`:''}
+
+    ${row('Police',select([['Arial','Arial'],['IBM Plex Sans','IBM Plex Sans'],['Georgia','Georgia'],['Helvetica','Helvetica'],['Times New Roman','Times New Roman'],['Courier New','Courier New']],s.fontFamily||'Arial',`onchange="pvSetStyle('${id}','fontFamily',this.value)"`))}
+
+    ${row('Taille de police (pt)',`<div style="display:flex;align-items:center;gap:8px">
+      <input type="range" min="6" max="18" value="${s.fontSize||9}" step="1" id="sl_fs_${id}" oninput="pvSetStyle('${id}','fontSize',+this.value);document.getElementById('sl_fs_${id}_v').value=this.value" style="flex:1;accent-color:#1a6bc4"/>
+      <input type="number" id="sl_fs_${id}_v" value="${s.fontSize||9}" min="6" max="18" step="1" oninput="pvSetStyle('${id}','fontSize',+this.value);document.getElementById('sl_fs_${id}').value=this.value" style="width:50px;background:#1e2535;border:1px solid #374151;border-radius:5px;color:#e2e8f0;padding:4px 6px;font-size:11px;font-family:inherit;text-align:center"/>
+    </div>`)}
+
+    ${row('Couleur du texte',`<div style="display:flex;gap:8px;align-items:center">
+      <input type="color" value="${s.color||'#1a1a1a'}" onchange="pvSetStyle('${id}','color',this.value)" style="width:40px;height:32px;border:1px solid #374151;border-radius:6px;background:#1e2535;cursor:pointer;padding:2px"/>
+      <span style="font-size:11px;color:#64748b">${s.color||'#1a1a1a'}</span>
+    </div>`)}
+
+    ${row('Opacité (%)',`<div style="display:flex;align-items:center;gap:8px">
+      <input type="range" min="10" max="100" value="${Math.round((s.opacity||1)*100)}" step="1" id="sl_op_${id}" oninput="pvSetStyle('${id}','opacity',this.value/100);document.getElementById('sl_op_${id}_v').value=this.value" style="flex:1;accent-color:#1a6bc4"/>
+      <input type="number" id="sl_op_${id}_v" value="${Math.round((s.opacity||1)*100)}" min="10" max="100" step="1" oninput="pvSetStyle('${id}','opacity',+this.value/100);document.getElementById('sl_op_${id}').value=this.value" style="width:50px;background:#1e2535;border:1px solid #374151;border-radius:5px;color:#e2e8f0;padding:4px 6px;font-size:11px;font-family:inherit;text-align:center"/>
+    </div>`)}
+
+    ${row('Espacement bas (pt)',`<div style="display:flex;align-items:center;gap:8px">
+      <input type="range" min="0" max="200" value="${s.spacing||6}" step="1" id="sl_sp_${id}" oninput="pvSetStyle('${id}','spacing',+this.value);document.getElementById('sl_sp_${id}_v').value=this.value" style="flex:1;accent-color:#1a6bc4"/>
+      <input type="number" id="sl_sp_${id}_v" value="${s.spacing||6}" min="0" max="200" step="1" oninput="pvSetStyle('${id}','spacing',+this.value);document.getElementById('sl_sp_${id}').value=this.value" style="width:54px;background:#1e2535;border:1px solid #374151;border-radius:5px;color:#e2e8f0;padding:4px 6px;font-size:11px;font-family:inherit;text-align:center"/>
+      <span style="font-size:10px;color:#475569">pt</span>
+    </div>`)}
+
+    ${row('Fond du bloc',`<div style="display:flex;gap:8px;align-items:center">
+      <input type="color" value="${s.bgColor==='transparent'?'#ffffff':s.bgColor||'#ffffff'}" onchange="pvSetStyle('${id}','bgColor',this.value)" style="width:40px;height:32px;border:1px solid #374151;border-radius:6px;background:#1e2535;cursor:pointer;padding:2px"/>
+      <button onclick="pvSetStyle('${id}','bgColor','transparent')" style="padding:4px 8px;border:1px solid #374151;border-radius:5px;background:#1e2535;color:#64748b;font-size:10px;cursor:pointer;font-family:inherit">Transparent</button>
+    </div>`)}
+
+    ${row('Couleur bordure',`<div style="display:flex;gap:8px;align-items:center">
+      <input type="color" value="${s.borderColor==='transparent'?'#cccccc':s.borderColor||'#cccccc'}" onchange="pvSetStyle('${id}','borderColor',this.value)" style="width:40px;height:32px;border:1px solid #374151;border-radius:6px;background:#1e2535;cursor:pointer;padding:2px"/>
+      <button onclick="pvSetStyle('${id}','borderColor','transparent')" style="padding:4px 8px;border:1px solid #374151;border-radius:5px;background:#1e2535;color:#64748b;font-size:10px;cursor:pointer;font-family:inherit">Aucune</button>
+    </div>`)}
+
+    ${row('Rayon bordure (px)',`<div style="display:flex;align-items:center;gap:8px">
+      <input type="range" min="0" max="20" value="${s.borderRadius||0}" step="1" id="sl_br_${id}" oninput="pvSetStyle('${id}','borderRadius',+this.value);document.getElementById('sl_br_${id}_v').value=this.value" style="flex:1;accent-color:#1a6bc4"/>
+      <input type="number" id="sl_br_${id}_v" value="${s.borderRadius||0}" min="0" max="20" step="1" oninput="pvSetStyle('${id}','borderRadius',+this.value);document.getElementById('sl_br_${id}').value=this.value" style="width:50px;background:#1e2535;border:1px solid #374151;border-radius:5px;color:#e2e8f0;padding:4px 6px;font-size:11px;font-family:inherit;text-align:center"/>
+      <span style="font-size:10px;color:#475569">px</span>
+    </div>`)}
+
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid #1e2535;display:flex;flex-direction:column;gap:6px">
+      <button onclick="pvSaveLayout('${_pvMod}')" style="width:100%;padding:8px;border:none;border-radius:7px;background:#0f4f84;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">💾 Sauvegarder la mise en page</button>
+      <button onclick="pvResetBlockStyle('${id}')" style="width:100%;padding:8px;border:1px solid #374151;border-radius:7px;background:#1e2535;color:#64748b;font-size:12px;cursor:pointer;font-family:inherit">↺ Réinitialiser ce bloc</button>
     </div>`;
-  });
-
-  // Pied de page
-  html+=`<div style="margin-top:24px;padding-top:9px;border-top:1px solid #d9e4f0;display:flex;justify-content:space-between;font-size:10px;color:#6a7c92">
-    <span>OCI Connect Nancy — Confidentiel</span><span>${labels[_pvModule]||''} · ${new Date().toLocaleDateString('fr-FR')}</span>
-  </div>`;
-  html+=`</div>`;
-  zone.innerHTML=html;
 }
 
-// ── Fonctions de contenu par section ──
-// Helpers
-function pvField(k,v){if(!v) return '';return`<div style="display:flex;gap:8px;margin:3px 0;font-size:11px"><span style="font-weight:700;color:#6a7c92;min-width:130px;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em;font-size:10px">${esc(k)}</span><span style="color:#1a2536">${esc(v)}</span></div>`;}
-function pvTable(headers,rows){
-  if(!rows.length) return '';
-  return`<table style="width:100%;border-collapse:collapse;font-size:11px;margin:6px 0">
-    <tr>${headers.map(h=>`<th style="background:#f4f8fd;padding:6px 8px;text-align:left;font-weight:700;border:1px solid #d9e4f0;font-size:10px;color:#365170;text-transform:uppercase;letter-spacing:.04em">${h}</th>`).join('')}</tr>
-    ${rows.map((r,i)=>`<tr>${r.map(c=>`<td style="padding:5px 8px;border:1px solid #d9e4f0;background:${i%2?'#f8fbff':'#fff'}">${c||'—'}</td>`).join('')}</tr>`).join('')}
-  </table>`;
-}
-function pvPhotos(target,max=4){
-  const photos=S.photos.filter(p=>p.target===target&&p.src).slice(0,max);
-  if(!photos.length) return '';
-  return`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0">
-    ${photos.map(p=>`<div><img src="${p.src}" style="width:100%;max-height:180px;object-fit:cover;border-radius:5px;border:1px solid #d9e4f0"/>${p.caption?`<div style="font-size:10px;color:#6a7c92;text-align:center;margin-top:3px">${esc(p.caption)}</div>`:''}</div>`).join('')}
-  </div>`;
-}
-function pvWarnBox(txt){return`<div style="background:#fff3e0;border:1px solid #f5c080;border-radius:5px;padding:8px 12px;font-size:11px;color:#8a4a00;margin:5px 0">⚠️ ${txt}</div>`;}
-function pvInfoBox(txt){return`<div style="background:#e3f2fd;border:1px solid #b8d4ea;border-radius:5px;padding:8px 12px;font-size:11px;color:#1a3a5c;margin:5px 0">ℹ️ ${txt}</div>`;}
-
-// ── VPI sections ──
-function pvVpiIdent(){
-  const v=S.vpi;
-  let h=pvField('N° commande',v.orderRef)+pvField('Date visite',v.visitDate)+pvField('Chargé d\'affaires',v.salesRef)+pvField('Client / Société',v.clientCompany)+pvField('Interlocuteur',v.clientContact)+pvField('Téléphone',v.clientPhone)+pvField('Email',v.clientEmail)+pvField('Adresse',v.clientAddress);
-  if(v.need) h+=`<div style="margin-top:8px;font-size:11px;color:#1a2536;background:#f7fbff;border:1px solid #d9e4f0;border-radius:5px;padding:8px">${esc(v.need)}</div>`;
-  return h||null;
-}
-function pvVpiFaisab(){
-  const v=S.vpi;
-  const [,,fl]=FAISAB[v.faisabiliteStatus||'']||FAISAB[''];
-  let h='';
-  if(v.faisabiliteStatus) h+=`<div style="margin-bottom:8px"><span style="font-size:11px;font-weight:700;background:#e8f5e9;color:#1b5e20;padding:4px 10px;border-radius:999px">${fl}</span></div>`;
-  if(v.faisabilite) h+=`<div style="font-size:11px;color:#1a2536;margin-bottom:8px;white-space:pre-wrap">${esc(v.faisabilite)}</div>`;
-  if(v.vigilance.length){
-    h+=pvTable(['Criticité','Description','Zone','Action requise'],
-      v.vigilance.map(r=>{const[,,l]=VIGILANCE_LEVELS[r.level]||VIGILANCE_LEVELS['warning'];return[l,r.desc,r.zone,r.action];}));
-  }
-  return h||null;
-}
-function pvVpiCables(){
-  const v=S.vpi;if(!v.cables.length) return null;
-  let h=pvTable(['Destination','De','Vers','Type câble','Long.','Chemin','État'],
-    v.cables.map(r=>{const[,,l]=CABLE_STATUS[r.status]||CABLE_STATUS['a_verifier'];return[r.dest,r.from,r.to,r.type,r.length,r.path,l];}));
-  // Photos câbles
-  const withPhotos=v.cables.filter(c=>c.photos&&c.photos.length);
-  withPhotos.forEach(c=>{
-    h+=`<div style="margin-top:10px"><div style="font-size:11px;font-weight:700;color:#1a5aaa;margin-bottom:5px">${esc(c.dest||'Câble')} — ${esc(c.from||'?')} → ${esc(c.to||'?')}</div>`;
-    h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">`;
-    c.photos.slice(0,4).forEach(p=>{h+=`<img src="${p.src}" style="width:100%;max-height:150px;object-fit:cover;border-radius:5px;border:1px solid #d9e4f0"/>`;});
-    h+=`</div></div>`;
-  });
-  return h;
-}
-function pvVpiPrep(){
-  const v=S.vpi;
-  const checks=Object.entries(v.prepChecks||{}).filter(([,on])=>on).map(([k])=>{const found=PREP_CHECKLIST.find(c=>c.key===k);return found?`${found.icon} ${found.label}`:k;});
-  let h='';
-  if(checks.length) h+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">${checks.map(c=>`<span style="padding:3px 9px;background:#e8f2ff;color:#0f4f84;border-radius:999px;font-size:11px;font-weight:600">${c}</span>`).join('')}</div>`;
-  if(v.prep.length) h+=pvTable(['Type','Description / localisation','Prise en charge','Qté'],v.prep.map(r=>[r.type,r.desc,r.charge,r.qty]));
-  return h||null;
-}
-function pvVpiEquip(){
-  const v=S.vpi;if(!v.equipment.length) return null;
-  return pvTable(['Référence','Désignation','Qté','Unité','Note'],v.equipment.map(r=>[r.code,r.name,r.qty,r.unit,r.note]));
-}
-function pvVpiEcarts(){
-  const v=S.vpi;if(!v.ecarts.length) return null;
-  return pvTable(['Type','Réf. devis','Constat terrain','Impact','Action'],
-    v.ecarts.map(r=>{const[,,l]=ECART_IMPACTS[r.impact]||ECART_IMPACTS['neutre'];return[r.type,r.devisRef,r.constat,l,r.action];}));
-}
-function pvVpiPhotos(){return pvPhotos('vpi',8)||null;}
-function pvVpiConclu(){
-  const v=S.vpi;
-  let h=pvField('Suite donnée',v.suite)+pvField('Visé par',v.visePar);
-  if(v.conclusion) h+=`<div style="margin-top:6px;font-size:11px;white-space:pre-wrap;background:#f7fbff;border:1px solid #d9e4f0;border-radius:5px;padding:8px">${esc(v.conclusion)}</div>`;
-  if(v.instructions) h+=`<div style="margin-top:6px;font-size:11px;white-space:pre-wrap;background:#fff8e6;border:1px solid #f5c080;border-radius:5px;padding:8px">${esc(v.instructions)}</div>`;
-  return h||null;
-}
-function pvVpiNotes(){
-  const notes=S.notebookPages.filter(p=>p.target==='vpi'&&p.content.trim());
-  if(!notes.length) return null;
-  return notes.map(n=>`<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;margin-bottom:3px">${esc(n.title)}</div><div style="font-size:11px;white-space:pre-wrap;color:#365170">${esc(n.content)}</div></div>`).join('');
+function pvSetStyle(id,prop,val){
+  const block=pvGetBlocks(_pvMod).find(b=>b.id===id);
+  if(!block) return;
+  if(!block.style) block.style={};
+  block.style[prop]=val;
+  pvRender();
+  pvAutoSave();
 }
 
-// ── DT sections ──
-function pvTechGarde(){
-  const v=S.vpi,t=S.tech;
-  let h=pvField('Client',v.clientCompany||t.clientRef)+pvField('Adresse',v.clientAddress||t.address)+pvField('N° dossier',t.number)+pvField('Réf. commande',v.orderRef||t.clientRef)+pvField('Chargé d\'affaires',t.manager||v.salesRef)+pvField('Contact site',v.clientContact+(v.clientPhone?' — '+v.clientPhone:''));
-  if(t.planning.length) h+=pvField('Durée estimée',`${t.planning.length} jour${t.planning.length>1?'s':''} d'intervention`);
-  if(t.context) h+=`<div style="margin-top:8px;font-size:11px;background:#f7fbff;border:1px solid #d9e4f0;border-radius:5px;padding:8px">${esc(t.context)}</div>`;
-  return h||null;
-}
-function pvTechPlanning(){
-  const t=S.tech;if(!t.planning.length) return null;
-  return pvTable(['Date','Technicien(s)','Tâches prévues','Zone / site'],t.planning.map(r=>[r.date,r.tech,r.tasks,r.site]));
-}
-function pvTechEquip(){
-  const t=S.tech;if(!t.equipment.length) return null;
-  return`<table style="width:100%;border-collapse:collapse;font-size:11px;margin:6px 0">
-    <tr><th style="background:#2e74b5;color:#fff;padding:6px 8px;text-align:left;border:1px solid #1e5f9f;font-size:10px;width:30px">✓</th>
-    <th style="background:#2e74b5;color:#fff;padding:6px 8px;text-align:left;border:1px solid #1e5f9f">Désignation</th>
-    <th style="background:#2e74b5;color:#fff;padding:6px 8px;text-align:left;border:1px solid #1e5f9f">Référence</th>
-    <th style="background:#2e74b5;color:#fff;padding:6px 8px;text-align:left;border:1px solid #1e5f9f">Qté</th>
-    <th style="background:#2e74b5;color:#fff;padding:6px 8px;text-align:left;border:1px solid #1e5f9f">Remarque</th></tr>
-    ${t.equipment.map((r,i)=>`<tr><td style="padding:5px 8px;border:1px solid #d9e4f0;text-align:center;background:${i%2?'#f8fbff':'#fff'}">☐</td>
-    <td style="padding:5px 8px;border:1px solid #d9e4f0;background:${i%2?'#f8fbff':'#fff'}">${esc(r.name)}</td>
-    <td style="padding:5px 8px;border:1px solid #d9e4f0;background:${i%2?'#f8fbff':'#fff'}">${esc(r.code)}</td>
-    <td style="padding:5px 8px;border:1px solid #d9e4f0;background:${i%2?'#f8fbff':'#fff'}">${esc(r.qty)} ${esc(r.unit)}</td>
-    <td style="padding:5px 8px;border:1px solid #d9e4f0;background:${i%2?'#f8fbff':'#fff'}">${esc(r.note)}</td></tr>`).join('')}
-  </table>`;
-}
-function pvTechReseau(){
-  const t=S.tech;if(!t.network.length) return null;
-  return pvTable(['Équipement','N° Série','Adresse IP','Masque','Passerelle','Login/Pass'],t.network.map(r=>[r.equipment,r.serial,r.ip||'À compléter',r.mask,r.gateway,r.credentials]));
-}
-function pvTechCables(){
-  const v=S.vpi;if(!v.cables.length) return null;
-  return pvVpiCables();
-}
-function pvTechPrep(){return pvVpiPrep();}
-function pvTechParam(){
-  const t=S.tech;if(!t.notes4) return null;
-  return`<div style="font-size:11px;white-space:pre-wrap;line-height:1.6">${esc(t.notes4)}</div>`;
-}
-function pvTechPhotos(){
-  const p=pvPhotos('tech',6);const p2=pvPhotos('vpi',4);
-  return(p||'')+(p2||'')||null;
-}
-function pvTechNotes(){
-  const notes=S.notebookPages.filter(p=>p.target==='tech'&&p.content.trim());
-  if(!notes.length) return null;
-  return notes.map(n=>`<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;margin-bottom:3px">${esc(n.title)}</div><div style="font-size:11px;white-space:pre-wrap;color:#365170">${esc(n.content)}</div></div>`).join('');
+function pvResetBlockStyle(id){
+  const block=pvGetBlocks(_pvMod).find(b=>b.id===id);
+  if(!block) return;
+  block.style={fontFamily:'Arial',fontSize:9,color:'#1a1a1a',opacity:1,spacing:6,bgColor:'transparent',borderColor:'transparent',borderRadius:0};
+  pvRenderProps(id);pvRender();pvAutoSave();
 }
 
-// ── DOE sections ──
-function pvDoeInfos(){
-  const d=S.doe,t=S.tech;
-  let h=pvField('Référence DOE',d.ref)+pvField('Version',d.version)+pvField('Date remise',d.date)+pvField('Contact client',t.contact);
-  if(d.summary) h+=`<div style="margin-top:6px;font-size:11px;background:#f7fbff;border:1px solid #d9e4f0;border-radius:5px;padding:8px">${esc(d.summary)}</div>`;
-  return h||null;
-}
-function pvDoeDocs(){
-  const d=S.doe;if(!d.docs.length) return null;
-  return pvTable(['Nom','Catégorie','Lié à'],d.docs.map(r=>[r.name,r.category,r.linkedTo]));
-}
-function pvDoeRecette(){
-  const d=S.doe;if(!d.tests.length) return null;
-  return pvTable(['Test','Équipement','Résultat','Valeur'],d.tests.map(r=>[r.test,r.equip,`<strong style="color:${r.result==='OK'?'#1b7a55':r.result==='NOK'?'#c53030':'#6a7c92'}">${esc(r.result)}</strong>`,r.value]));
-}
-function pvDoeFiches(){
-  const d=S.doe;if(!d.techSheets.length) return null;
-  return pvTable(['Référence','Désignation','Famille','Fiche','Note'],d.techSheets.map(r=>[r.code,r.name,r.family,r.fileName?`📎 ${r.fileName}`:'—',r.note]));
-}
-function pvDoePhotos(){return pvPhotos('doe',8)||null;}
-function pvDoeNotes(){
-  const notes=S.notebookPages.filter(p=>p.target==='doe'&&p.content.trim());
-  if(!notes.length) return null;
-  return notes.map(n=>`<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;margin-bottom:3px">${esc(n.title)}</div><div style="font-size:11px;white-space:pre-wrap;color:#365170">${esc(n.content)}</div></div>`).join('');
+// ── Logo upload
+function pvUploadLogo(input){
+  const file=input.files?.[0];if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    _pvCustomLogo=e.target.result;
+    const prev=document.getElementById('pv-logo-preview');
+    if(prev) prev.src=_pvCustomLogo;
+    pvRender();
+    pvAutoSave();
+    pvRenderProps(_pvSelectedBlock);
+  };
+  reader.readAsDataURL(file);
 }
 
-function printFromPreview(){
-  const secs=getPvSections(_pvModule).filter(s=>s.visible);
-  const logoUrl='https://r4c4st.github.io/vpi/oci_logo_transparent.png';
-  const labels={vpi:'VPI · Visite Préalable à l\'Installation',tech:'Dossier technique',doe:'DOE · Dossier des Ouvrages Exécutés'};
-  let html=`<div class="print-doc"><div class="print-hdr">
-    <div class="print-hdr-brand"><img class="print-hdr-logo" src="${logoUrl}" onerror="this.style.display='none'"/><div><div style="font-size:18px;font-weight:700;color:#0f4f84">OCI Connect</div><div style="font-size:11px;color:#6a7c92">Solutions courant faible & réseaux</div></div></div>
-    <div class="print-hdr-title"><h1>${labels[_pvModule]||''}</h1></div>
-    <div class="print-hdr-meta"><div>${new Date().toLocaleDateString('fr-FR')}</div><div style="font-weight:700;color:#0f4f84">OCI Connect Nancy</div></div>
-  </div>`;
-  secs.forEach(s=>{
-    const title=s.customTitle||s.title;
-    const content=s.fn?s.fn():'';
+function pvRemoveLogo(){
+  _pvCustomLogo=null;
+  pvRender();pvAutoSave();pvRenderProps(_pvSelectedBlock);
+}
+
+// ── Toggle visibilité
+function pvToggleBlock(id){
+  const block=pvGetBlocks(_pvMod).find(b=>b.id===id);
+  if(block&&!block.locked) block.visible=!block.visible;
+  pvRender();pvRenderBlocksList();pvAutoSave();
+}
+
+// ── Réordonner
+function pvMoveBlock(id,dir){
+  const blocks=pvGetBlocks(_pvMod);
+  const idx=blocks.findIndex(b=>b.id===id);
+  const ni=idx+dir;
+  if(ni<0||ni>=blocks.length||blocks[ni].locked) return;
+  [blocks[idx],blocks[ni]]=[blocks[ni],blocks[idx]];
+  pvRender();pvRenderBlocksList();pvAutoSave();
+}
+
+let _pvListDragId=null;
+function pvListDragStart(e,id){_pvListDragId=id;e.dataTransfer.effectAllowed='move';}
+function pvListDragOver(e){e.preventDefault();}
+function pvListDrop(e,targetId){
+  e.preventDefault();
+  if(!_pvListDragId||_pvListDragId===targetId) return;
+  const blocks=pvGetBlocks(_pvMod);
+  const fi=blocks.findIndex(b=>b.id===_pvListDragId);
+  const ti=blocks.findIndex(b=>b.id===targetId);
+  if(fi<0||ti<0||blocks[fi].locked||blocks[ti].locked) return;
+  const [m]=blocks.splice(fi,1);blocks.splice(ti,0,m);
+  _pvListDragId=null;
+  pvRender();pvRenderBlocksList();pvAutoSave();
+}
+
+// ── Zoom
+function pvZoom(delta){
+  if(delta===0){const w=document.getElementById('pv-canvas-wrap');const fmt=document.getElementById('pv-format')?.value||'a4';const fw=PV_FORMATS[fmt]?.w||794;if(w)_pvZoom=Math.round(Math.min(100,((w.clientWidth-48)/fw)*100));else _pvZoom=100;}
+  else _pvZoom=Math.max(30,Math.min(150,_pvZoom+delta));
+  pvRender();
+}
+
+function pvSelectAll(v2){pvGetBlocks(_pvMod).forEach(b=>{if(!b.locked)b.visible=v2;});pvRender();pvRenderBlocksList();pvAutoSave();}
+
+function pvResetLayout(){
+  _pvBlocks[_pvMod]=null;
+  localStorage.removeItem('oci_pv_layout_'+_pvMod);
+  _pvSelectedBlock=null;
+  pvRender();pvRenderBlocksList();pvRenderProps(null);
+  showToast('Mise en page réinitialisée.');
+}
+
+// ── Impression
+function pvPrint(){
+  const fmt=document.getElementById('pv-format')?.value||'a4';
+  const {w}=PV_FORMATS[fmt]||PV_FORMATS.a4;
+  const blocks=pvGetBlocks(_pvMod).filter(b=>b.visible);
+  let secCounter=0;
+  let html=`<style>@page{size:A4;margin:15mm 15mm 18mm 15mm}*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;box-sizing:border-box}body{margin:0;padding:0;background:#fff}table{border-collapse:collapse}img{max-width:100%;max-height:80mm;object-fit:contain;display:block}</style>
+  <div style="font-family:Arial,sans-serif;font-size:9pt;color:#1a1a1a;margin:0;padding:0">`;
+  blocks.forEach(b=>{
+    if(NUMBERED_TYPES.includes(b.type)) secCounter++;
+    const content=pvBlockHTML(b,secCounter);
     if(!content) return;
-    html+=`<div class="print-section"><h2>${esc(title)}</h2>${content}</div>`;
+    const s=b.style||{};
+    html+=`<div style="font-family:${s.fontFamily||'Arial'},sans-serif;font-size:${s.fontSize||9}pt;color:${s.color||'#1a1a1a'};opacity:${s.opacity!==undefined?s.opacity:1};margin-bottom:${s.spacing||6}pt;background:${s.bgColor||'transparent'};${s.borderColor&&s.borderColor!=='transparent'?`border:1px solid ${s.borderColor};`:''}border-radius:${s.borderRadius||0}px">${content}</div>`;
   });
-  html+=`<div class="print-footer"><span>OCI Connect Nancy — Confidentiel</span><span>${labels[_pvModule]||''} · ${new Date().toLocaleDateString('fr-FR')}</span></div></div>`;
+  html+=`</div>`;
   qs('printRoot').innerHTML=html;
   window.print();
 }
 
-// Garde refreshPreview pour la carte DOE
+// ── Compatibilité ancienne API
+function printFromPreview(){pvPrint();}
+
+function resetPreviewSections(){pvResetLayout();}
+function renderPvPreview(){pvRender();}
 function refreshPreview(){openPreviewModal();}
+// Stubs pour compatibilité
+function renderPvSectionsList(){pvRenderBlocksList();}
+function pvDragStart(){}
+function pvDragOver(){}
+function pvDrop(){}
+function pvDragEnd(){}
+function pvToggle(id){pvToggleBlock(id);}
+function pvDelete(){}
+function pvEditTitle(){}
+function getPvSections(){return[];}
+function pvField(k,v){if(!v) return '';return`<div style="display:flex;gap:8px;margin:3px 0;font-size:11px"><span style="font-weight:700;color:#6a7c92;min-width:130px;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em;font-size:10px">${esc(k)}</span><span style="color:#1a2536">${esc(v)}</span></div>`;}
+function pvTable(headers,rows){if(!rows.length) return '';return`<table style="width:100%;border-collapse:collapse;font-size:11px;margin:6px 0"><tr>${headers.map(h=>`<th style="background:#f4f8fd;padding:6px 8px;text-align:left;font-weight:700;border:1px solid #d9e4f0;font-size:10px;color:#365170;text-transform:uppercase;letter-spacing:.04em">${h}</th>`).join('')}</tr>${rows.map((r,i)=>`<tr>${r.map(c=>`<td style="padding:5px 8px;border:1px solid #d9e4f0;background:${i%2?'#f8fbff':'#fff'}">${c||'—'}</td>`).join('')}</tr>`).join('')}</table>`;}
+function pvPhotos(target,max=4){const photos=S.photos.filter(p=>p.target===target&&p.src).slice(0,max);if(!photos.length) return '';return`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0">${photos.map(p=>`<div><img src="${p.src}" style="width:100%;border-radius:4px;border:1px solid #d9e4f0"/>${p.caption?`<div style="font-size:10px;color:#6a7c92;margin-top:3px;text-align:center">${esc(p.caption)}</div>`:''}</div>`).join('')}</div>`;}
+function pvWarnBox(txt){return`<div style="background:#fff3e0;border:1px solid #f5c080;border-radius:5px;padding:8px 12px;font-size:11px;color:#8a4a00;margin:5px 0">⚠️ ${txt}</div>`;}
+function pvInfoBox(txt){return`<div style="background:#e3f2fd;border:1px solid #b8d4ea;border-radius:5px;padding:8px 12px;font-size:11px;color:#1a3a5c;margin:5px 0">ℹ️ ${txt}</div>`;}
+// Stubs sections pv (plus utilisées directement)
+function pvVpiIdent(){return'';}function pvVpiFaisab(){return'';}function pvVpiCables(){return'';}
+function pvVpiPrep(){return'';}function pvVpiEquip(){return'';}function pvVpiEcarts(){return'';}
+function pvVpiPhotos(){return'';}function pvVpiConclu(){return'';}function pvVpiNotes(){return'';}
+function pvTechGarde(){return'';}function pvTechPlanning(){return'';}function pvTechEquip(){return'';}
+function pvTechReseau(){return'';}function pvTechCables(){return'';}function pvTechPrep(){return'';}
+function pvTechParam(){return'';}function pvTechPhotos(){return'';}function pvTechNotes(){return'';}
+function pvDoeInfos(){return'';}function pvDoeDocs(){return'';}function pvDoeRecette(){return'';}
+function pvDoeFiches(){return'';}function pvDoePhotos(){return'';}function pvDoeNotes(){return'';}
+function switchPreviewModule(mod){pvSetModule(mod);}
 
 
 // ═══════════════════════════════════════
@@ -5009,244 +5925,258 @@ function buildPrintVPI(){
 function buildPrintTech(){
   const t=S.tech, v=S.vpi;
   const notes=S.notebookPages.filter(p=>p.target==='tech'&&p.content.trim());
-  const vpiNotes=S.notebookPages.filter(p=>p.target==='vpi'&&p.content.trim());
   const logoUrl='https://r4c4st.github.io/vpi/oci_logo_transparent.png';
+  const e2=s=>esc(s||'');
 
-  // ── Helper: info box (blue)
-  const infoBox=txt=>`<div class="dt-info-box"><div class="dt-info-box-icon">i</div><div>${esc(txt)}</div></div>`;
-  // ── Helper: warn box (orange)
-  const warnBox=txt=>`<div class="dt-warn-box"><div class="dt-warn-box-icon">⚠️</div><div>${txt}</div></div>`;
-  // ── Running page header
-  const runHdr=`
-    <div class="dt-run-hdr">
-      <div class="dt-run-hdr-left">
-        <div class="dt-run-hdr-title">Dossier technique — Usage interne</div>
-        <div class="dt-run-hdr-sub">${esc(v.clientCompany||t.clientRef||'—')} ${v.clientAddress?'— '+esc(v.clientAddress):''}</div>
-      </div>
-      <div class="dt-run-hdr-logo"><img src="${logoUrl}" onerror="this.style.display='none'" alt="OCI Connect"/></div>
-    </div>`;
+  const W=txt=>`<div class="dt-warn"><div class="dt-warn-ico">⚠</div><div>${txt}</div></div>`;
+  const I=txt=>`<div class="dt-info"><div class="dt-info-ico">i</div><div>${txt}</div></div>`;
 
-  let h=`<div class="dt-doc">${runHdr}`;
+  // Client + chantier pour le sous-titre de l'en-tête courant
+  const clientLine=e2(v.clientCompany||t.clientRef||'');
+  const chantieLine=e2(v.need||t.context||'');
+  const runSubtitle=[clientLine,chantieLine].filter(Boolean).join(' — ');
 
-  // ══════ PAGE DE GARDE ══════
-  h+=`<div class="dt-cover-title">DOSSIER TECHNIQUE D'INTERVENTION</div>`;
-  h+=`<div class="dt-cover-sub">Usage interne — Équipe technique</div>`;
+  let h=`<div class="dt-doc">`;
 
-  // Tableau récapitulatif
-  h+=`<table class="dt-summary">`;
-  const rows=[
-    ['Client', v.clientCompany||t.clientRef||'—'],
-    ['Adresse', v.clientAddress||t.address||'—'],
-    ['Nature / projet', v.need||t.context||'—'],
-    ['N° dossier / commande', (t.number?t.number+' — ':'')+(v.orderRef||'—')],
-    ['Durée estimée', t.planning.length?`${t.planning.length} jour${t.planning.length>1?'s':''} d'intervention`:'À définir'],
-    ['Équipe', t.manager||'—'],
-    ['Contact site', v.clientContact?(v.clientContact+(v.clientPhone?' — '+v.clientPhone:'')+(v.clientEmail?' — '+v.clientEmail:'')):'—'],
-    ['Chargé d\'affaires', v.salesRef||'—'],
-  ];
-  rows.forEach(([k,val])=>{
-    if(val&&val!=='—') h+=`<tr><td>${esc(k)}</td><td>${esc(val)}</td></tr>`;
-  });
-  h+=`</table>`;
+  // ── EN-TÊTE COURANT (encadré logo + titre dossier)
+  h+=`<div class="dt-run-hdr">
+    <div class="dt-run-hdr-left">
+      <div class="dt-run-hdr-title">Dossier technique — Usage interne</div>
+      <div class="dt-run-hdr-sub">${runSubtitle}</div>
+    </div>
+    <div class="dt-run-hdr-logo">
+      <img src="${logoUrl}" onerror="this.style.display='none'" alt="OCI Connect"/>
+    </div>
+  </div>`;
 
-  // Alertes / pré-requis de la VPI
-  if(v.ecarts.filter(e=>e.impact==='bloquant').length){
-    v.ecarts.filter(e=>e.impact==='bloquant').forEach(e=>{
-      h+=warnBox(`<strong>Point bloquant VPI :</strong> ${esc(e.constat)}${e.action?' → '+esc(e.action):''}`)
-    });
-  }
-  if(t.prereq){
-    t.prereq.split('\n').filter(l=>l.trim()).forEach(line=>{
-      h+=warnBox(esc(line));
-    });
-  }
+  // ── TITRE PRINCIPAL
+  h+=`<div class="dt-main-title">DOSSIER TECHNIQUE D'INTERVENTION</div>`;
+  h+=`<div class="dt-main-sub">Usage interne — Équipe technique</div>`;
 
-  // ══════ 1. PLANNING DÉTAILLÉ PAR JOURNÉE ══════
-  if(t.planning.length){
-    h+=`<div class="dt-h1">1. PLANNING DÉTAILLÉ PAR JOURNÉE</div>`;
-    t.planning.forEach((r,i)=>{
-      h+=`<div class="dt-h2">Jour ${i+1}${r.date?' — '+esc(r.date):''}${r.site?' — '+esc(r.site):''}</div>`;
-      if(r.tasks) h+=infoBox(`Objectif : ${r.tasks}`);
-      if(r.tech){
-        h+=`<table class="dt-table">
-          <tr><th>Technicien(s)</th><th>Zone / Bâtiment</th></tr>
-          <tr><td>${esc(r.tech)}</td><td>${esc(r.site)}</td></tr>
-        </table>`;
-      }
-    });
-    // Notes VPI terrain associées
-    const vpiTerrain=vpiNotes.filter(n=>n.content.trim());
-    if(vpiTerrain.length){
-      vpiTerrain.forEach(n=>{
-        if(n.content.includes('⚠️')||n.content.toLowerCase().includes('attention')||n.content.toLowerCase().includes('retour'))
-          h+=warnBox(esc(n.content.trim()));
-      });
-    }
-  }
+  // ── TABLEAU D'IDENTIFICATION
+  const identRows=[
+    ['Client',          v.clientCompany||t.clientRef],
+    ['Adresse',         v.clientAddress||t.address],
+    ['Nature',          v.need||t.context],
+    ['N° dossier',      t.number],
+    ['Réf. commande',   v.orderRef],
+    ['Durée estimée',   t.planning.length?`${t.planning.length} jour${t.planning.length>1?'s':''} d\'intervention`:''],
+    ['Chargé d\'affaires', t.manager||v.salesRef],
+    ['Contact site',    v.clientContact?(v.clientContact+(v.clientPhone?' — '+v.clientPhone:'')):''],
+  ].filter(([,val])=>val&&val.trim());
 
-  // ══════ 2. MATÉRIELS ET CONSOMMABLES ══════
-  if(t.equipment.length){
-    h+=`<div class="dt-h1">2. MATÉRIELS ET CONSOMMABLES — CHECK-LIST</div>`;
-    h+=`<table class="dt-checklist">
-      <tr>
-        <th style="width:30px;text-align:center">✓</th>
-        <th>Désignation</th>
-        <th style="width:160px">Référence / Modèle</th>
-        <th style="width:160px">Remarque</th>
-      </tr>`;
-    t.equipment.forEach(r=>{
-      h+=`<tr>
-        <td>☐</td>
-        <td>${esc(r.name)}</td>
-        <td>${esc(r.code)}</td>
-        <td>${esc(r.note)}</td>
-      </tr>`;
+  if(identRows.length){
+    h+=`<table class="dt-ident">`;
+    identRows.forEach(([k,val])=>{
+      h+=`<tr><td>${e2(k)}</td><td>${e2(val)}</td></tr>`;
     });
     h+=`</table>`;
-    // VPI fournitures aussi si différentes
-    if(v.equipment.length){
-      h+=`<div class="dt-h2">Matériel de pose &amp; consommables (relevé VPI)</div>`;
-      h+=`<table class="dt-checklist">
-        <tr><th style="width:30px">✓</th><th>Désignation</th><th>Référence</th><th>Note / emplacement</th></tr>`;
-      v.equipment.forEach(r=>{
-        h+=`<tr><td>☐</td><td>${esc(r.name)}</td><td>${esc(r.code)}</td><td>${esc(r.note)}</td></tr>`;
-      });
-      h+=`</table>`;
-    }
-    warnBox('Vérifier la disponibilité de tous les matériels avant le démarrage du chantier.');
   }
 
-  // ══════ 3. RACCORDEMENTS RÉSEAU ET ÉLECTRIQUES ══════
-  if(t.network.length||t.scope){
-    h+=`<div class="dt-h1">3. RACCORDEMENTS RÉSEAU ET ÉLECTRIQUES</div>`;
-    if(t.network.length){
-      h+=`<div class="dt-h2">3.1 Architecture réseau — Tableau de configuration</div>`;
-      h+=`<table class="dt-net-table">
-        <tr>
-          <th>Équipement</th><th>N° Série</th><th>Adresse IP</th>
-          <th>Masque</th><th>Passerelle</th><th>Login / Pass</th>
-        </tr>`;
-      t.network.forEach(r=>{
-        h+=`<tr>
-          <td>${esc(r.equipment)}</td>
-          <td>${esc(r.serial)||'—'}</td>
-          <td>${esc(r.ip)||'À compléter'}</td>
-          <td>${esc(r.mask)||'255.255.255.0'}</td>
-          <td>${esc(r.gateway)||'—'}</td>
-          <td>${esc(r.credentials)||'—'}</td>
+  // ── CONCLUSION & TRANSMISSION VPI
+  const hasC=v.conclusion||v.instructions||v.suite||v.visePar;
+  const hasB=v.ecarts&&v.ecarts.filter(e=>e.impact==='bloquant').length;
+  const hasVig=v.vigilance&&v.vigilance.filter(x=>x.description).length;
+  const hasPre=t.prereq&&t.prereq.trim();
+
+  if(hasC){
+    h+=`<div class="dt-conclu">`;
+    h+=`<div class="dt-conclu-title">Conclusion &amp; transmission — VPI</div>`;
+    if(v.suite)        h+=`<div class="dt-conclu-row"><div class="dt-conclu-k">Suite donnée</div><div class="dt-conclu-v">${e2(v.suite)}</div></div>`;
+    if(v.visePar)      h+=`<div class="dt-conclu-row"><div class="dt-conclu-k">Visé par</div><div class="dt-conclu-v">${e2(v.visePar)}</div></div>`;
+    if(v.conclusion)   h+=`<div class="dt-conclu-row"><div class="dt-conclu-k">Synthèse de visite</div><div class="dt-conclu-v">${e2(v.conclusion)}</div></div>`;
+    if(v.instructions) h+=`<div class="dt-conclu-row"><div class="dt-conclu-k">Instructions DT</div><div class="dt-conclu-v">${e2(v.instructions)}</div></div>`;
+    h+=`</div>`;
+  }
+  if(hasB) v.ecarts.filter(e=>e.impact==='bloquant').forEach(ec=>{h+=W(`<strong>Point bloquant :</strong> ${e2(ec.constat)}${ec.action?' → '+e2(ec.action):''}`)});
+  if(hasVig) v.vigilance.filter(x=>x.description).forEach(x=>{h+=W(`<strong>${e2(x.label||'Vigilance')} :</strong> ${e2(x.description)}`)});
+  if(hasPre) t.prereq.split('\n').filter(l=>l.trim()).forEach(l=>{h+=W(e2(l));});
+
+  // ── 1. PLANNING
+  if(t.planning.length){
+    h+=`<div class="dt-h1">1. Planning détaillé par journée</div>`;
+    t.planning.forEach((r,i)=>{
+      const taches=Array.isArray(r.taches)?r.taches.filter(x=>x.label.trim())
+        :(r.tasks?r.tasks.split('\n').filter(l=>l.trim()).map(l=>({label:l})):[]);
+
+      // Date lisible
+      let dateLabel='';
+      if(r.date){
+        try{
+          const d=new Date(r.date+'T00:00:00');
+          dateLabel=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+          dateLabel=dateLabel.charAt(0).toUpperCase()+dateLabel.slice(1);
+        }catch{dateLabel=r.date;}
+      }
+      const titleParts=[`Jour ${i+1}`, dateLabel||'', r.site?`Accès : ${r.site}`:''].filter(Boolean);
+      h+=`<div class="dt-day-title">${titleParts.join(' — ')}</div>`;
+
+      // Objectif en boîte info si pas de tâches détaillées
+      if(!taches.length){
+        h+=I('Aucune tâche renseignée pour cette journée.');
+      } else {
+        h+=`<table class="dt-tasks">
+          <thead><tr>
+            <th style="width:28%">Tâche</th>
+            <th>Détail / action</th>
+          </tr></thead><tbody>`;
+        taches.forEach(ta=>{
+          // Si la tâche contient " — " on split en libellé / détail, sinon tout en détail
+          const parts=ta.label.split(/\s+—\s+/);
+          const label=parts.length>1?parts[0]:'';
+          const detail=parts.length>1?parts.slice(1).join(' — '):ta.label;
+          h+=`<tr><td>${e2(label)}</td><td>${e2(detail)}</td></tr>`;
+        });
+        h+=`</tbody></table>`;
+      }
+      if(r.tech) h+=I(`Équipe : ${e2(r.tech)}`);
+    });
+  }
+
+  // ── 2. MATÉRIELS & CHECK-LIST
+  if(t.equipment.length||v.equipment.length){
+    h+=`<div class="dt-h1">2. Matériels et consommables — check-list</div>`;
+    const renderChk=items=>{
+      let s=`<table class="dt-chk">
+        <thead><tr>
+          <th style="width:22pt">✓</th>
+          <th>Désignation</th>
+          <th style="width:28%">Référence / Modèle</th>
+          <th style="width:8%">Qté</th>
+          <th style="width:22%">Remarque</th>
+        </tr></thead><tbody>`;
+      items.forEach(r=>{
+        s+=`<tr>
+          <td>☐</td>
+          <td>${e2(r.name)}</td>
+          <td>${e2(r.code)}</td>
+          <td style="text-align:center">${e2(r.qty)} <span style="font-size:8pt;color:#888">${e2(r.unit)}</span></td>
+          <td>${e2(r.note)}</td>
         </tr>`;
       });
-      h+=`</table>`;
+      return s+`</tbody></table>`;
+    };
+    if(t.equipment.length) h+=renderChk(t.equipment);
+    // N'afficher VPI que si contient des éléments distincts de tech
+    const techNames=new Set(t.equipment.map(x=>x.name+'|'+x.code));
+    const vpiExtra=v.equipment.filter(x=>!techNames.has(x.name+'|'+x.code));
+    if(vpiExtra.length){
+      h+=`<div class="dt-h2">Matériel de pose &amp; consommables (relevé VPI)</div>`;
+      h+=renderChk(vpiExtra);
     }
-    // Passages câbles VPI
+    if(!t.equipment.length&&v.equipment.length) h+=renderChk(v.equipment);
+  }
+
+  // ── 3. PASSAGES DE CÂBLES & RÉSEAU
+  if(v.cables.length||t.network.length||t.scope){
+    h+=`<div class="dt-h1">3. Passages de câbles &amp; raccordements réseau</div>`;
     if(v.cables.length){
-      h+=`<div class="dt-h2">3.2 Passages de câbles identifiés (VPI)</div>`;
-      h+=`<table class="dt-table">
-        <tr><th>Destination</th><th>De</th><th>Vers</th><th>Type câble</th><th>Long.</th><th>Chemin</th><th>État</th></tr>`;
+      h+=`<div class="dt-h2">Passages de câbles identifiés (VPI)</div>`;
+      h+=`<table class="dt-tbl"><thead><tr>
+        <th>Destination</th><th>De</th><th>Vers</th><th>Type</th><th>Long.</th><th>Chemin</th><th>État</th>
+      </tr></thead><tbody>`;
       v.cables.forEach(r=>{
         const [,,l]=CABLE_STATUS[r.status]||CABLE_STATUS['a_verifier'];
         h+=`<tr>
-          <td style="font-weight:700;color:#1a5aaa">${esc(r.dest||'—')}</td>
-          <td>${esc(r.from)}</td><td>${esc(r.to)}</td><td>${esc(r.type)}</td>
-          <td>${esc(r.length)}</td><td>${esc(r.path)}</td><td>${l}</td>
+          <td style="font-weight:700;color:#1a4a7a">${e2(r.dest||'—')}</td>
+          <td>${e2(r.from)}</td><td>${e2(r.to)}</td><td>${e2(r.type)}</td>
+          <td>${e2(r.length)}</td><td>${e2(r.path)}</td><td>${l}</td>
         </tr>`;
       });
-      h+=`</table>`;
-      // Photos de passages câbles par destination
-      const cablesWithPhotos=v.cables.filter(c=>c.photos&&c.photos.length);
-      if(cablesWithPhotos.length){
-        h+=`<div class="dt-h2">3.3 Photos des passages et emplacements équipements</div>`;
-        cablesWithPhotos.forEach(c=>{
-          h+=`<div style="margin-bottom:18px;page-break-inside:avoid">
-            <div style="font-size:12px;font-weight:700;color:#1a5aaa;margin-bottom:4px;
-              padding:5px 10px;background:#e8f3fb;border-radius:6px;display:inline-block">
-              ${esc(c.dest||'Câble')} — ${esc(c.from||'?')} → ${esc(c.to||'?')}
-              ${c.path?` &nbsp;|&nbsp; ${esc(c.path)}`:''}
-            </div>
-            <div class="print-photos" style="margin-top:8px">`;
+      h+=`</tbody></table>`;
+      // Photos de câbles
+      const cp=v.cables.filter(c=>c.photos&&c.photos.length);
+      if(cp.length){
+        h+=`<div class="dt-h2">Photos des passages</div>`;
+        cp.forEach(c=>{
+          h+=`<p style="font-size:8.5pt;font-weight:700;color:#1a4a7a;margin:6pt 0 3pt;background:#eaf2fb;padding:3pt 7pt;display:inline-block">${e2(c.dest||'Câble')} — ${e2(c.from||'?')} → ${e2(c.to||'?')}</p>`;
+          h+=`<div class="dt-photos">`;
           c.photos.forEach(p=>{
-            h+=`<div><img src="${p.src}" style="width:100%;max-height:220px;object-fit:cover;border-radius:6px;border:1px solid #d9e4f0"/>
-              ${p.caption?`<div class="ph-caption">${esc(p.caption)}</div>`:''}
-            </div>`;
+            h+=`<div><img src="${p.src}" style="width:100%;border:1pt solid #ccc;display:block"/>${p.caption?`<div class="dt-photo-cap">${e2(p.caption)}</div>`:''}</div>`;
           });
-          h+=`</div></div>`;
+          h+=`</div>`;
         });
       }
     }
+    if(t.network.length){
+      h+=`<div class="dt-h2">Configuration réseau</div>`;
+      h+=`<table class="dt-net"><thead><tr>
+        <th>Équipement</th><th>N° Série</th><th>Adresse IP</th><th>Masque</th><th>Passerelle</th><th>Login / Pass</th>
+      </tr></thead><tbody>`;
+      t.network.forEach(r=>{
+        h+=`<tr><td>${e2(r.equipment)}</td><td>${e2(r.serial)||'—'}</td><td>${e2(r.ip)||'À compléter'}</td><td>${e2(r.mask)||'255.255.255.0'}</td><td>${e2(r.gateway)||'—'}</td><td>${e2(r.credentials)||'—'}</td></tr>`;
+      });
+      h+=`</tbody></table>`;
+    }
     if(t.scope){
-      h+=`<div class="dt-h2">${v.cables.length&&v.cables.some(c=>c.photos&&c.photos.length)?'3.4':'3.3'} Dépendances client &amp; périmètre</div>`;
-      const scopeLines=t.scope.split('\n').filter(l=>l.trim());
-      if(scopeLines.length>1){
-        h+=`<ul class="dt-bullets">`;
-        scopeLines.forEach(l=>{h+=`<li>${esc(l)}</li>`;});
-        h+=`</ul>`;
-      } else {
-        h+=`<p style="font-size:11.5px;line-height:1.6;margin:8px 0">${esc(t.scope)}</p>`;
-      }
+      h+=`<div class="dt-h2">Dépendances client &amp; périmètre</div>`;
+      const sl=t.scope.split('\n').filter(l=>l.trim());
+      if(sl.length>1){h+=`<ul class="dt-ul">`;sl.forEach(l=>{h+=`<li>${e2(l)}</li>`;});h+=`</ul>`;}
+      else h+=`<p style="font-size:9pt;line-height:1.5;margin:4pt 0">${e2(t.scope)}</p>`;
     }
   }
 
-  // ══════ 4. TRAVAUX PRÉPARATOIRES ══════
-  if(v.prep.length){
-    h+=`<div class="dt-h1">4. TRAVAUX PRÉPARATOIRES</div>`;
-    h+=`<table class="dt-table">
-      <tr><th>Type</th><th>Description / localisation</th><th>Prise en charge</th><th>Qté</th><th>Remarque</th></tr>`;
+  // ── 4. TRAVAUX PRÉPARATOIRES
+  if(v.prep&&v.prep.length){
+    h+=`<div class="dt-h1">4. Travaux préparatoires</div>`;
+    h+=`<table class="dt-tbl"><thead><tr>
+      <th>Type</th><th>Description / localisation</th><th>Prise en charge</th><th>Qté</th><th>Remarque</th>
+    </tr></thead><tbody>`;
     v.prep.forEach(r=>{
-      h+=`<tr><td>${esc(r.type)}</td><td>${esc(r.desc)}</td><td>${esc(r.charge)}</td><td>${esc(r.qty)}</td><td>${esc(r.note)}</td></tr>`;
+      h+=`<tr><td>${e2(r.type)}</td><td>${e2(r.desc)}</td><td>${e2(r.charge)}</td><td>${e2(r.qty)}</td><td>${e2(r.note)}</td></tr>`;
     });
-    h+=`</table>`;
+    h+=`</tbody></table>`;
   }
 
-  // ══════ 5. PARAMÉTRAGE ET MISE EN SERVICE ══════
+  // ── 5. PARAMÉTRAGE & MISE EN SERVICE
   if(t.notes4){
-    h+=`<div class="dt-h1">${v.prep.length?'5':'4'}. PARAMÉTRAGE ET MISE EN SERVICE</div>`;
-    const config4=t.notes4.split('\n').filter(l=>l.trim());
-    h+=`<ul class="dt-bullets">`;
-    config4.forEach(l=>{
+    const sn=v.prep&&v.prep.length?5:4;
+    h+=`<div class="dt-h1">${sn}. Paramétrage &amp; mise en service</div>`;
+    const cl=t.notes4.split('\n').filter(l=>l.trim());
+    h+=`<ul class="dt-ul">`;
+    cl.forEach(l=>{
       if(l.startsWith('⚠️')||l.toLowerCase().startsWith('attention')||l.toLowerCase().startsWith('valider')){
-        h+=`</ul>${warnBox(esc(l.replace(/^⚠️\s*/,'').trim()))}<ul class="dt-bullets">`;
-      } else {
-        h+=`<li>${esc(l)}</li>`;
-      }
+        h+=`</ul>${W(e2(l.replace(/^⚠️\s*/,'').trim()))}<ul class="dt-ul">`;
+      } else { h+=`<li>${e2(l)}</li>`; }
     });
     h+=`</ul>`;
   }
 
-  // ══════ PHOTOS ══════
-  const techPhotos=S.photos.filter(p=>p.target==='tech'&&p.src);
-  const vpiPhotos=S.photos.filter(p=>p.target==='vpi'&&p.src);
-  if(techPhotos.length||vpiPhotos.length){
-    const allPhotos=[...techPhotos,...vpiPhotos];
-    h+=`<div class="dt-h1">PHOTOS DE CHANTIER</div>`;
-    h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0">`;
-    allPhotos.slice(0,8).forEach(p=>{
+  // ── PHOTOS DE CHANTIER
+  const techPh=S.photos.filter(p=>p.target==='tech'&&p.src);
+  const vpiPh=S.photos.filter(p=>p.target==='vpi'&&p.src);
+  const allPh=[...techPh,...vpiPh];
+  if(allPh.length){
+    h+=`<div class="dt-h1">Photos de chantier</div>`;
+    // Grille 2 colonnes, images avec hauteur limitée
+    h+=`<div class="dt-photos">`;
+    allPh.forEach(p=>{
       h+=`<div style="page-break-inside:avoid">
-        <img src="${p.src}" style="width:100%;border:1px solid #c8d8e8;border-radius:4px"/>
-        ${p.caption?`<div style="font-size:10px;color:#7a8fa8;text-align:center;margin-top:3px">${esc(p.caption)}</div>`:''}
+        <img src="${p.src}" style="width:100%;max-height:80mm;object-fit:contain;border:1pt solid #ccc;display:block"/>
+        ${p.caption?`<div class="dt-photo-cap">${e2(p.caption)}</div>`:''}
       </div>`;
     });
     h+=`</div>`;
   }
 
-  // ══════ NOTES ══════
+  // ── NOTES TECHNIQUES
   if(notes.length){
-    h+=`<div class="dt-h1">NOTES TECHNIQUES</div>`;
+    h+=`<div class="dt-h1">${secNum}. Notes techniques</div>`;
     notes.forEach(n=>{
-      h+=`<div style="margin-bottom:14px">
-        <div class="dt-h2">${esc(n.title)}</div>
-        <p style="font-size:11.5px;line-height:1.6;white-space:pre-wrap;margin:0">${esc(n.content)}</p>
-      </div>`;
+      if(n.title) h+=`<div class="dt-h2">${e2(n.title)}</div>`;
+      h+=`<p style="font-size:9pt;line-height:1.5;white-space:pre-wrap;margin:4pt 0">${e2(n.content)}</p>`;
     });
   }
 
-  // ══════ PIED DE PAGE ══════
-  h+=`<div class="dt-footer-bar">
+  // ── PIED DE PAGE
+  h+=`<div class="dt-footer">
     <span>OCI Connect — Confidentiel usage interne</span>
     <span>Dossier technique · ${today()}</span>
   </div>`;
 
   return h+`</div>`;
 }
+
 function buildPrintDoe(){
   const d=S.doe,t=S.tech;
   const notes=S.notebookPages.filter(p=>p.target==='doe'&&p.content.trim());
@@ -5307,6 +6237,14 @@ function loadSession(){
     if(data.tech){
       Object.assign(S.tech,data.tech);
       if(!Array.isArray(S.tech.planning)) S.tech.planning=[];
+      // Migration ancien format planning : tasks (string) → taches (array)
+      S.tech.planning.forEach(r=>{
+        if(!Array.isArray(r.taches)){
+          r.taches=r.tasks?r.tasks.split('\n').filter(l=>l.trim()).map(l=>({id:uid(),label:l})):[{id:uid(),label:''}];
+          delete r.tasks;
+        }
+        if(!r.taches.length) r.taches=[{id:uid(),label:''}];
+      });
       if(!Array.isArray(S.tech.equipment)) S.tech.equipment=[];
       if(!Array.isArray(S.tech.network)) S.tech.network=[];
       if(!S.tech.ca) S.tech.ca={reseau:[],groupes:[],usagers:[],plages:[],attach:{fileName:'',fileUrl:'',mimeType:''}};
@@ -5394,6 +6332,14 @@ function restaurerSauvegarde(e){
       if(d.tech){
         Object.assign(S.tech,d.tech);
         if(!Array.isArray(S.tech.planning)) S.tech.planning=[];
+        // Migration ancien format planning : tasks (string) → taches (array)
+        S.tech.planning.forEach(r=>{
+          if(!Array.isArray(r.taches)){
+            r.taches=r.tasks?r.tasks.split('\n').filter(l=>l.trim()).map(l=>({id:uid(),label:l})):[{id:uid(),label:''}];
+            delete r.tasks;
+          }
+          if(!r.taches.length) r.taches=[{id:uid(),label:''}];
+        });
         if(!Array.isArray(S.tech.equipment)) S.tech.equipment=[];
         if(!Array.isArray(S.tech.network)) S.tech.network=[];
         if(!S.tech.ca) S.tech.ca={reseau:[],groupes:[],usagers:[],plages:[],attach:{fileName:'',fileUrl:'',mimeType:''}};
@@ -5937,14 +6883,28 @@ function rfcSyncFields(){
 function rfcImportJoursFromTech(){
   const plan=S.tech.planning||[];
   if(!plan.length){showToast('Aucun planning dans le Dossier Technique.');return;}
-  // Only import if RFC jours is empty
   if(S.rfc.jours.length && !confirm('Le planning RFC sera écrasé par celui du DT. Continuer ?')) return;
-  S.rfc.jours=plan.map(p=>({
-    id:uid(),
-    label:p.date?`Journée du ${p.date}`:(p.label||'Journée'),
-    techniciens:p.tech||p.techniciens||'',
-    rows:[{id:uid(),prestation:p.tasks||p.taches||'',localisation:p.zone||p.site||'',statut:'ok'}]
-  }));
+  S.rfc.jours=plan.map(p=>{
+    // Construire les rows RFC à partir du tableau de tâches (nouveau format) ou du string tasks (ancien)
+    let rows=[];
+    if(Array.isArray(p.taches)&&p.taches.length){
+      rows=p.taches.filter(t=>(t.label||'').trim()).map(t=>({
+        id:uid(),prestation:t.label,localisation:p.site||'',statut:'ok'
+      }));
+    } else if(p.tasks){
+      // Ancien format string — une ligne par retour chariot, ou ligne unique
+      rows=p.tasks.split('\n').filter(l=>l.trim()).map(l=>({
+        id:uid(),prestation:l,localisation:p.site||'',statut:'ok'
+      }));
+    }
+    if(!rows.length) rows=[{id:uid(),prestation:'',localisation:p.site||'',statut:'ok'}];
+    return{
+      id:uid(),
+      label:p.date?`Journée du ${p.date}`:(p.label||'Journée'),
+      techniciens:p.tech||p.techniciens||'',
+      rows
+    };
+  });
   renderRfcJours();
   scheduleAutosave();
   showToast('Planning DT importé dans le RFC.');
