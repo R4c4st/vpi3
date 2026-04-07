@@ -2460,6 +2460,7 @@ canvas{display:block;touch-action:none;width:100%}
         <button onclick="pvSetModule('vpi')" id="pv-tab-vpi" style="padding:5px 14px;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;background:#0f4f84;color:#fff">VPI</button>
         <button onclick="pvSetModule('tech')" id="pv-tab-tech" style="padding:5px 14px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;background:transparent;color:#94a3b8">Dossier Technique</button>
         <button onclick="pvSetModule('doe')" id="pv-tab-doe" style="padding:5px 14px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;background:transparent;color:#94a3b8">DOE</button>
+        <button onclick="pvSetModule('rfc')" id="pv-tab-rfc" style="padding:5px 14px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;background:transparent;color:#94a3b8">RFC</button>
       </div>
 
       <div style="width:1px;height:28px;background:#2d3748"></div>
@@ -4984,7 +4985,8 @@ const PV_FORMATS={
 
 const NUMBERED_TYPES=['planning','equip','cables','reseau','prep','param','photos','notes',
   'vpi_ident','vpi_faisab','vpi_cables','vpi_prep','vpi_equip','vpi_ecarts','vpi_photos','vpi_conclu',
-  'doe_infos','doe_docs','doe_tests','doe_sheets','doe_photos'];
+  'doe_infos','doe_docs','doe_tests','doe_sheets','doe_photos',
+  'rfc_ident','rfc_jours','rfc_equip','rfc_photos'];
 
 const PV_BLOCK_DEFS={
   tech:[
@@ -5024,6 +5026,15 @@ const PV_BLOCK_DEFS={
     {id:'sheets', label:'Fiches techniques',    type:'doe_sheets',locked:false, visible:true},
     {id:'photos', label:'Photos',               type:'doe_photos',locked:false, visible:true},
     {id:'footer', label:'Pied de page',         type:'footer',    locked:true,  visible:true},
+  ],
+  rfc:[
+    {id:'hdr',    label:'En-tête OCI Connect',     type:'header',    locked:true,  visible:true},
+    {id:'title',  label:'Titre principal',           type:'title',     locked:false, visible:true},
+    {id:'ident',  label:'Identification chantier',   type:'rfc_ident', locked:false, visible:true},
+    {id:'jours',  label:'Récapitulatif travaux',      type:'rfc_jours', locked:false, visible:true},
+    {id:'equip',  label:'Matériel installé',          type:'rfc_equip', locked:false, visible:true},
+    {id:'photos', label:'Annexe photos',              type:'rfc_photos',locked:false, visible:true},
+    {id:'footer', label:'Pied de page',               type:'footer',    locked:true,  visible:true},
   ]
 };
 
@@ -5090,7 +5101,7 @@ function switchPreviewModule(mod){pvSetModule(mod);}
 
 function pvSetModule(mod){
   _pvMod=mod;_pvSelectedBlock=null;
-  ['vpi','tech','doe'].forEach(m=>{
+  ['vpi','tech','doe','rfc'].forEach(m=>{
     const btn=document.getElementById('pv-tab-'+m);
     if(!btn) return;
     btn.style.background=m===mod?'#0f4f84':'transparent';
@@ -5304,22 +5315,37 @@ function pvBlockHTML(block,secNum=1){
   const clientLine=[v.clientCompany||t.clientRef,v.clientAddress||t.address].filter(Boolean).join(' — ');
 
   switch(block.type){
-    case 'header': return`
+    case 'header':{
+      const modLabels={
+        tech:'Dossier technique — Usage interne',
+        vpi:'VPI — Visite Préalable à l\'Installation',
+        doe:'DOE — Dossier des Ouvrages Exécutés',
+        rfc:'RFC — Rapport de Fin de Chantier'
+      };
+      return`
       <div style="display:flex;align-items:stretch;border:1px solid #ccc;margin-bottom:16pt">
         <div style="flex:1;padding:8pt 12pt;border-right:1px solid #ccc">
-          <div style="font-size:.9em;font-weight:700;color:#1a4a7a;text-transform:uppercase;letter-spacing:.03em">Dossier technique — Usage interne</div>
+          <div style="font-size:.9em;font-weight:700;color:#1a4a7a;text-transform:uppercase;letter-spacing:.03em">${modLabels[_pvMod]||'Dossier technique'}</div>
           <div style="font-size:.78em;color:#777;margin-top:2pt">${e2(clientLine)}</div>
         </div>
         <div style="padding:6pt 12pt;display:flex;align-items:center;justify-content:center;min-width:70pt">
           <img src="${_pvCustomLogo||logoUrl}" onerror="this.src='${logoUrl}'" style="height:30pt;width:auto;max-width:80pt;object-fit:contain"/>
         </div>
-      </div>`;
+      </div>`;}
 
-    case 'title': return`
+    case 'title':{
+      const titles={
+        tech:{main:"DOSSIER TECHNIQUE D'INTERVENTION",sub:'Usage interne — Équipe technique'},
+        vpi:{main:'VISITE PRÉALABLE À L\'INSTALLATION',sub:'VPI — Avant-vente — Usage interne'},
+        doe:{main:'DOSSIER DES OUVRAGES EXÉCUTÉS',sub:'DOE — Document de fin de chantier'},
+        rfc:{main:'RAPPORT DE FIN DE CHANTIER',sub:'RFC — OCI Connect Nancy — Document interne'}
+      };
+      const tt=titles[_pvMod]||titles.tech;
+      return`
       <div style="margin-bottom:14pt">
-        <div style="font-size:2em;font-weight:900;color:#1a3a5c;line-height:1.1;margin-bottom:4pt">DOSSIER TECHNIQUE D'INTERVENTION</div>
-        <div style="font-size:1em;color:#777">Usage interne — Équipe technique</div>
-      </div>`;
+        <div style="font-size:2em;font-weight:900;color:#1a3a5c;line-height:1.1;margin-bottom:4pt">${tt.main}</div>
+        <div style="font-size:1em;color:#777">${tt.sub}</div>
+      </div>`;}
 
     case 'ident':{
       const rows=[
@@ -5568,6 +5594,84 @@ function pvBlockHTML(block,secNum=1){
       ph.forEach(p=>{h+=`<div><img src="${p.src}" style="width:100%;max-height:200px;object-fit:contain;border:1px solid #ccc;display:block"/>${p.caption?`<div style="font-size:.78em;color:#888;text-align:center;margin-top:3pt">${e2(p.caption)}</div>`:''}</div>`;});
       return h+`</div>`;
     }
+    // ── RFC BLOCKS
+    case 'rfc_ident':{
+      const r=S.rfc||{};
+      const rows=[
+        ['Client',r.client],['Adresse',r.address],
+        ['Objet des travaux',r.objet],['Prestataire',r.prestataire],
+        ['Équipe technique',r.equipe],['Chargé d\'affaires',r.manager],
+        ['Contact client',r.contactClient],['Contact IT',r.contactIT],
+        ['Durée d\'intervention',r.duree],['N° dossier',r.numDossier],
+        ['Date du rapport',r.dateRapport?new Date(r.dateRapport+'T00:00:00').toLocaleDateString('fr-FR'):null],
+      ].filter(([,val])=>val&&val.trim());
+      if(!rows.length) return null;
+      return`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Identification du chantier</div>
+      <table style="width:100%;border-collapse:collapse;page-break-inside:avoid">
+        ${rows.map(([k,val])=>`<tr><td style="padding:5pt 9pt;border:1px solid #ccc;background:#d0e4f7;width:36%;white-space:nowrap">${e2(k)}</td><td style="padding:5pt 9pt;border:1px solid #ccc">${e2(val)}</td></tr>`).join('')}
+      </table>`;
+    }
+
+    case 'rfc_jours':{
+      const r=S.rfc||{};
+      if(!r.jours?.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Récapitulatif des travaux réalisés</div>`;
+      r.jours.forEach(j=>{
+        h+=`<div style="margin-bottom:14pt;page-break-inside:avoid">
+          <div style="background:#eaf2fb;padding:6pt 10pt;border-left:4px solid #1a4a7a;font-weight:700;font-size:.95em;color:#1a4a7a;margin-bottom:0">
+            ${e2(j.label)}${j.techniciens?` <span style="font-weight:400;color:#6a7c92;font-size:.85em">— ${e2(j.techniciens)}</span>`:''}
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:.9em">
+            <thead><tr style="background:#f7fbff">
+              <th style="border:1px solid #ccc;padding:5pt 8pt;text-align:left;color:#365170;font-size:.85em;width:35%">Prestation / Localisation</th>
+              <th style="border:1px solid #ccc;padding:5pt 8pt;text-align:left;color:#365170;font-size:.85em">Travaux réalisés</th>
+              <th style="border:1px solid #ccc;padding:5pt 8pt;text-align:center;color:#365170;font-size:.85em;width:90pt">Statut</th>
+            </tr></thead><tbody>
+            ${(j.rows||[]).map((row,ri)=>{
+              const [bg,fg,lb]=RFC_STATUT[row.statut]||RFC_STATUT['ok'];
+              return`<tr style="background:${ri%2?'#f8fbff':'#fff'}">
+                <td style="border:1px solid #ccc;padding:5pt 8pt">${e2(row.prestation||'—')}</td>
+                <td style="border:1px solid #ccc;padding:5pt 8pt">${e2(row.localisation||'—')}</td>
+                <td style="border:1px solid #ccc;padding:5pt 8pt;text-align:center;background:${bg};color:${fg};font-weight:700;font-size:.82em">${lb}</td>
+              </tr>`;
+            }).join('')}
+            </tbody>
+          </table>
+        </div>`;
+      });
+      return h;
+    }
+
+    case 'rfc_equip':{
+      const r=S.rfc||{};
+      if(!r.equip?.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Matériel installé</div>`;
+      h+=`<table style="width:100%;border-collapse:collapse;page-break-inside:avoid">
+        <thead><tr>
+          <th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em">Désignation</th>
+          <th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em;width:28%">Référence</th>
+          <th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:center;font-size:.88em;width:7%">Qté</th>
+          <th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em;width:25%">Observations</th>
+        </tr></thead><tbody>
+        ${r.equip.map((eq,i)=>`<tr style="background:${i%2?'#f4f8fd':'#fff'}">
+          <td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(eq.designation||'—')}</td>
+          <td style="padding:4pt 8pt;border:1pt solid #ccc;font-size:.88em;color:#3a5a7a">${e2(eq.reference||'—')}</td>
+          <td style="padding:4pt 8pt;border:1pt solid #ccc;text-align:center;font-weight:700">${eq.qty||1}</td>
+          <td style="padding:4pt 8pt;border:1pt solid #ccc;font-size:.88em;color:#555">${e2(eq.observation||'—')}</td>
+        </tr>`).join('')}
+        </tbody></table>`;
+      return h;
+    }
+
+    case 'rfc_photos':{
+      const ph=S.photos.filter(p=>p.target==='rfc'&&p.src);
+      if(!ph.length) return null;
+      let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Annexe photo(s)</div>`;
+      h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12pt">`;
+      ph.forEach(p=>{h+=`<div style="page-break-inside:avoid"><img src="${p.src}" style="width:100%;max-height:220px;object-fit:cover;border:1px solid #ccc;border-radius:4px;display:block"/>${p.caption?`<div style="font-size:.78em;color:#888;text-align:center;margin-top:3pt">${e2(p.caption)}</div>`:''}</div>`;});
+      return h+`</div>`;
+    }
+
     default: return null;
   }
 }
