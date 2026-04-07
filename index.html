@@ -1913,7 +1913,34 @@ canvas{display:block;touch-action:none;width:100%}
         <div id="photos-rfc-empty" class="photo-empty">Aucune photo — ajoutez des clichés du chantier finalisé</div>
       </div>
 
-      <!-- BLOC 5 : Export PDF -->
+      <!-- BLOC 5 : Validation client -->
+      <div class="card">
+        <div class="card-hdr">
+          <div>
+            <div class="card-title">5. Validation client</div>
+            <div class="card-sub">Statut de réception, signature et commentaire éventuel.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="fields-grid">
+            <div class="field s4">
+              <label>Statut</label>
+              <select id="rfcValidationStatus" oninput="rfcFc('validationStatus',this.value)">
+                <option value="">— Non renseigné —</option>
+                <option value="validé">✔ Validé</option>
+                <option value="réserves">⚠ Validé avec réserves</option>
+                <option value="refusé">✗ Refusé</option>
+                <option value="en attente">⏳ En attente</option>
+              </select>
+            </div>
+            <div class="field s4"><label>Validé par</label><input id="rfcValidePar" oninput="rfcFc('validePar',this.value)" placeholder="Nom, fonction"/></div>
+            <div class="field s4"><label>Date de validation</label><input id="rfcDateValidation" type="date" oninput="rfcFc('dateValidation',this.value)"/></div>
+            <div class="field s12"><label>Commentaire / réserves</label><textarea id="rfcCommentaireValidation" rows="3" oninput="rfcFc('commentaireValidation',this.value)" placeholder="Ex : Réserve sur le câblage en attente de reprise sous 30 jours…"></textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOC 6 : Export PDF -->
       <div class="card">
         <div class="card-hdr">
           <div>
@@ -3727,16 +3754,26 @@ function renderTests(){
 // ═══════════════════════════════════════
 let _libFilePending=null; // {fileName, fileUrl, mimeType}
 
-function openTechLibrary(){
+function openTechLibrary(forceManage=false){
+  // Réinitialiser le formulaire d'ajout dans tous les cas
+  _libFilePending=null;
+  if(qs('lib-file-name')) qs('lib-file-name').textContent='Aucun fichier';
+  if(qs('lib-file-preview')) qs('lib-file-preview').style.display='none';
+  if(qs('lib-code')) qs('lib-code').value='';
+  if(qs('lib-name')) qs('lib-name').value='';
+  if(qs('lib-edit-id')) qs('lib-edit-id').style.display='none';
   renderLibGrid();
   renderLibCatalogSelect();
-  _libFilePending=null;
-  qs('lib-file-name').textContent='Aucun fichier';
-  qs('lib-file-preview').style.display='none';
-  qs('lib-code').value='';qs('lib-name').value='';
-  qs('lib-edit-id').style.display='none';
-  qs('modal-techlib').classList.add('open');
-  qs('modal-picksheet').classList.remove('open');
+  if(!forceManage && S.techLibrary.length){
+    // Bibliothèque non vide → ouvrir le picker de sélection
+    renderPickGrid();
+    qs('modal-picksheet').classList.add('open');
+    qs('modal-techlib').classList.remove('open');
+  } else {
+    // Bibliothèque vide ou accès direct gestion
+    qs('modal-techlib').classList.add('open');
+    qs('modal-picksheet').classList.remove('open');
+  }
 }
 
 function openAddToLibForm(){
@@ -3859,17 +3896,7 @@ function deleteLibItem(libId){
 }
 
 // ── Picker (sélection pour DOE) ──
-function openTechLibrary(){
-  if(!S.techLibrary.length){
-    // Si bibliothèque vide, ouvrir directement la gestion
-    renderLibGrid();renderLibCatalogSelect();_libFilePending=null;
-    qs('lib-file-name').textContent='Aucun fichier';qs('lib-file-preview').style.display='none';
-    qs('lib-code').value='';qs('lib-name').value='';qs('lib-edit-id').style.display='none';
-    qs('modal-techlib').classList.add('open');
-    return;
-  }
-  renderPickGrid();qs('modal-picksheet').classList.add('open');
-}
+// openTechLibrary() définie plus haut (fonction unique fusionnée)
 
 function renderPickGrid(){
   const q=(qs('pick-search')?.value||'').toLowerCase();
@@ -4220,7 +4247,7 @@ function nouveauProjet(){
     observations:'',validationStatus:'',validePar:'',dateValidation:'',commentaireValidation:'',
     jours:[],equip:[],reserves:[]};
   renderAll();
-  qs('preview-pane').innerHTML='<em style="color:var(--muted)">Nouveau projet initialisé.</em>';
+  if(qs('preview-render')) qs('preview-render').innerHTML='<em style="color:var(--muted)">Nouveau projet initialisé.</em>';
   setFaisabilite('',true);
   focusModule('vpi');
   saveSession(true);
@@ -4322,13 +4349,12 @@ function photoCaption(id,val){const p=S.photos.find(x=>x.id===id);if(p){p.captio
 // ═══════════════════════════════════════
 // CAPTURE EDITOR
 // ═══════════════════════════════════════
-let _canvasInit=false;
 function openCaptureModal(target,photoId){
   CE.target=target;CE.photoId=photoId||null;CE.actions=[];
   qs('modal-capture').classList.add('open');
   setTimeout(()=>{
     CE.canvas=qs('cap-canvas');CE.ctx=CE.canvas.getContext('2d');
-    if(!_canvasInit){initCanvasEvents();_canvasInit=true;}
+    initCanvasEvents(); // Toujours réattacher proprement (remove + add)
     renderIconGrid();setTool('pen');
     if(photoId){
       const p=S.photos.find(x=>x.id===photoId);
@@ -4355,22 +4381,27 @@ function highlightTool(active){
 }
 function initCanvasEvents(){
   const c=qs('cap-canvas');
+  // Nettoyer les anciens listeners s'ils existent (évite les doublons sur réouverture)
+  if(CE._down){
+    c.removeEventListener('mousedown',CE._down);c.removeEventListener('mousemove',CE._move);c.removeEventListener('mouseup',CE._up);
+    c.removeEventListener('touchstart',CE._down);c.removeEventListener('touchmove',CE._move);c.removeEventListener('touchend',CE._up);
+  }
   const getPos=e=>{
     const rect=c.getBoundingClientRect(),sx=c.width/rect.width,sy=c.height/rect.height;
     const src=e.touches?e.touches[0]:e;
     return{x:(src.clientX-rect.left)*sx,y:(src.clientY-rect.top)*sy};
   };
   let lx=null,ly=null;
-  const down=e=>{e.preventDefault();const pos=getPos(e);CE.drawing=true;CE.startX=pos.x;CE.startY=pos.y;CE.pts=[[pos.x,pos.y]];lx=pos.x;ly=pos.y;};
-  const move=e=>{if(!CE.drawing) return;e.preventDefault();const pos=getPos(e);CE.pts.push([pos.x,pos.y]);
+  CE._down=e=>{e.preventDefault();const pos=getPos(e);CE.drawing=true;CE.startX=pos.x;CE.startY=pos.y;CE.pts=[[pos.x,pos.y]];lx=pos.x;ly=pos.y;};
+  CE._move=e=>{if(!CE.drawing) return;e.preventDefault();const pos=getPos(e);CE.pts.push([pos.x,pos.y]);
     if(CE.tool==='pen'){CE.ctx.strokeStyle=CE.color;CE.ctx.lineWidth=CE.size;CE.ctx.lineCap='round';CE.ctx.lineJoin='round';CE.ctx.beginPath();CE.ctx.moveTo(lx,ly);CE.ctx.lineTo(pos.x,pos.y);CE.ctx.stroke();lx=pos.x;ly=pos.y;}
     else previewShape(pos.x,pos.y);
   };
-  const up=e=>{if(!CE.drawing) return;CE.drawing=false;lx=null;ly=null;
+  CE._up=e=>{if(!CE.drawing) return;CE.drawing=false;lx=null;ly=null;
     const pos=e.changedTouches?getPos({...e,touches:e.changedTouches}):getPos(e);finalizeAction(pos.x,pos.y);
   };
-  c.addEventListener('mousedown',down);c.addEventListener('mousemove',move);c.addEventListener('mouseup',up);
-  c.addEventListener('touchstart',down,{passive:false});c.addEventListener('touchmove',move,{passive:false});c.addEventListener('touchend',up);
+  c.addEventListener('mousedown',CE._down);c.addEventListener('mousemove',CE._move);c.addEventListener('mouseup',CE._up);
+  c.addEventListener('touchstart',CE._down,{passive:false});c.addEventListener('touchmove',CE._move,{passive:false});c.addEventListener('touchend',CE._up);
 }
 function previewShape(x,y){
   redrawCanvas();const ctx=CE.ctx;
@@ -5196,7 +5227,10 @@ function loadSession(){
     if(data.catalog) S.catalog=data.catalog;
     if(data.techLibrary) S.techLibrary=data.techLibrary;
     if(data.clientDB) S.clientDB=data.clientDB;
-    if(data.photos) S.photos=data.photos;
+    // Photos : clé séparée (nouveau), fallback inline (ancien format)
+    const rawPhotos=localStorage.getItem('oci_vpi_photos');
+    if(rawPhotos){ try{ S.photos=JSON.parse(rawPhotos); }catch{} }
+    else if(data.photos) S.photos=data.photos; // rétrocompatibilité
     if(data.notebookPages) S.notebookPages=data.notebookPages;
     if(data.activeNote!=null) S.activeNote=data.activeNote;
     if(data.vpi){
@@ -5230,6 +5264,7 @@ function loadSession(){
       if(!Array.isArray(S.doe.techSheets)) S.doe.techSheets=[];
     }
     if(data.rfc){
+      // S.rfc garanti initialisé (défaut) avant merge
       if(!S.rfc) S.rfc={client:'',address:'',objet:'',prestataire:'OCI Connect Nancy',equipe:'',dateRapport:'',
         contactClient:'',contactIT:'',duree:'',numDossier:'',manager:'',
         observations:'',validationStatus:'',validePar:'',dateValidation:'',commentaireValidation:'',
@@ -5238,6 +5273,12 @@ function loadSession(){
       if(!Array.isArray(S.rfc.jours)) S.rfc.jours=[];
       if(!Array.isArray(S.rfc.equip)) S.rfc.equip=[];
       if(!Array.isArray(S.rfc.reserves)) S.rfc.reserves=[];
+    } else if(!S.rfc){
+      // Pas de données RFC sauvegardées → init propre
+      S.rfc={client:'',address:'',objet:'',prestataire:'OCI Connect Nancy',equipe:'',dateRapport:'',
+        contactClient:'',contactIT:'',duree:'',numDossier:'',manager:'',
+        observations:'',validationStatus:'',validePar:'',dateValidation:'',commentaireValidation:'',
+        jours:[],equip:[],reserves:[]};
     }
   }catch(e){console.error(e);}
 }
@@ -5277,6 +5318,8 @@ function restaurerSauvegarde(e){
       if(d.techLibrary) S.techLibrary=d.techLibrary;
       if(d.clientDB) S.clientDB=d.clientDB;
       if(d.photos) S.photos=d.photos;
+      // Persister les photos dans leur clé dédiée
+      try{ localStorage.setItem('oci_vpi_photos',JSON.stringify(S.photos)); }catch{}
       if(d.notebookPages) S.notebookPages=d.notebookPages;
       if(d.activeNote!=null) S.activeNote=d.activeNote;
       if(d.vpi){
@@ -5423,10 +5466,6 @@ function renderAll(){
   renderEquipTable('vpi');renderEquipTable('tech');
   renderNetTable();renderPlanTable();renderAllCa();renderDoeDocs();renderTests();renderDoeSheets();
   renderPhotos('vpi');renderPhotos('tech');renderPhotos('doe');renderPhotos('rfc');
-  if(!S.rfc) S.rfc={client:'',address:'',objet:'',prestataire:'OCI Connect Nancy',equipe:'',dateRapport:'',
-    contactClient:'',contactIT:'',duree:'',numDossier:'',manager:'',
-    observations:'',validationStatus:'',validePar:'',dateValidation:'',commentaireValidation:'',
-    jours:[],equip:[],reserves:[]};
   renderRfcJours();renderRfcEquip();rfcSyncFields();
   renderMetrics();
   renderRfcMetrics();
@@ -5578,36 +5617,10 @@ function checkSession(){
     return;
   }
 
-  // Session active ?
-  const session=localStorage.getItem('oci_session');
-  if(session){
-    qs('login-screen').style.display='none';
-    document.body.style.overflow='';
-    updateUserBadge();
-    return;
-  }
+  // Toujours effacer la session au démarrage → login obligatoire à chaque ouverture
+  localStorage.removeItem('oci_session');
 
-  // Remember me ?
-  const remembered=localStorage.getItem('oci_remember');
-  if(remembered){
-    try{
-      let _rem; try{_rem=JSON.parse(decodeURIComponent(atob(remembered)));}catch{try{_rem=JSON.parse(remembered);}catch{_rem=null;}} const {u:user,p:pass}=_rem||{};
-      const accounts=getAccounts()||{admin:'admin'};
-      if(accounts[user]&&accounts[user]===pass){
-        _currentUser=user;
-        localStorage.setItem('oci_session',btoa(user+':'+Date.now()));
-        localStorage.setItem('oci_current_user',user);
-        qs('login-screen').style.display='none';
-        document.body.style.overflow='';
-        updateUserBadge();
-        if(qs('login-user')) qs('login-user').value=user;
-        if(qs('login-remember')) qs('login-remember').checked=true;
-        return;
-      }
-    }catch{}
-  }
-
-  // Sinon afficher login
+  // Afficher login
   qs('login-screen').style.display='flex';
   document.body.style.overflow='hidden';
   showLoginPanel();
@@ -5633,8 +5646,10 @@ function checkSession(){
 async function saveSessionWithUser(silent=false){
   const user=_currentUser||localStorage.getItem('oci_current_user')||'inconnu';
   try{
+    // Photos stockées dans une clé séparée (base64 lourd) pour alléger l'autosave principal
+    try{ localStorage.setItem('oci_vpi_photos',JSON.stringify(S.photos)); }catch(pe){console.error('Photos save error',pe);}
     const data={catalog:S.catalog,techLibrary:S.techLibrary,clientDB:S.clientDB,
-      photos:S.photos,notebookPages:S.notebookPages,activeNote:S.activeNote,
+      notebookPages:S.notebookPages,activeNote:S.activeNote,
       vpi:S.vpi,tech:S.tech,doe:S.doe,rfc:S.rfc||{},
       savedBy:user,savedAt:new Date().toISOString()};
     const json=JSON.stringify(data);
@@ -5642,13 +5657,15 @@ async function saveSessionWithUser(silent=false){
     localStorage.setItem('oci_vpi_v3',json);
     const ts=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
     qs('autosaveText').textContent=`Sauvegarde ${ts} (${user})`;
-    // Dossier local si disponible
+    // Dossier local si disponible (fichier complet avec photos pour export)
     if(_backupDirHandle){
+      const fullData={...data,photos:S.photos};
+      const fullJson=JSON.stringify(fullData);
       const fname=`oci_${user}_${new Date().toISOString().slice(0,10)}.json`;
       try{
         const fh=await _backupDirHandle.getFileHandle(fname,{create:true});
         const w=await fh.createWritable();
-        await w.write(json);await w.close();
+        await w.write(fullJson);await w.close();
         if(!silent) showToast(`Sauvegardé — ${fname}`);
       }catch(e){
         if(!silent) showToast('Sauvegarde localStorage OK. Dossier local inaccessible.');
