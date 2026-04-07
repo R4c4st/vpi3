@@ -1156,7 +1156,7 @@ canvas{display:block;touch-action:none;width:100%}
         <button onclick="pickBackupFolder()" id="pick-folder-btn" style="width:100%;padding:10px;border-radius:9px;border:2px dashed #2c3a52;background:transparent;color:#7a95b5;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
           📁 Choisir un dossier de sauvegarde
         </button>
-        <div id="backup-folder-label" style="margin-top:8px;font-size:11px;color:#4a6080;text-align:center">Aucun dossier sélectionné — les sauvegardes iront dans Téléchargements</div>
+        <div id="backup-folder-label" style="margin-top:8px;font-size:11px;color:#4a6080;text-align:center">Téléchargement automatique dans Téléchargements — dossier optionnel</div>
       </div>
       <div id="new-account-error" style="display:none;margin-bottom:12px;padding:9px 12px;background:rgba(200,50,50,.15);border:1px solid rgba(200,50,50,.3);border-radius:9px;font-size:12px;color:#ff8585;text-align:center"></div>
       <button onclick="createFirstAccount()" style="width:100%;padding:13px;border-radius:11px;border:none;background:linear-gradient(135deg,#1a7a55,#22a870);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:9px">
@@ -6317,7 +6317,8 @@ function loadSession(){
   try{
     const raw=localStorage.getItem('oci_vpi_v3');if(!raw) return;
     const data=JSON.parse(raw);
-    if(data.catalog) S.catalog=data.catalog;
+    if(data.catalog&&data.catalog.length>0) S.catalog=data.catalog;
+    else S.catalog=[...DEFAULT_CAT]; // catalog vide ou absent → réinitialiser depuis DEFAULT_CAT
     if(data.techLibrary) S.techLibrary=data.techLibrary;
     if(data.clientDB) S.clientDB=data.clientDB;
     // Photos : clé séparée (nouveau), fallback inline (ancien format)
@@ -6755,6 +6756,8 @@ function checkSession(){
 async function saveSessionWithUser(silent=false){
   const user=_currentUser||localStorage.getItem('oci_current_user')||'inconnu';
   try{
+    // Garde catalog : si S.catalog est vide (corruption localStorage), réinjecter DEFAULT_CAT
+    if(!S.catalog||S.catalog.length===0){ S.catalog=[...DEFAULT_CAT]; console.warn('catalog vide détecté → réinjection DEFAULT_CAT'); }
     // Photos stockées dans une clé séparée (base64 lourd) pour alléger l'autosave principal
     try{ localStorage.setItem('oci_vpi_photos',JSON.stringify(S.photos)); }catch(pe){console.error('Photos save error',pe);}
     const data={catalog:S.catalog,techLibrary:S.techLibrary,clientDB:S.clientDB,
@@ -6766,21 +6769,32 @@ async function saveSessionWithUser(silent=false){
     localStorage.setItem('oci_vpi_v3',json);
     const ts=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
     qs('autosaveText').textContent=`Sauvegarde ${ts} (${user})`;
-    // Dossier local si disponible (fichier complet avec photos pour export)
+    // Fichier complet avec photos
+    const fullData={...data,photos:S.photos};
+    const fullJson=JSON.stringify(fullData);
+    const chantier=(S.vpi?.clientCompany||'').trim().replace(/[^a-zA-Z0-9À-ÿ\-_ ]/g,'').replace(/\s+/g,'_').slice(0,30);
+    const fname=`oci_${user}_${chantier?chantier+'_':''}${new Date().toISOString().slice(0,10)}.json`;
     if(_backupDirHandle){
-      const fullData={...data,photos:S.photos};
-      const fullJson=JSON.stringify(fullData);
-      const fname=`oci_${user}_${new Date().toISOString().slice(0,10)}.json`;
+      // Dossier configuré → écriture directe
       try{
         const fh=await _backupDirHandle.getFileHandle(fname,{create:true});
         const w=await fh.createWritable();
         await w.write(fullJson);await w.close();
         if(!silent) showToast(`Sauvegardé — ${fname}`);
       }catch(e){
-        if(!silent) showToast('Sauvegarde localStorage OK. Dossier local inaccessible.');
+        // Dossier inaccessible (session perdue) → fallback Blob
+        _backupDirHandle=null;
+        const blob=new Blob([fullJson],{type:'application/json'});
+        const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+        a.download=fname;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+        if(!silent) showToast(`Dossier inaccessible — téléchargement : ${fname}`);
       }
     } else {
-      if(!silent) showToast(`Session sauvegardée (${user}).`);
+      // Pas de dossier → téléchargement Blob direct, toujours, sans configuration requise
+      const blob=new Blob([fullJson],{type:'application/json'});
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+      a.download=fname;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+      if(!silent) showToast(`Sauvegardé — ${fname}`);
     }
   }catch(e){console.error(e);}
 }
@@ -6813,7 +6827,7 @@ function renderAccountsFolderStatus(){
     if(st) st.innerHTML=`Dossier mémorisé : <span style="color:var(--warn);font-weight:600">${esc(fname)}</span>. Cliquez "Choisir / changer" pour le réautoriser.`;
   } else {
     if(cur) cur.style.display='none';
-    if(st) st.innerHTML=`Aucun dossier configuré. Les sauvegardes restent dans le navigateur (localStorage). Configurez un dossier pour des sauvegardes fichiers nommées <span style="color:var(--primary);font-weight:600">oci_[identifiant]_[date].json</span>`;
+    if(st) st.innerHTML=`Aucun dossier configuré. Chaque clic sur 💾 <b>Sauvegarder</b> télécharge automatiquement un fichier JSON dans votre dossier Téléchargements. Optionnel : configurez un dossier dédié pour écriture directe (Chrome/Edge uniquement).`;
   }
 }
 function renderAccountsList(){
