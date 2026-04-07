@@ -6308,10 +6308,12 @@ let _autosaveTimer=null;
 function scheduleAutosave(){
   clearTimeout(_autosaveTimer);
   qs('autosaveText').textContent='Non sauvegardé';
-  _autosaveTimer=setTimeout(()=>saveSession(true),3000);
+  // Autosave : localStorage uniquement, pas de téléchargement fichier
+  _autosaveTimer=setTimeout(()=>saveSessionWithUser(true,false),3000);
 }
 function saveSession(silent=false){
-  saveSessionWithUser(silent);
+  // Sauvegarde manuelle (bouton 💾) : localStorage + téléchargement JSON
+  saveSessionWithUser(silent,true);
 }
 function loadSession(){
   try{
@@ -6753,7 +6755,7 @@ function checkSession(){
 }
 
 // ── Sauvegarde avec nom utilisateur ──
-async function saveSessionWithUser(silent=false){
+async function saveSessionWithUser(silent=false,fileDownload=false){
   const user=_currentUser||localStorage.getItem('oci_current_user')||'inconnu';
   try{
     // Garde catalog : si S.catalog est vide (corruption localStorage), réinjecter DEFAULT_CAT
@@ -6769,32 +6771,33 @@ async function saveSessionWithUser(silent=false){
     localStorage.setItem('oci_vpi_v3',json);
     const ts=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
     qs('autosaveText').textContent=`Sauvegarde ${ts} (${user})`;
-    // Fichier complet avec photos
-    const fullData={...data,photos:S.photos};
-    const fullJson=JSON.stringify(fullData);
-    const chantier=(S.vpi?.clientCompany||'').trim().replace(/[^a-zA-Z0-9À-ÿ\-_ ]/g,'').replace(/\s+/g,'_').slice(0,30);
-    const fname=`oci_${user}_${chantier?chantier+'_':''}${new Date().toISOString().slice(0,10)}.json`;
-    if(_backupDirHandle){
-      // Dossier configuré → écriture directe
-      try{
-        const fh=await _backupDirHandle.getFileHandle(fname,{create:true});
-        const w=await fh.createWritable();
-        await w.write(fullJson);await w.close();
-        if(!silent) showToast(`Sauvegardé — ${fname}`);
-      }catch(e){
-        // Dossier inaccessible (session perdue) → fallback Blob
-        _backupDirHandle=null;
+    // Fichier complet avec photos — uniquement si sauvegarde manuelle (bouton 💾)
+    if(fileDownload){
+      const fullData={...data,photos:S.photos};
+      const fullJson=JSON.stringify(fullData);
+      const chantier=(S.vpi?.clientCompany||'').trim().replace(/[^a-zA-Z0-9À-ÿ\-_ ]/g,'').replace(/\s+/g,'_').slice(0,30);
+      const fname=`oci_${user}_${chantier?chantier+'_':''}${new Date().toISOString().slice(0,10)}.json`;
+      if(_backupDirHandle){
+        try{
+          const fh=await _backupDirHandle.getFileHandle(fname,{create:true});
+          const w=await fh.createWritable();
+          await w.write(fullJson);await w.close();
+          if(!silent) showToast(`Sauvegardé — ${fname}`);
+        }catch(e){
+          _backupDirHandle=null;
+          const blob=new Blob([fullJson],{type:'application/json'});
+          const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+          a.download=fname;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+          if(!silent) showToast(`Dossier inaccessible — téléchargement : ${fname}`);
+        }
+      } else {
         const blob=new Blob([fullJson],{type:'application/json'});
         const a=document.createElement('a');a.href=URL.createObjectURL(blob);
         a.download=fname;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
-        if(!silent) showToast(`Dossier inaccessible — téléchargement : ${fname}`);
+        if(!silent) showToast(`Sauvegardé — ${fname}`);
       }
     } else {
-      // Pas de dossier → téléchargement Blob direct, toujours, sans configuration requise
-      const blob=new Blob([fullJson],{type:'application/json'});
-      const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-      a.download=fname;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
-      if(!silent) showToast(`Sauvegardé — ${fname}`);
+      if(!silent) showToast(`Session sauvegardée.`);
     }
   }catch(e){console.error(e);}
 }
