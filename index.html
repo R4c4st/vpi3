@@ -224,6 +224,67 @@
 .dk .nb-item.on{background:rgba(90,171,255,.1);border-color:var(--primary)}
 .dk .nb-item .nb-title{color:#c8daf0}
 
+/* ══════════ PLAN ANNOTATOR (PA) ══════════ */
+#pa-host{color:#e5e5e5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.pa-modal-box{background:#0f1420 !important;border:1px solid #2c3a52 !important}
+.pa-app{display:flex;flex-direction:column;height:100%;background:#1a1a1a}
+.pa-topbar{height:44px;background:#232323;border-bottom:1px solid #333;display:flex;align-items:center;padding:0 12px;gap:6px;flex-shrink:0}
+.pa-sep{width:1px;height:22px;background:#3a3a3a;margin:0 4px}
+.pa-spacer{flex:1}
+.pa-btn{background:#333;color:#e5e5e5;border:1px solid #3a3a3a;padding:5px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-family:inherit}
+.pa-btn:hover{background:#3a3a3a;border-color:#4a4a4a}
+.pa-btn-ok{background:#157a4a;border-color:#157a4a;color:#fff}
+.pa-btn-ok:hover{background:#1a8f57}
+.pa-btn-danger{background:#8b2423;border-color:#8b2423;color:#fff}
+.pa-btn-danger:hover{background:#a62c2b}
+.pa-work{flex:1;display:flex;overflow:hidden;min-height:0}
+.pa-side{width:48px;background:#232323;border-right:1px solid #333;display:flex;flex-direction:column;padding:5px 0;gap:2px;flex-shrink:0}
+.pa-tool{width:38px;height:38px;margin:0 auto;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#999;flex-shrink:0}
+.pa-tool:hover{background:#2e2e2e;color:#ddd}
+.pa-tool.active{background:#2a6fd1;color:#fff}
+.pa-tool svg{width:18px;height:18px}
+.pa-div{height:1px;background:#333;margin:5px 8px}
+.pa-canvas-area{flex:1;position:relative;overflow:hidden;background:#2a2a2a;background-image:linear-gradient(45deg,#252525 25%,transparent 25%),linear-gradient(-45deg,#252525 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#252525 75%),linear-gradient(-45deg,transparent 75%,#252525 75%);background-size:18px 18px;background-position:0 0,0 9px,9px -9px,-9px 0}
+.pa-stage{position:absolute;transform-origin:0 0}
+.pa-stage canvas,.pa-stage svg{position:absolute;top:0;left:0;display:block}
+.pa-stage.pa-cross svg{cursor:crosshair}
+.pa-stage.pa-grab svg{cursor:grab}
+.pa-stage.pa-grabbing svg{cursor:grabbing}
+.pa-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:#777;pointer-events:none;text-align:center;padding:20px}
+.pa-status{position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,0.7);color:#ccc;font-size:10px;padding:4px 8px;border-radius:4px;font-variant-numeric:tabular-nums;pointer-events:none;z-index:10}
+.pa-zoom{position:absolute;bottom:10px;right:10px;display:flex;gap:3px;z-index:10}
+.pa-zoom .pa-btn{padding:4px 8px;background:rgba(0,0,0,0.7);border-color:transparent}
+.pa-right{width:260px;background:#232323;border-left:1px solid #333;overflow-y:auto;flex-shrink:0}
+.pa-sect{border-bottom:1px solid #2e2e2e;padding:10px 12px}
+.pa-sect h4{margin:0 0 8px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#888;font-weight:600}
+.pa-layers{background:#1a1a1a;border-bottom:2px solid #2a6fd1}
+.pa-lyr{display:flex;align-items:center;gap:6px;padding:5px 7px;border-radius:4px;margin-bottom:3px;cursor:pointer;border:1px solid transparent;font-size:12px}
+.pa-lyr:hover{background:#2a2a2a}
+.pa-lyr-active{background:#1d3a5f;border-color:#2a6fd1}
+.pa-lyr-active .pa-lyr-n{color:#fff;font-weight:600}
+.pa-lyr .pa-eye{cursor:pointer;color:#ddd;width:16px;font-size:11px;user-select:none}
+.pa-lyr .pa-lyr-n{flex:1;font-size:12px;color:#ccc}
+.pa-lyr .pa-cnt{font-size:10px;color:#777}
+#pa-props input[type=color]{width:40px;height:26px;background:#1a1a1a;border:1px solid #3a3a3a;border-radius:4px;padding:2px;cursor:pointer}
+#pa-props input[type=text],#pa-props select{width:100%;background:#1a1a1a;border:1px solid #3a3a3a;color:#e5e5e5;padding:5px 7px;border-radius:4px;font-size:12px;font-family:inherit}
+#pa-props input[type=range]{width:100%;accent-color:#2a6fd1}
+.pa-f{font-size:11px;color:#aaa;display:block;margin:6px 0 3px}
+.pa-hint{background:#1e1e1e;border-left:2px solid #2a6fd1;padding:6px 8px;font-size:11px;color:#bbb;margin-top:6px;line-height:1.4}
+.pa-color.active{border-color:#fff !important}
+.pa-item{display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:3px;font-size:11px;cursor:pointer;color:#ccc}
+.pa-item:hover{background:#2a2a2a}
+.pa-item.on{background:#2a6fd1;color:#fff}
+.pa-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.pa-lbl{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pa-x{color:#999;cursor:pointer;padding:1px}
+.pa-x:hover{color:#e74c3c}
+.pa-handle{fill:#fff;stroke:#2a6fd1;stroke-width:2;cursor:pointer}
+.pa-handle.pa-rot{fill:#2a9d8f;stroke:#fff}
+.pa-selbox{fill:none;stroke:#2a6fd1;stroke-width:1;stroke-dasharray:4 3}
+.pa-plan-item{padding:8px 10px;margin-bottom:4px;border-radius:5px;cursor:pointer;background:#131921;border:1px solid #2c3a52}
+.pa-plan-item:hover{background:#1e2838;border-color:#3a5070}
+.pa-plan-item.on{background:rgba(90,171,255,.12);border-color:var(--primary,#5aabff)}
+
 /* Catalogue items */
 .dk .cat-item{background:#131921;border:1px solid #2c3a52}
 .dk .cat-item:hover{background:#1e2838;border-color:var(--primary)}
@@ -1337,7 +1398,7 @@ canvas{display:block;touch-action:none;width:100%}
           transition:background .18s;flex-shrink:0">ℹ</button>
       </div>
       <div class="hero-strip">
-        <button class="hbtn hbtn-warn" onclick="openNotebook()">Bloc-notes terrain</button>
+        <button class="hbtn hbtn-warn" onclick="openNotebook()">📐 Plans annotés</button>
         <button class="hbtn" onclick="triggerPhoto(currentModule)">Photo / image</button>
         <button class="hbtn" onclick="saveSession()">💾 Sauvegarder</button>
         <button class="hbtn" onclick="document.getElementById('jsonImport').click()">📂 Restaurer</button>
@@ -1463,7 +1524,7 @@ canvas{display:block;touch-action:none;width:100%}
         <div class="quick-actions">
           <button class="btn" onclick="triggerPhoto('vpi')">+ Photo terrain</button>
           <button class="btn" onclick="createWhiteboard('vpi')">+ Schéma / plan</button>
-          <button class="btn warn" onclick="openNotebook()">Bloc-notes</button>
+          <button class="btn warn" onclick="openNotebook()">📐 Plans annotés</button>
         </div>
       </div>
 
@@ -1559,7 +1620,10 @@ canvas{display:block;touch-action:none;width:100%}
             <div class="card-title">Relevé des passages de câbles</div>
             <div class="card-sub">Identifier les chemins, gaines, fourreaux, cheminements et obstacles pour chaque équipement.</div>
           </div>
-          <div class="card-acts"><button class="btn primary" onclick="addCableRow()">+ Passage</button></div>
+          <div class="card-acts">
+            <button class="btn" onclick="openCableTypesModal()" title="Gérer la liste des types de câble">⚙️ Types</button>
+            <button class="btn primary" onclick="addCableRow()">+ Passage</button>
+          </div>
         </div>
         <div class="tbl-wrap">
           <table>
@@ -2413,37 +2477,48 @@ canvas{display:block;touch-action:none;width:100%}
   </div>
 </div>
 
-<!-- ══════════ MODAL : NOTEBOOK ══════════ -->
-<div class="modal" id="modal-notebook" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal-box lg">
+<!-- ══════════ MODAL : GESTION TYPES DE CÂBLES ══════════ -->
+<div class="modal" id="modal-cable-types" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box md">
     <div class="modal-hdr">
-      <h3>Bloc-notes terrain</h3>
+      <h3>⚙️ Gérer les types de câbles</h3>
       <div style="display:flex;gap:7px">
-        <button class="btn primary" onclick="addNotePage()">+ Nouvelle page</button>
-        <button class="btn ghost" onclick="document.getElementById('modal-notebook').classList.remove('open')">✕</button>
+        <button class="btn" onclick="resetCableTypes()" title="Restaurer la liste par défaut">↺ Défaut</button>
+        <button class="btn ghost" onclick="document.getElementById('modal-cable-types').classList.remove('open')">✕</button>
       </div>
     </div>
     <div class="modal-body">
-      <div class="nb-layout">
-        <div>
-          <div style="font-size:13px;font-weight:700;margin-bottom:10px">Pages</div>
-          <div class="nb-list" id="nb-list"></div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div class="field"><label>Module rattaché</label>
-            <select id="nb-target" onchange="updateNotePage('target',this.value)">
-              <option value="vpi">VPI</option><option value="tech">Dossier technique</option>
-              <option value="doe">DOE</option><option value="terrain">Terrain général</option>
-            </select>
-          </div>
-          <div class="field"><label>Titre</label><input id="nb-title" oninput="updateNotePage('title',this.value)"/></div>
-          <div class="field"><label>Contenu</label><textarea id="nb-content" style="min-height:260px" oninput="updateNotePage('content',this.value)"></textarea></div>
-          <div style="display:flex;gap:8px">
-            <button class="btn ok" onclick="saveSession();showToast('Notes sauvegardées.')">Sauvegarder</button>
-            <button class="btn danger" onclick="deleteNotePage()">Supprimer cette page</button>
-          </div>
-        </div>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 12px">Liste utilisée dans la colonne « Type câble » du tableau des passages. Les modifications sont persistées automatiquement et s'appliquent aux nouveaux passages. Les passages déjà saisis conservent leur type même s'il est retiré de la liste.</p>
+      <div id="ct-list" style="display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow-y:auto;padding-right:6px"></div>
+      <div style="display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)">
+        <input id="ct-new" placeholder="Nouveau type (ex : Cat8 S/FTP, OPGW 24 brins…)" style="flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:13px" onkeydown="if(event.key==='Enter'){event.preventDefault();addCableType();}"/>
+        <button class="btn primary" onclick="addCableType()">+ Ajouter</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL : PLAN ANNOTATOR (ex Bloc-notes) ══════════ -->
+<div class="modal" id="modal-notebook" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box pa-modal-box" style="width:98vw;height:95vh;max-height:95vh;max-width:none;overflow:hidden">
+    <div class="modal-hdr">
+      <h3>📐 Plans annotés terrain</h3>
+      <div style="display:flex;gap:7px">
+        <button class="btn primary" onclick="PA.newPlan()">+ Nouveau plan</button>
+        <button class="btn" onclick="document.getElementById('pa-file-input').click()">📁 Importer image</button>
+        <input type="file" id="pa-file-input" accept="image/*" style="display:none">
+        <button class="btn ok" onclick="PA.saveAll();showToast('Plans sauvegardés.')">💾 Enregistrer</button>
+        <button class="btn ghost" onclick="document.getElementById('modal-notebook').classList.remove('open')">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" style="padding:0;overflow:hidden;display:flex;height:calc(95vh - 58px)">
+      <!-- Left: plan list -->
+      <div id="pa-sidebar" style="width:200px;background:#1e2330;border-right:1px solid #2c3a52;display:flex;flex-direction:column;flex-shrink:0">
+        <div style="padding:10px 12px;font-size:11px;font-weight:700;color:#8aa3c4;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #2c3a52">Plans du chantier</div>
+        <div id="pa-plan-list" style="flex:1;overflow-y:auto;padding:6px"></div>
+      </div>
+      <!-- Right: annotator host -->
+      <div id="pa-host" style="flex:1;position:relative;background:#1a1a1a;overflow:hidden"></div>
     </div>
   </div>
 </div>
@@ -3300,6 +3375,8 @@ const S={
   photos:[],
   notebookPages:[{id:uid(),target:'vpi',title:'Note 1',content:''}],
   activeNote:0,
+  planPages:[],  // Plans annotés (remplace le bloc-notes texte)
+  cableTypes:[], // Liste personnalisable des types de câble (vide = DEFAULT_CABLE_TYPES)
   vpi:{clientCompany:'',clientContact:'',clientPhone:'',clientEmail:'',
     clientAddress:'',need:'',orderRef:'',visitDate:'',salesRef:'',
     faisabilite:'',faisabiliteStatus:'',conclusion:'',suite:'',visePar:'',instructions:'',
@@ -3530,7 +3607,8 @@ function renderVigilanceTable(){
 // ═══════════════════════════════════════
 // VPI — PASSAGES DE CÂBLES
 // ═══════════════════════════════════════
-const CABLE_TYPES=['Cat6A S/FTP','Cat6 UTP','Coaxial RG59','Fibre optique 9/125','Fibre optique 50/125','2×0.75mm²','3G1.5mm²','Bus 2 fils','Câble alarme 6×0.22','HDMI','Autre'];
+const DEFAULT_CABLE_TYPES=['Cat6A S/FTP','Cat6 UTP','Cat7 S/FTP','Coaxial RG59','Fibre optique OM2 50/125','Fibre optique OM3 50/125','Fibre optique OM4 50/125','Fibre optique OS2 9/125','2×0.75mm²','3G1.5mm²','Bus 2 fils','Câble alarme 6×0.22','HDMI','Autre'];
+function getCableTypes(){ return (Array.isArray(S.cableTypes) && S.cableTypes.length) ? S.cableTypes : DEFAULT_CABLE_TYPES; }
 const CABLE_DEST=['Caméra','Borne Wi-Fi','Prise RJ45','Rack / baie info','Centrale CA','Interphone','Lecteur badge','Barrière','Détecteur','Onduleur','Divers'];
 const CABLE_STATUS={
   'libre':['#e8f5e9','#1b5e20','✅ Libre'],
@@ -3540,7 +3618,8 @@ const CABLE_STATUS={
   'impossible':['#fce4ec','#880e4f','🚫 Impossible']
 };
 function addCableRow(){
-  S.vpi.cables.push({id:uid(),from:'',dest:'Caméra',to:'',type:'Cat6A S/FTP',length:'',path:'',status:'a_verifier',note:'',photos:[]});
+  const types=getCableTypes();
+  S.vpi.cables.push({id:uid(),from:'',dest:'Caméra',to:'',type:types[0]||'Cat6A S/FTP',length:'',path:'',status:'a_verifier',note:'',photos:[]});
   renderCableTable();scheduleAutosave();
 }
 function removeCableRow(id){S.vpi.cables=S.vpi.cables.filter(r=>r.id!==id);renderCableTable();renderMetrics();scheduleAutosave();}
@@ -3557,7 +3636,8 @@ function renderCableTable(){
     <td><input value="${esc(r.to)}" placeholder="Local tech / zone" oninput="cableField('${r.id}','to',this.value)" style="min-width:110px"/></td>
     <td>
       <select onchange="cableField('${r.id}','type',this.value)" style="min-width:130px">
-        ${CABLE_TYPES.map(t=>`<option${r.type===t?' selected':''}>${t}</option>`).join('')}
+        ${getCableTypes().map(t=>`<option${r.type===t?' selected':''}>${esc(t)}</option>`).join('')}
+        ${!getCableTypes().includes(r.type)&&r.type?`<option selected>${esc(r.type)}</option>`:''}
       </select>
     </td>
     <td><input value="${esc(r.length)}" placeholder="m" oninput="cableField('${r.id}','length',this.value)" style="min-width:50px"/></td>
@@ -3576,6 +3656,85 @@ function renderCableTable(){
     </td>
     <td><button class="btn sm danger" onclick="removeCableRow('${r.id}')">✕</button></td>
   </tr>`).join('');
+}
+
+// ─── Gestion de la liste des types de câble ───
+function openCableTypesModal(){
+  // Initialiser la liste si vide
+  if(!Array.isArray(S.cableTypes)||S.cableTypes.length===0){
+    S.cableTypes=[...DEFAULT_CABLE_TYPES];
+  }
+  renderCableTypesList();
+  qs('modal-cable-types').classList.add('open');
+}
+function renderCableTypesList(){
+  const el=qs('ct-list');if(!el)return;
+  const types=S.cableTypes||[];
+  if(types.length===0){
+    el.innerHTML=`<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Liste vide. Ajoutez des types ou cliquez « ↺ Défaut ».</div>`;
+    return;
+  }
+  el.innerHTML=types.map((t,i)=>`<div style="display:flex;gap:6px;align-items:center;background:rgba(0,0,0,.03);padding:6px 8px;border-radius:6px;border:1px solid var(--line)">
+    <span style="font-size:11px;color:var(--muted);min-width:22px;font-variant-numeric:tabular-nums">#${i+1}</span>
+    <input value="${esc(t)}" oninput="renameCableType(${i},this.value)" style="flex:1;padding:5px 8px;border:1px solid var(--line);border-radius:5px;font-size:13px;background:#fff"/>
+    <button class="btn sm" onclick="moveCableType(${i},-1)" ${i===0?'disabled':''} title="Monter">▲</button>
+    <button class="btn sm" onclick="moveCableType(${i},1)" ${i===types.length-1?'disabled':''} title="Descendre">▼</button>
+    <button class="btn sm danger" onclick="removeCableType(${i})" title="Supprimer">✕</button>
+  </div>`).join('');
+}
+function addCableType(){
+  const inp=qs('ct-new');
+  const v=(inp.value||'').trim();
+  if(!v)return;
+  if(!Array.isArray(S.cableTypes))S.cableTypes=[...DEFAULT_CABLE_TYPES];
+  if(S.cableTypes.includes(v)){
+    showToast('Ce type existe déjà.');
+    return;
+  }
+  S.cableTypes.push(v);
+  inp.value='';
+  renderCableTypesList();
+  renderCableTable();
+  scheduleAutosave();
+}
+function renameCableType(i,val){
+  if(!S.cableTypes[i])return;
+  const old=S.cableTypes[i];
+  S.cableTypes[i]=val;
+  // Propager le renommage dans les passages existants qui utilisaient l'ancien libellé
+  if(old!==val){
+    S.vpi.cables.forEach(c=>{if(c.type===old)c.type=val;});
+  }
+  renderCableTable();
+  scheduleAutosave();
+}
+function removeCableType(i){
+  if(!S.cableTypes[i])return;
+  const t=S.cableTypes[i];
+  const inUse=S.vpi.cables.filter(c=>c.type===t).length;
+  let msg=`Supprimer « ${t} » de la liste ?`;
+  if(inUse>0)msg+=`\n\n(${inUse} passage${inUse>1?'s':''} utilise${inUse>1?'nt':''} ce type — il restera affiché sur ces lignes.)`;
+  if(!confirm(msg))return;
+  S.cableTypes.splice(i,1);
+  renderCableTypesList();
+  renderCableTable();
+  scheduleAutosave();
+}
+function moveCableType(i,dir){
+  const j=i+dir;
+  if(j<0||j>=S.cableTypes.length)return;
+  [S.cableTypes[i],S.cableTypes[j]]=[S.cableTypes[j],S.cableTypes[i]];
+  renderCableTypesList();
+  renderCableTable();
+  scheduleAutosave();
+}
+function resetCableTypes(){
+  if(!confirm('Restaurer la liste par défaut ? Vos ajouts et réorganisations seront perdus.'))return;
+  S.cableTypes=[...DEFAULT_CABLE_TYPES];
+  renderCableTypesList();
+  renderCableTable();
+  scheduleAutosave();
+  showToast('Liste par défaut restaurée.');
 }
 
 // ═══════════════════════════════════════
@@ -4885,26 +5044,890 @@ function saveCaptureToPhoto(){
 }
 
 // ═══════════════════════════════════════
-// NOTEBOOK
+// NOTEBOOK → PLAN ANNOTATOR (module PA)
 // ═══════════════════════════════════════
-function openNotebook(){renderNbList();loadNbPage(S.activeNote);qs('modal-notebook').classList.add('open');}
-function renderNbList(){
-  qs('nb-list').innerHTML=S.notebookPages.map((p,i)=>`<div class="nb-item${i===S.activeNote?' on':''}" onclick="loadNbPage(${i})">
-    <div class="nb-title">${esc(p.title||'Sans titre')}</div>
-    <div class="nb-tag">${{vpi:'VPI',tech:'DT',doe:'DOE',terrain:'Terrain'}[p.target]||p.target}</div>
-  </div>`).join('');
+function openNotebook(){
+  qs('modal-notebook').classList.add('open');
+  if(!PA._booted){ PA.init(); PA._booted=true; }
+  PA.onModalOpen();
 }
-function loadNbPage(i){S.activeNote=i;const p=S.notebookPages[i];if(!p) return;
-  qs('nb-target').value=p.target||'vpi';qs('nb-title').value=p.title||'';qs('nb-content').value=p.content||'';
-  renderNbList();
-}
-function updateNotePage(key,val){const p=S.notebookPages[S.activeNote];if(p){p[key]=val;scheduleAutosave();}}
-function addNotePage(){S.notebookPages.push({id:uid(),target:'vpi',title:`Note ${S.notebookPages.length+1}`,content:''});S.activeNote=S.notebookPages.length-1;renderNbList();loadNbPage(S.activeNote);}
-function deleteNotePage(){
-  if(S.notebookPages.length===1){S.notebookPages[0]={id:uid(),target:'vpi',title:'Note 1',content:''};S.activeNote=0;}
-  else{S.notebookPages.splice(S.activeNote,1);S.activeNote=0;}
-  renderNbList();loadNbPage(0);scheduleAutosave();
-}
+
+// Conservé pour rétro-compatibilité (aucune référence UI restante)
+function renderNbList(){}
+function loadNbPage(){}
+function updateNotePage(){}
+function addNotePage(){ openNotebook(); PA.newPlan(); }
+function deleteNotePage(){}
+
+// ═══════════════════════════════════════
+// MODULE PLAN ANNOTATOR — namespaced
+// ═══════════════════════════════════════
+const PA = (function(){
+  const D = {
+    strokeColor:'#ef4444', strokeWidth:2, fillColor:'none',
+    cameraColor:'#378add', cameraRadius:12,
+    fovColor:'#2a9d8f', fovOpacity:0.4, fovRadius:120, fovAperture:90, fovBearing:0,
+    textColor:'#111', textSize:16,
+    baieColor:'#2a6fd1', baieSize:30,
+    percementSize:18, percementColor:'#ef4444', percementWidth:3,
+    eraserSize:20,
+  };
+
+  const st = {
+    tool:'select', mode:'color', threshold:100,
+    shapes:[], selectedId:null, nextId:1,
+    zoom:1, panX:0, panY:0,
+    imgLoaded:false, imgWidth:0, imgHeight:0, imgData:null,
+    originalSrc:null,
+    drawing:false, currentShape:null, wallPoints:[],
+    layers:{plan:true, trace:true, annot:true},
+    defaults:{...D},
+    history:[], historyIndex:-1,
+    isDraggingHandle:false, dragHandle:null, dragStart:null,
+    isPanning:false, spacePressed:false,
+    lastErasePoint:null,
+    currentPlanId:null,
+    _booted:false,
+  };
+
+  let host, canvas, ctx, overlay, stage, canvasArea, statusbar;
+
+  function qs2(id){ return document.getElementById(id); }
+  function esc2(s){ return String(s).replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&apos;'}[c])); }
+
+  // ─── Build UI inside #pa-host ───
+  function init(){
+    host = qs2('pa-host');
+    host.innerHTML = `
+<div class="pa-app">
+  <div class="pa-topbar">
+    <select id="pa-mode-select" style="width:auto;padding:6px 10px;border-radius:5px;background:#1a1a1a;color:#e5e5e5;border:1px solid #3a3a3a;font-size:13px">
+      <option value="color">Couleur</option>
+      <option value="bw">Noir & blanc</option>
+      <option value="gray">Niveaux de gris</option>
+      <option value="invert">Inversé</option>
+    </select>
+    <div id="pa-threshold-wrap" style="display:none;align-items:center;gap:6px">
+      <span style="font-size:11px;color:#aaa">Seuil</span>
+      <input type="range" id="pa-threshold" min="50" max="200" value="100" style="width:80px">
+      <span id="pa-threshold-val" style="font-size:11px;color:#ccc;width:26px">100</span>
+    </div>
+    <div class="pa-sep"></div>
+    <button class="pa-btn" id="pa-rot-left" title="Rotation 90° antihoraire">↺ 90°</button>
+    <button class="pa-btn" id="pa-rot-right" title="Rotation 90° horaire">↻ 90°</button>
+    <div class="pa-sep"></div>
+    <button class="pa-btn" id="pa-undo" title="Annuler (Ctrl+Z)">↶</button>
+    <button class="pa-btn" id="pa-redo" title="Rétablir">↷</button>
+    <div class="pa-spacer"></div>
+    <button class="pa-btn" id="pa-export-png">PNG</button>
+    <button class="pa-btn" id="pa-export-svg">SVG</button>
+    <button class="pa-btn pa-btn-ok" id="pa-attach">✓ Joindre au dossier</button>
+  </div>
+  <div class="pa-work">
+    <div class="pa-side">
+      ${toolBtn('select','Sélection / déplacer','V','M5 2l14 10-6 1.5 3 7-3 1.5-3-7-5 4.5z',true)}
+      ${toolBtn('pan','Déplacer la vue','H','M18 11V6a2 2 0 0 0-4 0v6M14 10V4a2 2 0 0 0-4 0v8M10 10V5a2 2 0 0 0-4 0v10M6 13c-2 0-2 2-2 2 0 3 3 7 8 7h2a8 8 0 0 0 8-8V8a2 2 0 1 0-4 0v4',false,true)}
+      <div class="pa-div"></div>
+      ${toolBtn('pen','Pinceau libre','B','M12 19l7-7 3 3-7 7-3-3zM18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5zM2 2l7.586 7.586',false,true)}
+      ${toolBtn('line','Ligne','L','','line')}
+      ${toolBtn('wall','Mur polyligne','W','','wall')}
+      ${toolBtn('rect','Rectangle','R','','rect')}
+      <div class="pa-div"></div>
+      ${toolBtn('camera','Caméra','C','','cam')}
+      ${toolBtn('fov','Angle de vue','F','','fov')}
+      ${toolBtn('baie','Baie informatique','I','','baie')}
+      ${toolBtn('percement','Percement','X','','cross')}
+      ${toolBtn('text','Texte','T','','text')}
+      <div class="pa-div"></div>
+      ${toolBtn('eraser','Gomme plan','E','','eraser')}
+      ${toolBtn('delete','Supprimer élément','Del','M3 6h18M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2',false,true)}
+    </div>
+    <div class="pa-canvas-area" id="pa-canvas-area">
+      <div class="pa-stage" id="pa-stage">
+        <canvas id="pa-canvas"></canvas>
+        <svg id="pa-overlay" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="pa-empty" id="pa-empty"><div style="font-size:34px;opacity:.25">📐</div><div style="font-size:13px">Importez un plan ou choisissez-le dans la liste à gauche</div></div>
+      <div class="pa-status" id="pa-status">— Aucun plan chargé —</div>
+      <div class="pa-zoom">
+        <button class="pa-btn" onclick="PA.zoomOut()">−</button>
+        <button class="pa-btn" id="pa-zoom-val" onclick="PA.zoomReset()">100%</button>
+        <button class="pa-btn" onclick="PA.zoomIn()">+</button>
+        <button class="pa-btn" onclick="PA.fitToView()">⊡</button>
+      </div>
+    </div>
+    <div class="pa-right">
+      <div class="pa-sect pa-layers">
+        <h4 style="color:#5aabff">▤ Calques</h4>
+        <div class="pa-lyr" data-lyr="plan"><span class="pa-eye visible" onclick="event.stopPropagation();PA.toggleLayer('plan')">◉</span><span class="pa-lyr-n">Plan importé</span><span class="pa-cnt" id="pa-cnt-plan">—</span></div>
+        <div class="pa-lyr pa-lyr-active" data-lyr="trace"><span class="pa-eye visible" onclick="event.stopPropagation();PA.toggleLayer('trace')">◉</span><span class="pa-lyr-n">Traçage / murs</span><span class="pa-cnt" id="pa-cnt-trace">0</span></div>
+        <div class="pa-lyr" data-lyr="annot"><span class="pa-eye visible" onclick="event.stopPropagation();PA.toggleLayer('annot')">◉</span><span class="pa-lyr-n">Caméras / pictos</span><span class="pa-cnt" id="pa-cnt-annot">0</span></div>
+      </div>
+      <div class="pa-sect">
+        <h4>Propriétés</h4>
+        <div id="pa-props" style="font-size:12px;color:#888">Sélectionnez un outil ou un élément</div>
+      </div>
+      <div class="pa-sect">
+        <h4>Couleurs rapides</h4>
+        <div id="pa-colors" style="display:flex;gap:4px;flex-wrap:wrap">
+          ${['#378add','#2a9d8f','#e67e22','#ef4444','#f1c40f','#9b59b6','#111111','#ffffff'].map(c=>`<div class="pa-color" data-c="${c}" style="width:22px;height:22px;border-radius:4px;background:${c};cursor:pointer;border:2px solid transparent"></div>`).join('')}
+        </div>
+      </div>
+      <div class="pa-sect">
+        <h4>Éléments (<span id="pa-count">0</span>)</h4>
+        <div id="pa-shapes" style="max-height:180px;overflow-y:auto"></div>
+      </div>
+    </div>
+  </div>
+</div>`;
+
+    canvas = qs2('pa-canvas');
+    ctx = canvas.getContext('2d');
+    overlay = qs2('pa-overlay');
+    stage = qs2('pa-stage');
+    canvasArea = qs2('pa-canvas-area');
+    statusbar = qs2('pa-status');
+
+    bindEvents();
+    updatePropsPanel();
+    render();
+    pushHistory();
+  }
+
+  function toolBtn(id, label, key, svgPath, active, stroke){
+    const isStroke = svgPath && svgPath.length > 0 && !['line','wall','rect','cam','fov','baie','cross','text','eraser'].includes(svgPath);
+    let icon = '';
+    if (id === 'line') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="20" x2="20" y2="4"/></svg>';
+    else if (id === 'wall') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 17 9 11 13 15 21 7"/><circle cx="3" cy="17" r="1.5" fill="currentColor"/><circle cx="21" cy="7" r="1.5" fill="currentColor"/></svg>';
+    else if (id === 'rect') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>';
+    else if (id === 'camera') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>';
+    else if (id === 'fov') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12 L22 6 A12 12 0 0 1 22 18 Z" fill="currentColor" fill-opacity="0.3"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>';
+    else if (id === 'baie') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="1"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="8" y1="19" x2="16" y2="19"/></svg>';
+    else if (id === 'percement') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>';
+    else if (id === 'text') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="12" y1="4" x2="12" y2="20"/></svg>';
+    else if (id === 'eraser') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20H7l-4-4 11-11 9 9z"/><line x1="14" y1="8" x2="8" y2="14"/></svg>';
+    else if (svgPath) icon = `<svg viewBox="0 0 24 24" ${stroke?'fill="none" stroke="currentColor" stroke-width="2"':'fill="currentColor"'}><path d="${svgPath}"/></svg>`;
+    return `<div class="pa-tool${active?' active':''}" data-tool="${id}" title="${label} (${key})">${icon}</div>`;
+  }
+
+  function bindEvents(){
+    host.querySelectorAll('.pa-tool').forEach(el => {
+      el.addEventListener('click', () => {
+        host.querySelectorAll('.pa-tool').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        st.tool = el.dataset.tool;
+        st.wallPoints = []; st.selectedId = null;
+        render(); updatePropsPanel(); updateCursor();
+      });
+    });
+
+    host.querySelectorAll('.pa-color').forEach(el => {
+      el.addEventListener('click', () => {
+        const c = el.dataset.c;
+        if (['pen','line','wall','rect'].includes(st.tool)) st.defaults.strokeColor = c;
+        else if (st.tool === 'camera') st.defaults.cameraColor = c;
+        else if (st.tool === 'fov') st.defaults.fovColor = c;
+        else if (st.tool === 'text') st.defaults.textColor = c;
+        else if (st.tool === 'baie') st.defaults.baieColor = c;
+        else if (st.tool === 'percement') st.defaults.percementColor = c;
+        if (st.selectedId) {
+          const s = st.shapes.find(x => x.id === st.selectedId);
+          if (s) { if ('color' in s) s.color = c; else if ('stroke' in s) s.stroke = c; }
+          render();
+        }
+        updatePropsPanel();
+      });
+    });
+
+    host.querySelectorAll('.pa-lyr').forEach(el => {
+      el.addEventListener('click', () => {
+        host.querySelectorAll('.pa-lyr').forEach(x => x.classList.remove('pa-lyr-active'));
+        el.classList.add('pa-lyr-active');
+      });
+    });
+
+    qs2('pa-mode-select').addEventListener('change', e => {
+      st.mode = e.target.value;
+      qs2('pa-threshold-wrap').style.display = (st.mode === 'bw') ? 'flex' : 'none';
+      applyMode();
+      persistCurrent();
+    });
+    qs2('pa-threshold').addEventListener('input', e => {
+      st.threshold = parseInt(e.target.value);
+      qs2('pa-threshold-val').textContent = st.threshold;
+      if (st.mode === 'bw') applyMode();
+      persistCurrent();
+    });
+
+    qs2('pa-rot-left').addEventListener('click', () => rotatePlan(false));
+    qs2('pa-rot-right').addEventListener('click', () => rotatePlan(true));
+    qs2('pa-undo').addEventListener('click', undo);
+    qs2('pa-redo').addEventListener('click', redo);
+    qs2('pa-export-png').addEventListener('click', exportPNG);
+    qs2('pa-export-svg').addEventListener('click', exportSVG);
+    qs2('pa-attach').addEventListener('click', attachToDossier);
+
+    qs2('pa-file-input').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const r = new FileReader();
+      r.onload = ev => {
+        // create a new plan with this image
+        const plan = {
+          id: uid(),
+          title: (file.name || 'Plan').replace(/\.[^.]+$/,''),
+          target: 'vpi',
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          imgSrc: ev.target.result,
+          originalSrc: ev.target.result,
+          imgWidth: 0, imgHeight: 0,
+          shapes: [], mode: 'color', threshold: 100, nextId: 1,
+        };
+        S.planPages = S.planPages || [];
+        S.planPages.push(plan);
+        st.currentPlanId = plan.id;
+        loadPlan(plan);
+        renderPlanList();
+        scheduleAutosave();
+      };
+      r.readAsDataURL(file);
+      e.target.value = '';
+    });
+
+    canvasArea.addEventListener('wheel', e => {
+      if (!st.imgLoaded) return;
+      e.preventDefault();
+      const factor = e.deltaY > 0 ? 0.9 : 1.111;
+      setZoom(st.zoom * factor, e.clientX, e.clientY);
+    }, { passive: false });
+
+    overlay.addEventListener('mousedown', onMouseDown);
+    overlay.addEventListener('mousemove', onMouseMove);
+    overlay.addEventListener('mouseup', onMouseUp);
+    overlay.addEventListener('dblclick', onDblClick);
+    canvasArea.addEventListener('mousedown', onPanStart);
+    window.addEventListener('mousemove', onPanMove);
+    window.addEventListener('mouseup', onPanEnd);
+
+    // Drag and drop on the whole canvas area
+    canvasArea.addEventListener('dragover', e => { e.preventDefault(); });
+    canvasArea.addEventListener('drop', e => {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (!file || !file.type.startsWith('image/')) return;
+      const r = new FileReader();
+      r.onload = ev => {
+        const plan = {
+          id: uid(), title: (file.name||'Plan').replace(/\.[^.]+$/,''), target: 'vpi',
+          createdAt: Date.now(), updatedAt: Date.now(),
+          imgSrc: ev.target.result, originalSrc: ev.target.result,
+          imgWidth: 0, imgHeight: 0, shapes: [], mode: 'color', threshold: 100, nextId: 1,
+        };
+        S.planPages = S.planPages || [];
+        S.planPages.push(plan);
+        st.currentPlanId = plan.id;
+        loadPlan(plan); renderPlanList(); scheduleAutosave();
+      };
+      r.readAsDataURL(file);
+    });
+
+    // Keyboard shortcuts — only when modal is open
+    window.addEventListener('keydown', e => {
+      if (!qs2('modal-notebook').classList.contains('open')) return;
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+      const km = {v:'select',h:'pan',b:'pen',l:'line',w:'wall',r:'rect',c:'camera',f:'fov',t:'text',i:'baie',x:'percement',e:'eraser'};
+      if (km[e.key.toLowerCase()]) {
+        const btn = host.querySelector(`[data-tool="${km[e.key.toLowerCase()]}"]`);
+        if (btn) btn.click();
+      } else if (e.key === 'Escape') {
+        st.wallPoints=[]; st.selectedId=null; st.currentShape=null; st.drawing=false; render(); updatePropsPanel();
+      } else if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (st.selectedId) deleteShape(st.selectedId);
+      } else if (e.key === ' ') { st.spacePressed=true; updateCursor(); e.preventDefault(); }
+      else if ((e.ctrlKey||e.metaKey) && e.key==='z') { e.preventDefault(); if(e.shiftKey) redo(); else undo(); }
+      else if ((e.ctrlKey||e.metaKey) && e.key==='y') { e.preventDefault(); redo(); }
+    });
+    window.addEventListener('keyup', e => { if (e.key === ' ') { st.spacePressed = false; updateCursor(); }});
+  }
+
+  function onModalOpen(){
+    // re-size after modal shown
+    setTimeout(() => { if (st.imgLoaded) fitToView(); }, 50);
+    renderPlanList();
+    // auto-load first plan if present and no current selection
+    const list = S.planPages || [];
+    if (list.length && !st.currentPlanId) {
+      st.currentPlanId = list[0].id;
+      loadPlan(list[0]);
+    } else if (st.currentPlanId) {
+      const p = list.find(x => x.id === st.currentPlanId);
+      if (p) loadPlan(p);
+    }
+  }
+
+  // ─── Plan list management ───
+  function renderPlanList(){
+    const list = S.planPages || [];
+    const el = qs2('pa-plan-list');
+    if (!el) return;
+    if (list.length === 0) {
+      el.innerHTML = `<div style="padding:20px 10px;font-size:12px;color:#6a7a92;text-align:center;line-height:1.5">Aucun plan.<br>Cliquez « + Nouveau plan » ou « Importer image » en haut.</div>`;
+      return;
+    }
+    el.innerHTML = list.map(p => `
+      <div class="pa-plan-item${p.id === st.currentPlanId ? ' on' : ''}" onclick="PA.selectPlan('${p.id}')">
+        <div style="font-weight:600;font-size:12px;color:#c8daf0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc2(p.title || 'Sans titre')}</div>
+        <div style="font-size:10px;color:#7a95b5;margin-top:2px;display:flex;justify-content:space-between;align-items:center">
+          <span>${({vpi:'VPI',tech:'DT',doe:'DOE',terrain:'Terrain'}[p.target] || p.target)}</span>
+          <span>${(p.shapes || []).length} élt</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function newPlan(){
+    // ask user to pick file
+    qs2('pa-file-input').click();
+  }
+
+  function selectPlan(id){
+    persistCurrent();
+    const plan = (S.planPages || []).find(p => p.id === id);
+    if (!plan) return;
+    st.currentPlanId = id;
+    loadPlan(plan);
+    renderPlanList();
+  }
+
+  function deletePlan(id){
+    if (!confirm('Supprimer ce plan ?')) return;
+    S.planPages = (S.planPages || []).filter(p => p.id !== id);
+    if (st.currentPlanId === id) {
+      st.currentPlanId = null;
+      resetCanvas();
+    }
+    renderPlanList();
+    scheduleAutosave();
+  }
+
+  function loadPlan(plan){
+    if (!plan || !plan.imgSrc) { resetCanvas(); return; }
+    const img = new Image();
+    img.onload = () => {
+      st.imgWidth = img.width;
+      st.imgHeight = img.height;
+      canvas.width = img.width; canvas.height = img.height;
+      overlay.setAttribute('width', img.width);
+      overlay.setAttribute('height', img.height);
+      overlay.setAttribute('viewBox', `0 0 ${img.width} ${img.height}`);
+      ctx.drawImage(img, 0, 0);
+      st.imgData = ctx.getImageData(0, 0, img.width, img.height);
+      st.originalSrc = plan.originalSrc || plan.imgSrc;
+      st.imgLoaded = true;
+      qs2('pa-empty').style.display = 'none';
+      qs2('pa-cnt-plan').textContent = `${img.width}×${img.height}`;
+      st.shapes = plan.shapes ? JSON.parse(JSON.stringify(plan.shapes)) : [];
+      st.nextId = plan.nextId || 1;
+      st.mode = plan.mode || 'color';
+      st.threshold = plan.threshold || 100;
+      qs2('pa-mode-select').value = st.mode;
+      qs2('pa-threshold').value = st.threshold;
+      qs2('pa-threshold-val').textContent = st.threshold;
+      qs2('pa-threshold-wrap').style.display = (st.mode === 'bw') ? 'flex' : 'none';
+      applyMode();
+      fitToView();
+      render();
+      st.history = []; st.historyIndex = -1;
+      pushHistory();
+    };
+    img.src = plan.imgSrc;
+  }
+
+  function resetCanvas(){
+    st.imgLoaded = false;
+    st.imgData = null;
+    st.shapes = [];
+    canvas.width = 10; canvas.height = 10;
+    overlay.setAttribute('width', 10); overlay.setAttribute('height', 10);
+    qs2('pa-empty').style.display = 'flex';
+    qs2('pa-cnt-plan').textContent = '—';
+    render();
+  }
+
+  function persistCurrent(){
+    if (!st.currentPlanId) return;
+    const plan = (S.planPages || []).find(p => p.id === st.currentPlanId);
+    if (!plan) return;
+    plan.imgSrc = canvas.toDataURL('image/png');
+    plan.originalSrc = st.originalSrc || plan.imgSrc;
+    plan.imgWidth = st.imgWidth;
+    plan.imgHeight = st.imgHeight;
+    plan.shapes = JSON.parse(JSON.stringify(st.shapes));
+    plan.nextId = st.nextId;
+    plan.mode = st.mode;
+    plan.threshold = st.threshold;
+    plan.updatedAt = Date.now();
+  }
+
+  function saveAll(){
+    persistCurrent();
+    scheduleAutosave();
+  }
+
+  function attachToDossier(){
+    if (!st.imgLoaded) { showToast('Aucun plan à joindre.'); return; }
+    persistCurrent();
+    // Also export as PNG added to S.photos for inclusion in reports
+    exportToBlob().then(dataUrl => {
+      const photo = {
+        id: uid(),
+        target: 'vpi',
+        name: 'Plan annoté ' + new Date().toLocaleDateString('fr-FR'),
+        src: dataUrl,
+        ts: Date.now(),
+      };
+      if (!Array.isArray(S.photos)) S.photos = [];
+      S.photos.push(photo);
+      scheduleAutosave();
+      showToast('Plan ajouté au dossier (Photos VPI).');
+    });
+  }
+
+  async function exportToBlob(){
+    const off = document.createElement('canvas');
+    off.width = st.imgWidth; off.height = st.imgHeight;
+    const octx = off.getContext('2d');
+    if (st.layers.plan) octx.drawImage(canvas, 0, 0);
+    else { octx.fillStyle = '#fff'; octx.fillRect(0, 0, off.width, off.height); }
+    const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="${st.imgWidth}" height="${st.imgHeight}" viewBox="0 0 ${st.imgWidth} ${st.imgHeight}">${overlay.innerHTML}</svg>`;
+    await new Promise(res => {
+      const img = new Image();
+      img.onload = () => { octx.drawImage(img, 0, 0); res(); };
+      img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgStr)));
+    });
+    return off.toDataURL('image/png');
+  }
+
+  // ─── Image mode ───
+  function applyMode(){
+    if (!st.imgData) return;
+    const src = st.imgData;
+    const out = ctx.createImageData(src.width, src.height);
+    const s = src.data, d = out.data;
+    if (st.mode === 'color') d.set(s);
+    else if (st.mode === 'bw') {
+      const thr = st.threshold;
+      for (let i = 0; i < s.length; i += 4) {
+        const r=s[i],g=s[i+1],b=s[i+2];
+        const mx=Math.max(r,g,b), mn=Math.min(r,g,b);
+        const v=(mx<thr && (mx-mn)<35)?0:255;
+        d[i]=d[i+1]=d[i+2]=v; d[i+3]=255;
+      }
+    } else if (st.mode === 'gray') {
+      for (let i = 0; i < s.length; i += 4) {
+        const g=Math.round(0.299*s[i]+0.587*s[i+1]+0.114*s[i+2]);
+        d[i]=d[i+1]=d[i+2]=g; d[i+3]=255;
+      }
+    } else if (st.mode === 'invert') {
+      for (let i = 0; i < s.length; i += 4) { d[i]=255-s[i];d[i+1]=255-s[i+1];d[i+2]=255-s[i+2];d[i+3]=255; }
+    }
+    ctx.putImageData(out, 0, 0);
+  }
+
+  // ─── Transform ───
+  function applyTransform(){
+    stage.style.transform = `translate(${st.panX}px, ${st.panY}px) scale(${st.zoom})`;
+    const zv = qs2('pa-zoom-val'); if (zv) zv.textContent = Math.round(st.zoom * 100) + '%';
+  }
+  function zoomIn(){ setZoom(st.zoom * 1.25); }
+  function zoomOut(){ setZoom(st.zoom / 1.25); }
+  function zoomReset(){ setZoom(1); }
+  function setZoom(z, cx, cy){
+    const nz = Math.max(0.1, Math.min(10, z));
+    if (cx !== undefined) {
+      const r = canvasArea.getBoundingClientRect();
+      const mx = cx - r.left, my = cy - r.top;
+      const dx = (mx - st.panX) * (nz / st.zoom - 1);
+      const dy = (my - st.panY) * (nz / st.zoom - 1);
+      st.panX -= dx; st.panY -= dy;
+    }
+    st.zoom = nz; applyTransform();
+  }
+  function fitToView(){
+    if (!st.imgLoaded) return;
+    const r = canvasArea.getBoundingClientRect();
+    const m = 40;
+    const sx = (r.width-m*2)/st.imgWidth;
+    const sy = (r.height-m*2)/st.imgHeight;
+    st.zoom = Math.min(sx, sy);
+    st.panX = (r.width - st.imgWidth*st.zoom) / 2;
+    st.panY = (r.height - st.imgHeight*st.zoom) / 2;
+    applyTransform();
+  }
+  function screenToImg(cx, cy){
+    const r = canvasArea.getBoundingClientRect();
+    return { x: (cx - r.left - st.panX) / st.zoom, y: (cy - r.top - st.panY) / st.zoom };
+  }
+
+  // ─── History ───
+  function pushHistory(){
+    st.history = st.history.slice(0, st.historyIndex + 1);
+    st.history.push(JSON.stringify(st.shapes));
+    if (st.history.length > 50) st.history.shift();
+    st.historyIndex = st.history.length - 1;
+    persistCurrent();
+    scheduleAutosave();
+  }
+  function undo(){ if (st.historyIndex <= 0) return; st.historyIndex--; st.shapes = JSON.parse(st.history[st.historyIndex]); st.selectedId=null; render(); updatePropsPanel(); persistCurrent(); }
+  function redo(){ if (st.historyIndex >= st.history.length-1) return; st.historyIndex++; st.shapes = JSON.parse(st.history[st.historyIndex]); st.selectedId=null; render(); updatePropsPanel(); persistCurrent(); }
+
+  // ─── Shapes ───
+  function newShapeId(){ return 's' + (st.nextId++); }
+  function addShape(s){ s.id = newShapeId(); st.shapes.push(s); pushHistory(); render(); }
+  function deleteShape(id){ st.shapes = st.shapes.filter(s => s.id !== id); if (st.selectedId===id) st.selectedId=null; pushHistory(); render(); updatePropsPanel(); }
+  function updateShape(id, upd){ const s=st.shapes.find(x=>x.id===id); if(!s) return; Object.assign(s, upd); render(); persistCurrent(); scheduleAutosave(); }
+  function nextCameraLabel(){ const e = st.shapes.filter(s=>s.type==='camera').map(s=>s.label); for(let i=1;i<100;i++){ const l='C'+String(i).padStart(2,'0'); if(!e.includes(l)) return l; } return 'C'; }
+  function nextBaieLabel(){ const e = st.shapes.filter(s=>s.type==='baie').map(s=>s.label); for(let i=1;i<50;i++){ const l='BAIE'+String(i).padStart(2,'0'); if(!e.includes(l)) return l; } return 'BAIE'; }
+
+  // ─── Mouse ───
+  function onPanStart(e){
+    if (!st.imgLoaded) return;
+    if (st.tool==='pan' || st.spacePressed || e.button===1) {
+      st.isPanning = true;
+      st.panStart = { x: e.clientX - st.panX, y: e.clientY - st.panY };
+      stage.classList.add('pa-grabbing'); e.preventDefault();
+    }
+  }
+  function onPanMove(e){ if (!st.isPanning) return; st.panX=e.clientX-st.panStart.x; st.panY=e.clientY-st.panStart.y; applyTransform(); }
+  function onPanEnd(){ if (st.isPanning) { st.isPanning = false; updateCursor(); } }
+
+  function onMouseDown(e){
+    if (st.isPanning || st.spacePressed) return;
+    if (!st.imgLoaded) return;
+    const p = screenToImg(e.clientX, e.clientY);
+
+    const hEl = e.target.closest('[data-handle]');
+    if (hEl && st.tool === 'select') {
+      st.isDraggingHandle = true; st.dragHandle = { id: hEl.dataset.id, handle: hEl.dataset.handle }; st.dragStart = p; return;
+    }
+    const sEl = e.target.closest('[data-shape-id]');
+    if (st.tool==='select' && sEl) {
+      st.selectedId = sEl.dataset.shapeId; updatePropsPanel(); render();
+      st.isDraggingHandle = true; st.dragHandle = { id: st.selectedId, handle: 'move' }; st.dragStart = p; return;
+    }
+    if (st.tool==='select' && !sEl) { st.selectedId = null; updatePropsPanel(); render(); return; }
+    if (st.tool==='delete' && sEl) { deleteShape(sEl.dataset.shapeId); return; }
+
+    if (st.tool==='pen') { st.drawing=true; st.currentShape={type:'pen',points:[[p.x,p.y]],stroke:st.defaults.strokeColor,width:st.defaults.strokeWidth,layer:'trace'}; }
+    else if (st.tool==='line') { st.drawing=true; st.currentShape={type:'line',x1:p.x,y1:p.y,x2:p.x,y2:p.y,stroke:st.defaults.strokeColor,width:st.defaults.strokeWidth,layer:'trace'}; }
+    else if (st.tool==='wall') { if (st.wallPoints.length===0) st.wallPoints.push([p.x,p.y]); st.wallPoints.push([p.x,p.y]); st.drawing=true; }
+    else if (st.tool==='rect') { st.drawing=true; st.currentShape={type:'rect',x:p.x,y:p.y,w:0,h:0,stroke:st.defaults.strokeColor,width:st.defaults.strokeWidth,fill:'none',layer:'trace'}; }
+    else if (st.tool==='camera') { const sh={type:'camera',x:p.x,y:p.y,radius:st.defaults.cameraRadius,color:st.defaults.cameraColor,label:nextCameraLabel(),layer:'annot'}; addShape(sh); st.selectedId=sh.id; updatePropsPanel(); }
+    else if (st.tool==='fov') { const sh={type:'fov',x:p.x,y:p.y,radius:st.defaults.fovRadius,bearing:st.defaults.fovBearing,aperture:st.defaults.fovAperture,color:st.defaults.fovColor,opacity:st.defaults.fovOpacity,layer:'annot'}; addShape(sh); st.selectedId=sh.id; updatePropsPanel(); }
+    else if (st.tool==='text') { const t=prompt('Texte:'); if(t){ addShape({type:'text',x:p.x,y:p.y,text:t,color:st.defaults.textColor,size:st.defaults.textSize,layer:'annot'}); } }
+    else if (st.tool==='baie') { const sh={type:'baie',x:p.x,y:p.y,size:st.defaults.baieSize,color:st.defaults.baieColor,label:nextBaieLabel(),layer:'annot'}; addShape(sh); st.selectedId=sh.id; updatePropsPanel(); }
+    else if (st.tool==='percement') { const sh={type:'percement',x:p.x,y:p.y,size:st.defaults.percementSize,color:st.defaults.percementColor,width:st.defaults.percementWidth,layer:'annot'}; addShape(sh); st.selectedId=sh.id; updatePropsPanel(); }
+    else if (st.tool==='eraser') { st.drawing=true; st.lastErasePoint=p; eraseAt(p.x,p.y); }
+  }
+
+  function onMouseMove(e){
+    if (!st.imgLoaded) return;
+    const p = screenToImg(e.clientX, e.clientY);
+    statusbar.textContent = `x:${Math.round(p.x)}, y:${Math.round(p.y)} · zoom ${Math.round(st.zoom*100)}%`;
+
+    if (st.isDraggingHandle) {
+      const sh = st.shapes.find(s => s.id === st.dragHandle.id); if (!sh) return;
+      const h = st.dragHandle.handle;
+      const dx = p.x - st.dragStart.x, dy = p.y - st.dragStart.y;
+      if (h === 'move') {
+        if (['camera','fov','text','baie','percement'].includes(sh.type)) { sh.x += dx; sh.y += dy; }
+        else if (sh.type==='line') { sh.x1+=dx; sh.y1+=dy; sh.x2+=dx; sh.y2+=dy; }
+        else if (sh.type==='rect') { sh.x+=dx; sh.y+=dy; }
+        else if (sh.type==='pen'||sh.type==='polyline') { sh.points = sh.points.map(pt=>[pt[0]+dx,pt[1]+dy]); }
+        st.dragStart = p;
+      } else if (h==='p1' && sh.type==='line') { sh.x1=p.x; sh.y1=p.y; }
+      else if (h==='p2' && sh.type==='line') { sh.x2=p.x; sh.y2=p.y; }
+      else if (h==='radius' && (sh.type==='camera'||sh.type==='fov')) {
+        sh.radius = Math.max(5, Math.hypot(p.x-sh.x, p.y-sh.y));
+        if (sh.type==='fov') sh.bearing = (Math.atan2(p.y-sh.y, p.x-sh.x) * 180 / Math.PI + 360) % 360;
+      } else if (h==='rect-br' && sh.type==='rect') { sh.w = p.x - sh.x; sh.h = p.y - sh.y; }
+      updatePropsPanel(); render(); return;
+    }
+
+    if (!st.drawing) return;
+    if (st.tool==='pen') { st.currentShape.points.push([p.x,p.y]); render(); }
+    else if (st.tool==='line') { st.currentShape.x2=p.x; st.currentShape.y2=p.y; render(); }
+    else if (st.tool==='wall' && st.wallPoints.length>0) { st.wallPoints[st.wallPoints.length-1]=[p.x,p.y]; render(); }
+    else if (st.tool==='rect') { st.currentShape.w=p.x-st.currentShape.x; st.currentShape.h=p.y-st.currentShape.y; render(); }
+    else if (st.tool==='eraser') {
+      const last = st.lastErasePoint || p;
+      const dist = Math.hypot(p.x-last.x, p.y-last.y);
+      const steps = Math.max(1, Math.ceil(dist / (st.defaults.eraserSize/2)));
+      for (let i=1; i<=steps; i++) {
+        const t = i/steps;
+        eraseAt(last.x+(p.x-last.x)*t, last.y+(p.y-last.y)*t);
+      }
+      st.lastErasePoint = p;
+    }
+  }
+
+  function onMouseUp(){
+    if (st.isDraggingHandle) { st.isDraggingHandle=false; st.dragHandle=null; pushHistory(); return; }
+    if (!st.drawing) return;
+    if (['pen','line','rect'].includes(st.tool)) {
+      if (st.tool==='rect' && (Math.abs(st.currentShape.w)<3 || Math.abs(st.currentShape.h)<3)) { st.currentShape=null; st.drawing=false; render(); return; }
+      addShape(st.currentShape); st.currentShape=null; st.drawing=false;
+    } else if (st.tool==='eraser') {
+      st.drawing=false; st.lastErasePoint=null; persistCurrent(); scheduleAutosave();
+    }
+  }
+
+  function onDblClick(){
+    if (st.tool==='wall' && st.wallPoints.length>=2) {
+      const pts = st.wallPoints.slice(0,-1);
+      if (pts.length>=2) addShape({type:'polyline',points:pts,stroke:st.defaults.strokeColor,width:st.defaults.strokeWidth,layer:'trace'});
+      st.wallPoints=[]; st.drawing=false; render();
+    }
+  }
+
+  // ─── Erase ───
+  function eraseAt(x, y){
+    if (!st.imgData) return;
+    const sz = st.defaults.eraserSize;
+    ctx.save(); ctx.fillStyle='#ffffff'; ctx.beginPath(); ctx.arc(x,y,sz,0,Math.PI*2); ctx.fill(); ctx.restore();
+    const data = st.imgData.data, w = st.imgData.width, h = st.imgData.height;
+    const xi=Math.round(x), yi=Math.round(y), szSq=sz*sz;
+    const x0=Math.max(0,xi-sz), x1=Math.min(w-1,xi+sz), y0=Math.max(0,yi-sz), y1=Math.min(h-1,yi+sz);
+    for (let py=y0; py<=y1; py++) {
+      for (let px=x0; px<=x1; px++) {
+        const dx=px-xi, dy=py-yi;
+        if (dx*dx+dy*dy <= szSq) { const idx=(py*w+px)*4; data[idx]=255; data[idx+1]=255; data[idx+2]=255; data[idx+3]=255; }
+      }
+    }
+  }
+  function restoreOriginalPlan(){
+    if (!st.originalSrc) { alert('Plan original introuvable'); return; }
+    if (!confirm('Restaurer le plan original ?')) return;
+    const img = new Image();
+    img.onload = () => {
+      st.imgWidth=img.width; st.imgHeight=img.height;
+      canvas.width=img.width; canvas.height=img.height;
+      overlay.setAttribute('width',img.width); overlay.setAttribute('height',img.height);
+      overlay.setAttribute('viewBox',`0 0 ${img.width} ${img.height}`);
+      ctx.drawImage(img,0,0); st.imgData=ctx.getImageData(0,0,img.width,img.height);
+      qs2('pa-cnt-plan').textContent = `${img.width}×${img.height}`;
+      applyMode(); fitToView(); render(); persistCurrent(); scheduleAutosave();
+    };
+    img.src = st.originalSrc;
+  }
+
+  // ─── Rotation ───
+  function rotatePlan(cw){
+    if (!st.imgLoaded) return;
+    const oldW=st.imgWidth, oldH=st.imgHeight, newW=oldH, newH=oldW;
+    const tmp=document.createElement('canvas'); tmp.width=oldW; tmp.height=oldH; tmp.getContext('2d').drawImage(canvas,0,0);
+    canvas.width=newW; canvas.height=newH;
+    ctx.save(); ctx.translate(newW/2,newH/2); ctx.rotate(cw?Math.PI/2:-Math.PI/2); ctx.drawImage(tmp,-oldW/2,-oldH/2); ctx.restore();
+    const oc=document.createElement('canvas'); oc.width=oldW; oc.height=oldH; oc.getContext('2d').putImageData(st.imgData,0,0);
+    const rc=document.createElement('canvas'); rc.width=newW; rc.height=newH;
+    const rctx=rc.getContext('2d'); rctx.translate(newW/2,newH/2); rctx.rotate(cw?Math.PI/2:-Math.PI/2); rctx.drawImage(oc,-oldW/2,-oldH/2);
+    st.imgData=rctx.getImageData(0,0,newW,newH);
+    st.imgWidth=newW; st.imgHeight=newH;
+    overlay.setAttribute('width',newW); overlay.setAttribute('height',newH);
+    overlay.setAttribute('viewBox',`0 0 ${newW} ${newH}`);
+    const tx = (x,y) => cw ? [oldH-y, x] : [y, oldW-x];
+    for (const s of st.shapes) {
+      if (['camera','fov','text','baie','percement'].includes(s.type)) {
+        [s.x,s.y] = tx(s.x,s.y); if (s.type==='fov') s.bearing = ((s.bearing+(cw?90:-90))%360+360)%360;
+      } else if (s.type==='line') { [s.x1,s.y1]=tx(s.x1,s.y1); [s.x2,s.y2]=tx(s.x2,s.y2); }
+      else if (s.type==='rect') { const [a1,b1]=tx(s.x,s.y),[a2,b2]=tx(s.x+s.w,s.y+s.h); s.x=Math.min(a1,a2); s.y=Math.min(b1,b2); s.w=Math.abs(a2-a1); s.h=Math.abs(b2-b1); }
+      else if (s.type==='pen'||s.type==='polyline') { s.points = s.points.map(([x,y])=>tx(x,y)); }
+    }
+    qs2('pa-cnt-plan').textContent = `${newW}×${newH}`;
+    if (st.originalSrc) {
+      const oi=new Image();
+      oi.onload=()=>{ const c2=document.createElement('canvas'); c2.width=newW; c2.height=newH;
+        const c2x=c2.getContext('2d'); c2x.translate(newW/2,newH/2); c2x.rotate(cw?Math.PI/2:-Math.PI/2); c2x.drawImage(oi,-oldW/2,-oldH/2);
+        st.originalSrc = c2.toDataURL('image/png'); persistCurrent(); };
+      oi.src = st.originalSrc;
+    }
+    fitToView(); render(); pushHistory();
+  }
+
+  // ─── Rendering ───
+  function fovPath(cx,cy,r,b,a){
+    if (a>=360) return `M ${cx-r} ${cy} A ${r} ${r} 0 1 0 ${cx+r} ${cy} A ${r} ${r} 0 1 0 ${cx-r} ${cy} Z`;
+    const h=a/2; const sA=(b-h)*Math.PI/180, eA=(b+h)*Math.PI/180;
+    const x1=cx+r*Math.cos(sA), y1=cy+r*Math.sin(sA), x2=cx+r*Math.cos(eA), y2=cy+r*Math.sin(eA);
+    return `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${a>180?1:0} 1 ${x2} ${y2} Z`;
+  }
+
+  function shapeSVG(s, sel){
+    const lay = s.layer||'trace'; if (!st.layers[lay]) return '';
+    const se = sel ? ' data-selected="1"' : '';
+    if (s.type==='pen') { const d='M '+s.points.map(p=>`${p[0]} ${p[1]}`).join(' L '); return `<path data-shape-id="${s.id}"${se} d="${d}" fill="none" stroke="${s.stroke}" stroke-width="${s.width}" stroke-linecap="round" stroke-linejoin="round"/>`; }
+    if (s.type==='line') return `<line data-shape-id="${s.id}"${se} x1="${s.x1}" y1="${s.y1}" x2="${s.x2}" y2="${s.y2}" stroke="${s.stroke}" stroke-width="${s.width}" stroke-linecap="round"/>`;
+    if (s.type==='polyline') { const p=s.points.map(p=>`${p[0]},${p[1]}`).join(' '); return `<polyline data-shape-id="${s.id}"${se} points="${p}" fill="none" stroke="${s.stroke}" stroke-width="${s.width}" stroke-linecap="round" stroke-linejoin="round"/>`; }
+    if (s.type==='rect') { const x=Math.min(s.x,s.x+s.w), y=Math.min(s.y,s.y+s.h), w=Math.abs(s.w), h=Math.abs(s.h); return `<rect data-shape-id="${s.id}"${se} x="${x}" y="${y}" width="${w}" height="${h}" fill="${s.fill||'none'}" stroke="${s.stroke}" stroke-width="${s.width}"/>`; }
+    if (s.type==='camera') { const r=s.radius||12; return `<g data-shape-id="${s.id}"${se}><circle cx="${s.x}" cy="${s.y}" r="${r+4}" fill="#fff"/><circle cx="${s.x}" cy="${s.y}" r="${r}" fill="${s.color}" stroke="#fff" stroke-width="2"/><circle cx="${s.x}" cy="${s.y}" r="${r*0.35}" fill="#fff"/>${s.label?`<g><rect x="${s.x-22}" y="${s.y-r-22}" width="44" height="18" rx="3" fill="${s.color}"/><text x="${s.x}" y="${s.y-r-8}" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#fff">${esc2(s.label)}</text></g>`:''}</g>`; }
+    if (s.type==='fov') return `<g data-shape-id="${s.id}"${se}><path d="${fovPath(s.x,s.y,s.radius,s.bearing,s.aperture)}" fill="${s.color}" fill-opacity="${s.opacity}" stroke="${s.color}" stroke-opacity="${Math.min(1,s.opacity+0.3)}" stroke-width="1"/></g>`;
+    if (s.type==='text') return `<text data-shape-id="${s.id}"${se} x="${s.x}" y="${s.y}" font-family="sans-serif" font-size="${s.size}" font-weight="600" fill="${s.color}">${esc2(s.text)}</text>`;
+    if (s.type==='baie') { const sz=s.size||30, hf=sz/2; return `<g data-shape-id="${s.id}"${se}><rect x="${s.x-hf}" y="${s.y-hf}" width="${sz}" height="${sz}" fill="${s.color}" stroke="#000" stroke-width="1.5"/><line x1="${s.x-hf+4}" y1="${s.y-hf+sz*0.25}" x2="${s.x+hf-4}" y2="${s.y-hf+sz*0.25}" stroke="#fff" stroke-opacity="0.7" stroke-width="1"/><line x1="${s.x-hf+4}" y1="${s.y-hf+sz*0.5}" x2="${s.x+hf-4}" y2="${s.y-hf+sz*0.5}" stroke="#fff" stroke-opacity="0.7" stroke-width="1"/><line x1="${s.x-hf+4}" y1="${s.y-hf+sz*0.75}" x2="${s.x+hf-4}" y2="${s.y-hf+sz*0.75}" stroke="#fff" stroke-opacity="0.7" stroke-width="1"/>${s.label?`<g><rect x="${s.x-Math.max(25,s.label.length*4.5)}" y="${s.y+hf+2}" width="${Math.max(50,s.label.length*9)}" height="16" rx="2" fill="${s.color}"/><text x="${s.x}" y="${s.y+hf+14}" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#fff">${esc2(s.label)}</text></g>`:''}</g>`; }
+    if (s.type==='percement') { const sz=s.size||18, hf=sz/2, w=s.width||3; return `<g data-shape-id="${s.id}"${se}><line x1="${s.x-hf}" y1="${s.y-hf}" x2="${s.x+hf}" y2="${s.y+hf}" stroke="${s.color}" stroke-width="${w}" stroke-linecap="round"/><line x1="${s.x+hf}" y1="${s.y-hf}" x2="${s.x-hf}" y2="${s.y+hf}" stroke="${s.color}" stroke-width="${w}" stroke-linecap="round"/></g>`; }
+    return '';
+  }
+  function selOverlay(s){
+    if (s.type==='camera'||s.type==='fov') { const r=s.radius||50; let h=`<circle class="pa-handle" data-handle="move" data-id="${s.id}" cx="${s.x}" cy="${s.y}" r="6"/>`; const a=(s.bearing||0)*Math.PI/180, hx=s.x+r*Math.cos(a), hy=s.y+r*Math.sin(a); h+=`<line x1="${s.x}" y1="${s.y}" x2="${hx}" y2="${hy}" stroke="#2a6fd1" stroke-width="1" stroke-dasharray="3 3"/><circle class="pa-handle pa-rot" data-handle="radius" data-id="${s.id}" cx="${hx}" cy="${hy}" r="6"/>`; return h; }
+    if (s.type==='line') return `<circle class="pa-handle" data-handle="p1" data-id="${s.id}" cx="${s.x1}" cy="${s.y1}" r="5"/><circle class="pa-handle" data-handle="p2" data-id="${s.id}" cx="${s.x2}" cy="${s.y2}" r="5"/>`;
+    if (s.type==='rect') return `<rect class="pa-selbox" x="${Math.min(s.x,s.x+s.w)}" y="${Math.min(s.y,s.y+s.h)}" width="${Math.abs(s.w)}" height="${Math.abs(s.h)}"/><circle class="pa-handle" data-handle="move" data-id="${s.id}" cx="${s.x+s.w/2}" cy="${s.y+s.h/2}" r="5"/><circle class="pa-handle" data-handle="rect-br" data-id="${s.id}" cx="${s.x+s.w}" cy="${s.y+s.h}" r="5"/>`;
+    if (s.type==='baie'||s.type==='percement') { const sz=s.size||20; return `<rect class="pa-selbox" x="${s.x-sz/2-4}" y="${s.y-sz/2-4}" width="${sz+8}" height="${sz+8}"/><circle class="pa-handle" data-handle="move" data-id="${s.id}" cx="${s.x}" cy="${s.y}" r="5"/>`; }
+    return '';
+  }
+
+  function render(){
+    const order = { trace:0, annot:1 };
+    const sorted = [...st.shapes].sort((a,b)=>(order[a.layer||'trace']||0)-(order[b.layer||'trace']||0));
+    let svg = '';
+    for (const s of sorted) svg += shapeSVG(s, s.id===st.selectedId);
+    if (st.currentShape) svg += shapeSVG(st.currentShape, false);
+    if (st.tool==='wall' && st.wallPoints.length>0) {
+      const pts = st.wallPoints.map(p=>`${p[0]},${p[1]}`).join(' ');
+      svg += `<polyline points="${pts}" fill="none" stroke="${st.defaults.strokeColor}" stroke-width="${st.defaults.strokeWidth}" stroke-dasharray="4 3"/>`;
+      st.wallPoints.forEach(p => { svg += `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${st.defaults.strokeColor}"/>`; });
+    }
+    if (st.selectedId) { const s = st.shapes.find(x=>x.id===st.selectedId); if (s) svg += selOverlay(s); }
+    overlay.innerHTML = svg;
+    qs2('pa-cnt-trace').textContent = st.shapes.filter(s=>(s.layer||'trace')==='trace').length;
+    qs2('pa-cnt-annot').textContent = st.shapes.filter(s=>s.layer==='annot').length;
+    qs2('pa-count').textContent = st.shapes.length;
+    updateShapeList();
+  }
+
+  function updateShapeList(){
+    const el = qs2('pa-shapes');
+    if (st.shapes.length===0) { el.innerHTML = '<div style="padding:8px;font-size:11px;color:#777">Aucun élément</div>'; return; }
+    el.innerHTML = st.shapes.map(s => {
+      const col = s.color||s.stroke||'#888';
+      const ic = {camera:'⊙',fov:'⌖',line:'╱',polyline:'⌐',rect:'▭',pen:'〜',text:'T',baie:'▦',percement:'✕'}[s.type]||'•';
+      const lbl = s.label || s.text || (s.type+' '+s.id.replace('s',''));
+      return `<div class="pa-item${s.id===st.selectedId?' on':''}" onclick="PA.selectShape('${s.id}')"><span class="pa-dot" style="background:${col}"></span><span class="pa-lbl">${ic} ${esc2(lbl)}</span><span class="pa-x" onclick="event.stopPropagation();PA.deleteShape('${s.id}')">✕</span></div>`;
+    }).join('');
+  }
+
+  function selectShape(id){ st.selectedId = id; updatePropsPanel(); render(); }
+
+  function updateCursor(){
+    stage.className = 'pa-stage';
+    if (st.tool==='pan' || st.spacePressed) stage.classList.add('pa-grab');
+    else if (['pen','line','wall','rect','camera','fov','text','baie','percement','eraser'].includes(st.tool)) stage.classList.add('pa-cross');
+  }
+
+  function toggleLayer(n){
+    st.layers[n] = !st.layers[n];
+    const lyr = host.querySelector(`[data-lyr="${n}"] .pa-eye`);
+    if (lyr) lyr.style.opacity = st.layers[n] ? '1' : '0.35';
+    if (n==='plan') canvas.style.display = st.layers.plan ? 'block' : 'none';
+    render();
+  }
+
+  function updatePropsPanel(){
+    const el = qs2('pa-props');
+    if (st.selectedId) { const s=st.shapes.find(x=>x.id===st.selectedId); if (s) { shapePropsUI(s, el); return; } }
+    const h={
+      select:'Cliquez un élément, glissez pour le déplacer.',
+      pan:'Glissez pour déplacer la vue.',
+      pen:'Dessin libre sur le calque Traçage.',
+      line:'Cliquez + glissez pour une ligne.',
+      wall:'Cliquez points successifs, double-clic pour terminer.',
+      rect:'Cliquez + glissez pour un rectangle.',
+      camera:'Clic = caméra avec libellé auto (C01, C02…).',
+      fov:'Clic = cône de vision. Angle/portée/transparence réglables.',
+      text:'Clic = libellé texte.',
+      baie:'Clic = carré baie informatique (couleur au choix, BAIE01, 02…).',
+      percement:'Clic = croix rouge (percement/traversée de cloison).',
+      eraser:'Glissez pour effacer le plan (peint en blanc).',
+      delete:'Clic sur un élément pour le supprimer.',
+    };
+    if (['pen','line','wall','rect'].includes(st.tool)) {
+      el.innerHTML = `<label class="pa-f">Couleur</label><input type="color" value="${st.defaults.strokeColor}" oninput="PA.setDef('strokeColor',this.value)"><label class="pa-f">Épaisseur: <span id="wv">${st.defaults.strokeWidth}</span>px</label><input type="range" min="1" max="10" step="0.5" value="${st.defaults.strokeWidth}" oninput="PA.setDef('strokeWidth',parseFloat(this.value));document.getElementById('wv').textContent=this.value"><div class="pa-hint">${h[st.tool]}</div>`;
+    } else if (st.tool==='camera') {
+      el.innerHTML = `<label class="pa-f">Couleur</label><input type="color" value="${st.defaults.cameraColor}" oninput="PA.setDef('cameraColor',this.value)"><label class="pa-f">Rayon: <span id="crv">${st.defaults.cameraRadius}</span>px</label><input type="range" min="6" max="30" value="${st.defaults.cameraRadius}" oninput="PA.setDef('cameraRadius',parseInt(this.value));document.getElementById('crv').textContent=this.value"><div class="pa-hint">${h.camera}</div>`;
+    } else if (st.tool==='fov') {
+      el.innerHTML = `<label class="pa-f">Couleur</label><input type="color" value="${st.defaults.fovColor}" oninput="PA.setDef('fovColor',this.value)"><label class="pa-f">Ouverture: <span id="av">${st.defaults.fovAperture}</span>°</label><input type="range" min="1" max="360" value="${st.defaults.fovAperture}" oninput="PA.setDef('fovAperture',parseInt(this.value));document.getElementById('av').textContent=this.value"><label class="pa-f">Orientation: <span id="bv">${st.defaults.fovBearing}</span>°</label><input type="range" min="0" max="360" value="${st.defaults.fovBearing}" oninput="PA.setDef('fovBearing',parseInt(this.value));document.getElementById('bv').textContent=this.value"><label class="pa-f">Portée: <span id="rv">${st.defaults.fovRadius}</span>px</label><input type="range" min="20" max="600" value="${st.defaults.fovRadius}" oninput="PA.setDef('fovRadius',parseInt(this.value));document.getElementById('rv').textContent=this.value"><label class="pa-f">Transparence: <span id="ov">${Math.round(st.defaults.fovOpacity*100)}</span>%</label><input type="range" min="5" max="90" value="${st.defaults.fovOpacity*100}" oninput="PA.setDef('fovOpacity',parseInt(this.value)/100);document.getElementById('ov').textContent=this.value"><div class="pa-hint">${h.fov}</div>`;
+    } else if (st.tool==='baie') {
+      el.innerHTML = `<label class="pa-f">Couleur</label><input type="color" value="${st.defaults.baieColor}" oninput="PA.setDef('baieColor',this.value)"><label class="pa-f">Taille: <span id="bsv">${st.defaults.baieSize}</span>px</label><input type="range" min="12" max="60" value="${st.defaults.baieSize}" oninput="PA.setDef('baieSize',parseInt(this.value));document.getElementById('bsv').textContent=this.value"><div class="pa-hint">${h.baie}</div>`;
+    } else if (st.tool==='percement') {
+      el.innerHTML = `<label class="pa-f">Couleur</label><input type="color" value="${st.defaults.percementColor}" oninput="PA.setDef('percementColor',this.value)"><label class="pa-f">Taille: <span id="psv">${st.defaults.percementSize}</span>px</label><input type="range" min="8" max="40" value="${st.defaults.percementSize}" oninput="PA.setDef('percementSize',parseInt(this.value));document.getElementById('psv').textContent=this.value"><label class="pa-f">Épaisseur: <span id="pwv">${st.defaults.percementWidth}</span>px</label><input type="range" min="1" max="8" step="0.5" value="${st.defaults.percementWidth}" oninput="PA.setDef('percementWidth',parseFloat(this.value));document.getElementById('pwv').textContent=this.value"><div class="pa-hint">${h.percement}</div>`;
+    } else if (st.tool==='text') {
+      el.innerHTML = `<label class="pa-f">Couleur</label><input type="color" value="${st.defaults.textColor}" oninput="PA.setDef('textColor',this.value)"><label class="pa-f">Taille: <span id="tsv">${st.defaults.textSize}</span>px</label><input type="range" min="8" max="48" value="${st.defaults.textSize}" oninput="PA.setDef('textSize',parseInt(this.value));document.getElementById('tsv').textContent=this.value"><div class="pa-hint">${h.text}</div>`;
+    } else if (st.tool==='eraser') {
+      el.innerHTML = `<label class="pa-f">Taille: <span id="esv">${st.defaults.eraserSize}</span>px</label><input type="range" min="4" max="100" value="${st.defaults.eraserSize}" oninput="PA.setDef('eraserSize',parseInt(this.value));document.getElementById('esv').textContent=this.value"><div class="pa-hint">${h.eraser}</div><button class="pa-btn pa-btn-danger" style="width:100%;margin-top:8px" onclick="PA.restoreOriginal()">↺ Restaurer plan original</button>`;
+    } else {
+      el.innerHTML = `<div class="pa-hint">${h[st.tool]||'Sélectionnez un outil ou un élément.'}</div>`;
+    }
+
+    // Current plan title editor
+    if (st.currentPlanId) {
+      const p = (S.planPages||[]).find(x=>x.id===st.currentPlanId);
+      if (p) {
+        el.innerHTML += `<div style="margin-top:14px;padding-top:12px;border-top:1px solid #2e2e2e">
+          <label class="pa-f">Titre du plan</label>
+          <input type="text" value="${esc2(p.title||'')}" oninput="PA.renamePlan('${p.id}',this.value)" style="width:100%;background:#1a1a1a;border:1px solid #3a3a3a;color:#e5e5e5;padding:6px 8px;border-radius:4px;font-size:12px">
+          <label class="pa-f">Module rattaché</label>
+          <select onchange="PA.setPlanTarget('${p.id}',this.value)" style="width:100%;background:#1a1a1a;border:1px solid #3a3a3a;color:#e5e5e5;padding:6px 8px;border-radius:4px;font-size:12px">
+            <option value="vpi" ${p.target==='vpi'?'selected':''}>VPI</option>
+            <option value="tech" ${p.target==='tech'?'selected':''}>Dossier technique</option>
+            <option value="doe" ${p.target==='doe'?'selected':''}>DOE</option>
+            <option value="terrain" ${p.target==='terrain'?'selected':''}>Terrain général</option>
+          </select>
+          <button class="pa-btn pa-btn-danger" style="width:100%;margin-top:10px" onclick="PA.deletePlan('${p.id}')">Supprimer ce plan</button>
+        </div>`;
+      }
+    }
+  }
+
+  function shapePropsUI(s, el){
+    let html = `<div style="font-size:11px;color:#aaa;margin-bottom:8px">Type: <b style="color:#ddd">${s.type}</b></div>`;
+    if (s.type==='camera') html += `<label class="pa-f">Étiquette</label><input type="text" value="${esc2(s.label||'')}" oninput="PA.updateShape('${s.id}',{label:this.value})"><label class="pa-f">Couleur</label><input type="color" value="${s.color}" oninput="PA.updateShape('${s.id}',{color:this.value})"><label class="pa-f">Rayon: <span>${s.radius}</span>px</label><input type="range" min="6" max="30" value="${s.radius}" oninput="PA.updateShape('${s.id}',{radius:parseInt(this.value)});PA.refreshProps()">`;
+    else if (s.type==='fov') html += `<label class="pa-f">Couleur</label><input type="color" value="${s.color}" oninput="PA.updateShape('${s.id}',{color:this.value})"><label class="pa-f">Ouverture: <span>${Math.round(s.aperture)}</span>°</label><input type="range" min="1" max="360" value="${s.aperture}" oninput="PA.updateShape('${s.id}',{aperture:parseInt(this.value)});PA.refreshProps()"><label class="pa-f">Orientation: <span>${Math.round(s.bearing)}</span>°</label><input type="range" min="0" max="360" value="${s.bearing}" oninput="PA.updateShape('${s.id}',{bearing:parseInt(this.value)});PA.refreshProps()"><label class="pa-f">Portée: <span>${Math.round(s.radius)}</span>px</label><input type="range" min="20" max="800" value="${s.radius}" oninput="PA.updateShape('${s.id}',{radius:parseInt(this.value)});PA.refreshProps()"><label class="pa-f">Transparence: <span>${Math.round(s.opacity*100)}</span>%</label><input type="range" min="5" max="90" value="${s.opacity*100}" oninput="PA.updateShape('${s.id}',{opacity:parseInt(this.value)/100});PA.refreshProps()"`;
+    else if (['line','pen','polyline'].includes(s.type)) html += `<label class="pa-f">Couleur</label><input type="color" value="${s.stroke}" oninput="PA.updateShape('${s.id}',{stroke:this.value})"><label class="pa-f">Épaisseur: <span>${s.width}</span>px</label><input type="range" min="1" max="10" step="0.5" value="${s.width}" oninput="PA.updateShape('${s.id}',{width:parseFloat(this.value)});PA.refreshProps()">`;
+    else if (s.type==='rect') html += `<label class="pa-f">Couleur trait</label><input type="color" value="${s.stroke}" oninput="PA.updateShape('${s.id}',{stroke:this.value})"><label class="pa-f">Remplissage</label><div style="display:flex;gap:6px"><input type="color" value="${s.fill==='none'?'#ffffff':s.fill}" oninput="PA.updateShape('${s.id}',{fill:this.value})"><button class="pa-btn" onclick="PA.updateShape('${s.id}',{fill:'none'})">Aucun</button></div><label class="pa-f">Épaisseur: <span>${s.width}</span>px</label><input type="range" min="1" max="10" step="0.5" value="${s.width}" oninput="PA.updateShape('${s.id}',{width:parseFloat(this.value)});PA.refreshProps()">`;
+    else if (s.type==='text') html += `<label class="pa-f">Texte</label><input type="text" value="${esc2(s.text)}" oninput="PA.updateShape('${s.id}',{text:this.value})"><label class="pa-f">Couleur</label><input type="color" value="${s.color}" oninput="PA.updateShape('${s.id}',{color:this.value})"><label class="pa-f">Taille: <span>${s.size}</span>px</label><input type="range" min="8" max="48" value="${s.size}" oninput="PA.updateShape('${s.id}',{size:parseInt(this.value)});PA.refreshProps()">`;
+    else if (s.type==='baie') html += `<label class="pa-f">Libellé</label><input type="text" value="${esc2(s.label||'')}" oninput="PA.updateShape('${s.id}',{label:this.value})"><label class="pa-f">Couleur</label><input type="color" value="${s.color}" oninput="PA.updateShape('${s.id}',{color:this.value})"><label class="pa-f">Taille: <span>${s.size}</span>px</label><input type="range" min="12" max="60" value="${s.size}" oninput="PA.updateShape('${s.id}',{size:parseInt(this.value)});PA.refreshProps()">`;
+    else if (s.type==='percement') html += `<label class="pa-f">Couleur</label><input type="color" value="${s.color}" oninput="PA.updateShape('${s.id}',{color:this.value})"><label class="pa-f">Taille: <span>${s.size}</span>px</label><input type="range" min="8" max="40" value="${s.size}" oninput="PA.updateShape('${s.id}',{size:parseInt(this.value)});PA.refreshProps()"><label class="pa-f">Épaisseur: <span>${s.width}</span>px</label><input type="range" min="1" max="8" step="0.5" value="${s.width}" oninput="PA.updateShape('${s.id}',{width:parseFloat(this.value)});PA.refreshProps()">`;
+    html += `<button class="pa-btn pa-btn-danger" style="width:100%;margin-top:10px" onclick="PA.deleteShape('${s.id}')">Supprimer l'élément</button>`;
+    el.innerHTML = html;
+  }
+
+  function setDef(k,v){ st.defaults[k]=v; }
+  function refreshProps(){ updatePropsPanel(); }
+  function renamePlan(id, title){ const p=(S.planPages||[]).find(x=>x.id===id); if(p){ p.title=title; scheduleAutosave(); renderPlanList(); } }
+  function setPlanTarget(id, target){ const p=(S.planPages||[]).find(x=>x.id===id); if(p){ p.target=target; scheduleAutosave(); renderPlanList(); } }
+
+  async function exportPNG(){
+    if (!st.imgLoaded) { alert('Aucun plan'); return; }
+    const url = await exportToBlob();
+    const a = document.createElement('a'); a.href = url;
+    a.download = 'plan_annote_' + new Date().toISOString().slice(0,10) + '.png'; a.click();
+  }
+  function exportSVG(){
+    if (!st.imgLoaded) { alert('Aucun plan'); return; }
+    const b64 = canvas.toDataURL('image/png');
+    const svg = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${st.imgWidth}" height="${st.imgHeight}" viewBox="0 0 ${st.imgWidth} ${st.imgHeight}">${st.layers.plan?`<image href="${b64}" width="${st.imgWidth}" height="${st.imgHeight}"/>`:''}${overlay.innerHTML}</svg>`;
+    const blob = new Blob([svg], { type: 'image/svg+xml' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'plan_annote_' + new Date().toISOString().slice(0,10) + '.svg'; a.click();
+  }
+
+  return {
+    init, onModalOpen, newPlan, selectPlan, deletePlan, renamePlan, setPlanTarget,
+    selectShape, deleteShape, updateShape, refreshProps, setDef,
+    zoomIn, zoomOut, zoomReset, fitToView, toggleLayer,
+    restoreOriginal: restoreOriginalPlan,
+    saveAll, _booted:false,
+  };
+})();
 
 // ═══════════════════════════════════════
 // PREVIEW
@@ -6329,6 +7352,8 @@ function loadSession(){
     else if(data.photos) S.photos=data.photos; // rétrocompatibilité
     if(data.notebookPages) S.notebookPages=data.notebookPages;
     if(data.activeNote!=null) S.activeNote=data.activeNote;
+    if(Array.isArray(data.planPages)) S.planPages=data.planPages;
+    if(Array.isArray(data.cableTypes)) S.cableTypes=data.cableTypes;
     if(data.vpi){
       Object.assign(S.vpi,data.vpi);
       // Migration défensive — champs ajoutés après v1
