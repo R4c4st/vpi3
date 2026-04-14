@@ -245,7 +245,7 @@
 .pa-tool svg{width:18px;height:18px}
 .pa-div{height:1px;background:#333;margin:5px 8px}
 .pa-canvas-area{flex:1;position:relative;overflow:hidden;background:#2a2a2a;background-image:linear-gradient(45deg,#252525 25%,transparent 25%),linear-gradient(-45deg,#252525 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#252525 75%),linear-gradient(-45deg,transparent 75%,#252525 75%);background-size:18px 18px;background-position:0 0,0 9px,9px -9px,-9px 0}
-.pa-stage{position:absolute;transform-origin:0 0}
+.pa-stage{position:absolute;top:0;left:0;transform-origin:0 0}
 .pa-stage canvas,.pa-stage svg{position:absolute;top:0;left:0;display:block}
 .pa-stage.pa-cross svg{cursor:crosshair}
 .pa-stage.pa-grab svg{cursor:grab}
@@ -1403,7 +1403,6 @@ canvas{display:block;touch-action:none;width:100%}
         <button class="hbtn" onclick="saveSession()">💾 Sauvegarder</button>
         <button class="hbtn" onclick="document.getElementById('jsonImport').click()">📂 Restaurer</button>
         <button class="hbtn hbtn-ok" onclick="openPreviewModal()">Prévisualiser</button>
-        <button class="hbtn hbtn-pdf" onclick="printCurrentModule()">PDF</button>
         <button class="hbtn hbtn-danger" onclick="nouveauProjet()">Nouveau projet</button>
         <button class="hbtn" onclick="openAccounts()" style="background:rgba(255,255,255,.09)">⚙ Accès</button>
         <button class="hbtn" onclick="doLogout()" style="background:rgba(255,255,255,.09)">⏻ Déco.</button>
@@ -4662,20 +4661,32 @@ function attachSheetFile(id){
 function renderDoeSheets(){
   const tbody=qs('doe-sheets-table');if(!tbody) return;
   const cnt=S.doe.techSheets.length;
-  qs('sheets-count-label').textContent=`${cnt} fiche${cnt>1?'s':''}`;
+  const validated=S.doe.techSheets.filter(r=>r.fileUrl||(r.code&&S.catalog.find(c=>c.code===r.code&&c.noticeFileUrl))).length;
+  const missing=cnt-validated;
+  qs('sheets-count-label').innerHTML=cnt===0
+    ?`0 fiche`
+    :`${cnt} fiche${cnt>1?'s':''} &nbsp;·&nbsp; <span style="color:var(--ok);font-weight:700">${validated} ✔</span>${missing?` &nbsp;<span style="color:var(--warn);font-weight:700">${missing} ⚠</span>`:''}`;
   tbody.innerHTML=S.doe.techSheets.map(r=>{
     const iconKey=FICON[r.family]||'rack';
     const hasFile=!!r.fileUrl;const isPdf=(r.mimeType||'').includes('pdf');
-    // Chercher une notice dans le catalogue pour ce code si pas de fichier lib
     const catEntry=!hasFile&&r.code?S.catalog.find(c=>c.code===r.code&&c.noticeFileUrl):null;
     const catNotice=catEntry?{url:catEntry.noticeFileUrl,name:catEntry.noticeFileName,mime:catEntry.noticeMimeType}:null;
     const catIsPdf=catNotice&&(catNotice.mime||'').includes('pdf');
+    // Badge statut
+    const statusBadge=hasFile
+      ?`<span title="Fiche technique jointe" style="display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:#fff;background:var(--ok);border-radius:5px;padding:1px 6px;white-space:nowrap"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Validé</span>`
+      :catNotice
+        ?`<span title="Notice disponible dans le catalogue" style="display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:#fff;background:var(--primary2);border-radius:5px;padding:1px 6px;white-space:nowrap">📂 Catalogue</span>`
+        :`<span title="Aucune fiche technique jointe" style="display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:#fff;background:var(--warn);border-radius:5px;padding:1px 6px;white-space:nowrap"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Manquante</span>`;
     return`<tr>
       <td>
         <div style="display:flex;align-items:center;gap:7px">
           <div style="flex-shrink:0;width:26px;height:26px;border-radius:6px;background:#e8f0fb;display:flex;align-items:center;justify-content:center;color:var(--primary)">${IC[iconKey]}</div>
           <div>
-            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">${esc(r.code)}</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">${esc(r.code)}</div>
+              ${statusBadge}
+            </div>
             <input value="${esc(r.name)}" placeholder="Désignation produit" oninput="sheetField('${r.id}','name',this.value)" style="border:none;background:transparent;font-size:12px;font-weight:600;padding:0;width:180px"/>
           </div>
         </div>
@@ -5632,8 +5643,8 @@ const PA = (function(){
   }
 
   function onModalOpen(){
-    // re-size after modal shown
-    setTimeout(() => { if (st.imgLoaded) fitToView(); }, 50);
+    // re-size after modal shown — double rAF garantit que le layout est calculé
+    requestAnimationFrame(() => requestAnimationFrame(() => { if (st.imgLoaded) fitToView(); }));
     renderPlanList();
     // auto-load first plan if present and no current selection
     const list = S.planPages || [];
@@ -5698,9 +5709,17 @@ const PA = (function(){
       st.imgWidth = img.width;
       st.imgHeight = img.height;
       canvas.width = img.width; canvas.height = img.height;
+      // Forcer les dimensions CSS du canvas (certains navigateurs en ont besoin)
+      canvas.style.width = img.width + 'px';
+      canvas.style.height = img.height + 'px';
       overlay.setAttribute('width', img.width);
       overlay.setAttribute('height', img.height);
       overlay.setAttribute('viewBox', `0 0 ${img.width} ${img.height}`);
+      overlay.style.width = img.width + 'px';
+      overlay.style.height = img.height + 'px';
+      // Fond blanc avant dessin (canvas transparent par défaut)
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, img.width, img.height);
       ctx.drawImage(img, 0, 0);
       st.imgData = ctx.getImageData(0, 0, img.width, img.height);
       st.originalSrc = plan.originalSrc || plan.imgSrc;
@@ -5716,10 +5735,15 @@ const PA = (function(){
       qs2('pa-threshold-val').textContent = st.threshold;
       qs2('pa-threshold-wrap').style.display = (st.mode === 'bw') ? 'flex' : 'none';
       applyMode();
-      fitToView();
       render();
       st.history = []; st.historyIndex = -1;
       pushHistory();
+      // Différer fitToView pour s'assurer que le layout du modal est calculé
+      requestAnimationFrame(() => requestAnimationFrame(fitToView));
+    };
+    img.onerror = () => {
+      showToast('Impossible de charger l\'image du plan.');
+      resetCanvas();
     };
     img.src = plan.imgSrc;
   }
@@ -5837,10 +5861,13 @@ const PA = (function(){
   function fitToView(){
     if (!st.imgLoaded) return;
     const r = canvasArea.getBoundingClientRect();
+    // Si le layout n'est pas encore calculé (modal vient d'ouvrir), retenter au prochain frame
+    if (!r.width || !r.height) { requestAnimationFrame(fitToView); return; }
     const m = 40;
     const sx = (r.width-m*2)/st.imgWidth;
     const sy = (r.height-m*2)/st.imgHeight;
-    st.zoom = Math.min(sx, sy);
+    st.zoom = Math.min(sx, sy, 5); // plafonner à 5x pour éviter un zoom aberrant
+    if (!isFinite(st.zoom) || st.zoom <= 0) st.zoom = 1;
     st.panX = (r.width - st.imgWidth*st.zoom) / 2;
     st.panY = (r.height - st.imgHeight*st.zoom) / 2;
     applyTransform();
