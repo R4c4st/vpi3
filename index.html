@@ -6042,6 +6042,9 @@ const PA = (function(){
     const oldW=st.imgWidth, oldH=st.imgHeight, newW=oldH, newH=oldW;
     const tmp=document.createElement('canvas'); tmp.width=oldW; tmp.height=oldH; tmp.getContext('2d').drawImage(canvas,0,0);
     canvas.width=newW; canvas.height=newH;
+    // Mettre à jour les dimensions CSS du canvas (sinon déformation visuelle)
+    canvas.style.width = newW + 'px';
+    canvas.style.height = newH + 'px';
     ctx.save(); ctx.translate(newW/2,newH/2); ctx.rotate(cw?Math.PI/2:-Math.PI/2); ctx.drawImage(tmp,-oldW/2,-oldH/2); ctx.restore();
     const oc=document.createElement('canvas'); oc.width=oldW; oc.height=oldH; oc.getContext('2d').putImageData(st.imgData,0,0);
     const rc=document.createElement('canvas'); rc.width=newW; rc.height=newH;
@@ -6050,6 +6053,8 @@ const PA = (function(){
     st.imgWidth=newW; st.imgHeight=newH;
     overlay.setAttribute('width',newW); overlay.setAttribute('height',newH);
     overlay.setAttribute('viewBox',`0 0 ${newW} ${newH}`);
+    overlay.style.width = newW + 'px';
+    overlay.style.height = newH + 'px';
     const tx = (x,y) => cw ? [oldH-y, x] : [y, oldW-x];
     for (const s of st.shapes) {
       if (['camera','fov','text','baie','percement','borne','porte','centrale'].includes(s.type)) {
@@ -6066,7 +6071,8 @@ const PA = (function(){
         st.originalSrc = c2.toDataURL('image/png'); persistCurrent(); };
       oi.src = st.originalSrc;
     }
-    fitToView(); render(); pushHistory();
+    render(); pushHistory();
+    requestAnimationFrame(() => requestAnimationFrame(fitToView));
   }
 
   // ─── Rendering ───
