@@ -2138,10 +2138,16 @@ canvas{display:block;touch-action:none;width:100%}
       <div class="card">
         <div class="toolbar">
           <div class="left"><h4 style="margin:0">Notices, plans, bons de livraison</h4></div>
-          <div class="right"><button class="btn primary" onclick="addDocRow()">+ Document</button></div>
+          <div class="right">
+            <button class="btn" onclick="importNoticesFromCatalog()" title="Importer automatiquement les notices des références catalogue ayant un fichier joint" style="display:flex;align-items:center;gap:5px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              Depuis catalogue
+            </button>
+            <button class="btn primary" onclick="addDocRow()">+ Document</button>
+          </div>
         </div>
         <div class="tbl-wrap">
-          <table><thead><tr><th>Nom document</th><th>Catégorie</th><th>Lié à</th><th style="width:34px"></th></tr></thead>
+          <table><thead><tr><th>Nom document</th><th>Catégorie</th><th>Lié à</th><th>Fichier</th><th style="width:34px"></th></tr></thead>
           <tbody id="doe-docs-table"></tbody></table>
         </div>
         <div class="tbl-foot"><button class="btn" onclick="addDocRow()">+ Ajouter un document</button></div>
@@ -2421,9 +2427,22 @@ canvas{display:block;touch-action:none;width:100%}
             <select id="nc-unit"><option>pce</option><option>m</option><option>ml</option><option>lot</option><option>h</option><option>forfait</option></select>
           </div>
         </div>
+        <!-- Notice technique optionnelle -->
+        <div style="margin-top:10px;padding:10px 12px;background:var(--panel-soft);border:1px dashed var(--line);border-radius:10px">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px">Notice technique (optionnel)</div>
+          <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+            <button class="btn sm" type="button" onclick="triggerCatNoticeUpload()" style="display:flex;align-items:center;gap:5px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Joindre PDF / image
+            </button>
+            <span id="nc-notice-name" style="font-size:11px;color:var(--muted);font-style:italic">Aucun fichier</span>
+            <button id="nc-notice-clear" class="btn sm danger" type="button" onclick="clearCatNotice()" style="display:none;padding:3px 7px">✕</button>
+          </div>
+          <input id="nc-notice-input" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" style="display:none" onchange="onCatNoticeSelected(event)"/>
+        </div>
         <div style="margin-top:10px;display:flex;gap:8px">
           <button class="btn primary" onclick="saveNewCatItem()">Enregistrer dans le catalogue</button>
-          <button class="btn" onclick="document.getElementById('cat-new-form').style.display='none'">Annuler</button>
+          <button class="btn" onclick="document.getElementById('cat-new-form').style.display='none';clearCatNotice()">Annuler</button>
         </div>
       </div>
     </div>
@@ -4316,18 +4335,60 @@ function renderPlanTable(){
 // ═══════════════════════════════════════
 // DOE DOCS & TESTS
 // ═══════════════════════════════════════
-function addDocRow(){S.doe.docs.push({id:uid(),name:'',category:'Notice',linkedTo:''});renderDoeDocs();scheduleAutosave();}
+function addDocRow(){S.doe.docs.push({id:uid(),name:'',category:'Notice',linkedTo:'',fileName:'',fileUrl:'',mimeType:''});renderDoeDocs();scheduleAutosave();}
 function removeDocRow(id){S.doe.docs=S.doe.docs.filter(r=>r.id!==id);renderDoeDocs();renderMetrics();scheduleAutosave();}
 function docField(id,key,val){const r=S.doe.docs.find(x=>x.id===id);if(r){r[key]=val;scheduleAutosave();}}
+function attachDocFile(id){
+  const input=document.createElement('input');input.type='file';input.accept='.pdf,.png,.jpg,.jpeg,.webp';
+  input.onchange=e=>{
+    const f=e.target.files?.[0];if(!f) return;
+    const r2=new FileReader();r2.onload=ev=>{
+      const row=S.doe.docs.find(x=>x.id===id);
+      if(row){row.fileName=f.name;row.fileUrl=ev.target.result;row.mimeType=f.type;renderDoeDocs();scheduleAutosave();}
+    };r2.readAsDataURL(f);
+  };input.click();
+}
 function renderDoeDocs(){
   const tbody=qs('doe-docs-table');if(!tbody) return;
-  tbody.innerHTML=S.doe.docs.map(r=>`<tr>
-    <td><input value="${esc(r.name)}" placeholder="Nom document" oninput="docField('${r.id}','name',this.value)" style="min-width:180px"/></td>
+  tbody.innerHTML=S.doe.docs.map(r=>{
+    const hasFile=!!r.fileUrl;const isPdf=(r.mimeType||'').includes('pdf');
+    return`<tr>
+    <td><input value="${esc(r.name)}" placeholder="Nom document" oninput="docField('${r.id}','name',this.value)" style="min-width:160px"/></td>
     <td><select onchange="docField('${r.id}','category',this.value)">
       ${['Notice','Plan','Devis','BL','Recettage','Rapport','Autre'].map(c=>`<option${r.category===c?' selected':''}>${c}</option>`).join('')}
     </select></td>
-    <td><input value="${esc(r.linkedTo)}" placeholder="Équipement / réf." oninput="docField('${r.id}','linkedTo',this.value)" style="min-width:140px"/></td>
-    <td><button class="btn sm danger" onclick="removeDocRow('${r.id}')">✕</button></td></tr>`).join('');
+    <td><input value="${esc(r.linkedTo)}" placeholder="Équipement / réf." oninput="docField('${r.id}','linkedTo',this.value)" style="min-width:130px"/></td>
+    <td style="min-width:160px">
+      ${hasFile
+        ?`<div style="display:flex;align-items:center;gap:5px">
+            ${isPdf?`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c97c08" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`:``}
+            <a href="${r.fileUrl}" target="_blank" download="${esc(r.fileName)}" style="font-size:11px;color:var(--primary);font-weight:600;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;text-decoration:none" title="${esc(r.fileName)}">${esc(r.fileName)}</a>
+            <button class="btn sm ghost" onclick="attachDocFile('${r.id}')" title="Remplacer" style="padding:2px 5px;font-size:10px">↑</button>
+          </div>`
+        :`<button class="btn sm warn" onclick="attachDocFile('${r.id}')" style="font-size:11px">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Joindre
+          </button>`}
+    </td>
+    <td><button class="btn sm danger" onclick="removeDocRow('${r.id}')">✕</button></td></tr>`;
+  }).join('');
+}
+
+// Importer les notices des références catalogue dans DOE docs
+function importNoticesFromCatalog(){
+  const withNotice=S.catalog.filter(c=>c.noticeFileUrl);
+  if(!withNotice.length){showToast('Aucune notice trouvée dans le catalogue.');return;}
+  let added=0;
+  withNotice.forEach(c=>{
+    const alreadyThere=S.doe.docs.find(d=>d.linkedTo===c.code&&d.fileUrl===c.noticeFileUrl);
+    if(!alreadyThere){
+      S.doe.docs.push({id:uid(),name:c.noticeFileName||`Notice ${c.code}`,category:'Notice',linkedTo:c.code,
+        fileName:c.noticeFileName||'notice.pdf',fileUrl:c.noticeFileUrl,mimeType:c.noticeMimeType||''});
+      added++;
+    }
+  });
+  renderDoeDocs();renderMetrics();scheduleAutosave();
+  showToast(added?`${added} notice${added>1?'s':''} importée${added>1?'s':''} depuis le catalogue.`:'Toutes les notices du catalogue sont déjà présentes.');
 }
 
 function addTestRow(){S.doe.tests.push({id:uid(),test:'',equip:'',result:'OK',value:''});renderTests();scheduleAutosave();}
@@ -4567,6 +4628,10 @@ function renderDoeSheets(){
   tbody.innerHTML=S.doe.techSheets.map(r=>{
     const iconKey=FICON[r.family]||'rack';
     const hasFile=!!r.fileUrl;const isPdf=(r.mimeType||'').includes('pdf');
+    // Chercher une notice dans le catalogue pour ce code si pas de fichier lib
+    const catEntry=!hasFile&&r.code?S.catalog.find(c=>c.code===r.code&&c.noticeFileUrl):null;
+    const catNotice=catEntry?{url:catEntry.noticeFileUrl,name:catEntry.noticeFileName,mime:catEntry.noticeMimeType}:null;
+    const catIsPdf=catNotice&&(catNotice.mime||'').includes('pdf');
     return`<tr>
       <td>
         <div style="display:flex;align-items:center;gap:7px">
@@ -4587,10 +4652,17 @@ function renderDoeSheets(){
               <a href="${r.fileUrl}" target="_blank" download="${esc(r.fileName)}" style="font-size:11px;color:var(--primary);font-weight:700;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;text-decoration:none">${esc(r.fileName)}</a>
               <button class="btn sm ghost" onclick="attachSheetFile('${r.id}')" title="Remplacer" style="padding:3px 6px">↑</button>
             </div>`
-          :`<button class="btn sm warn" onclick="attachSheetFile('${r.id}')">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              Joindre fiche
-            </button>`}
+          :catNotice
+            ?`<div style="display:flex;align-items:center;gap:6px">
+                ${catIsPdf?`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c97c08" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`:''}
+                <a href="${catNotice.url}" target="_blank" download="${esc(catNotice.name)}" style="font-size:11px;color:var(--ok);font-weight:700;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;text-decoration:none" title="Notice du catalogue — ${esc(catNotice.name)}">📂 ${esc(catNotice.name)}</a>
+                <span style="font-size:10px;color:var(--muted);white-space:nowrap">catalogue</span>
+                <button class="btn sm ghost" onclick="attachSheetFile('${r.id}')" title="Joindre une fiche spécifique" style="padding:3px 6px">↑</button>
+              </div>`
+            :`<button class="btn sm warn" onclick="attachSheetFile('${r.id}')">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Joindre fiche
+              </button>`}
       </td>
       <td><input value="${esc(r.note)}" placeholder="Note, emplacement…" oninput="sheetField('${r.id}','note',this.value)" style="min-width:140px"/></td>
       <td><button class="btn sm danger" onclick="removeSheetRow('${r.id}')">✕</button></td>
@@ -4877,12 +4949,31 @@ function renderCatalogGrid(){
     const mq=!q||(c.code.toLowerCase().includes(q)||c.name.toLowerCase().includes(q)||c.family.toLowerCase().includes(q)||(c.brand||'').toLowerCase().includes(q));
     return mc&&mq;
   });
-  qs('cat-grid').innerHTML=items.length?items.map(c=>`<div class="cat-item" onclick="selectCatItem('${c.id}')">
-    <div class="ci-icon">${IC[FICON[c.family]||'rack']}</div>
-    <div class="ci-code">${esc(c.code)}</div>
-    <div class="ci-name">${esc(c.name)}</div>
-    <span class="ci-tag">${esc(c.brand||c.family)}</span>
-  </div>`).join(''):`<div style="grid-column:1/-1;padding:20px;text-align:center;color:var(--muted)">Aucun résultat</div>`;
+  qs('cat-grid').innerHTML=items.length?items.map(c=>{
+    const hasNotice=!!c.noticeFileUrl;
+    const isPdf=(c.noticeMimeType||'').includes('pdf');
+    return`<div class="cat-item" style="position:relative">
+      <div onclick="selectCatItem('${c.id}')" style="cursor:pointer">
+        <div class="ci-icon">${IC[FICON[c.family]||'rack']}</div>
+        <div class="ci-code">${esc(c.code)}</div>
+        <div class="ci-name">${esc(c.name)}</div>
+        <span class="ci-tag">${esc(c.brand||c.family)}</span>
+      </div>
+      <div style="margin-top:7px;display:flex;align-items:center;gap:5px;border-top:1px solid var(--line);padding-top:6px">
+        ${hasNotice
+          ?`<a href="${c.noticeFileUrl}" target="_blank" download="${esc(c.noticeFileName)}" style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--ok);font-weight:700;text-decoration:none;flex:1;overflow:hidden" title="${esc(c.noticeFileName)}">
+              ${isPdf?`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`:`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`}
+              <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px">📎 ${esc(c.noticeFileName)}</span>
+            </a>
+            <button onclick="event.stopPropagation();attachCatNotice('${c.id}')" class="btn sm ghost" style="padding:2px 5px;font-size:10px" title="Remplacer la notice">↑</button>
+            <button onclick="event.stopPropagation();removeCatNotice('${c.id}')" class="btn sm danger" style="padding:2px 5px;font-size:10px" title="Supprimer la notice">✕</button>`
+          :`<button onclick="event.stopPropagation();attachCatNotice('${c.id}')" class="btn sm" style="font-size:10px;padding:3px 7px;width:100%;justify-content:center;display:flex;align-items:center;gap:4px">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Joindre notice
+            </button>`}
+      </div>
+    </div>`;
+  }).join(''):`<div style="grid-column:1/-1;padding:20px;text-align:center;color:var(--muted)">Aucun résultat</div>`;
 }
 function selectCatItem(catId){
   const cat=S.catalog.find(c=>c.id===catId);if(!cat) return;
@@ -4898,11 +4989,55 @@ function saveNewCatItem(){
   const family=qs('nc-family').value,unit=qs('nc-unit').value;
   if(!code||!name){alert('Code et désignation requis.');return;}
   if(S.catalog.find(c=>c.code===code)){alert('Code déjà existant.');return;}
-  S.catalog.push({id:uid(),code,name,family,unit});
+  const entry={id:uid(),code,name,family,unit};
+  if(_catNoticePending){
+    entry.noticeFileName=_catNoticePending.fileName;
+    entry.noticeFileUrl=_catNoticePending.fileUrl;
+    entry.noticeMimeType=_catNoticePending.mimeType;
+  }
+  S.catalog.push(entry);
   qs('nc-code').value='';qs('nc-name').value='';
+  clearCatNotice();
   qs('cat-new-form').style.display='none';catFilter='all';
   renderCatPills();renderCatalogGrid();scheduleAutosave();
   showToast('Référence ajoutée au catalogue.');
+}
+
+// ── NOTICE CATALOGUE
+let _catNoticePending=null;
+function triggerCatNoticeUpload(){qs('nc-notice-input').click();}
+function onCatNoticeSelected(e){
+  const f=e.target.files?.[0];if(!f) return;
+  const r=new FileReader();r.onload=ev=>{
+    _catNoticePending={fileName:f.name,fileUrl:ev.target.result,mimeType:f.type};
+    qs('nc-notice-name').textContent=f.name;
+    qs('nc-notice-clear').style.display='inline-flex';
+  };r.readAsDataURL(f);e.target.value='';
+}
+function clearCatNotice(){
+  _catNoticePending=null;
+  if(qs('nc-notice-name')) qs('nc-notice-name').textContent='Aucun fichier';
+  if(qs('nc-notice-clear')) qs('nc-notice-clear').style.display='none';
+  if(qs('nc-notice-input')) qs('nc-notice-input').value='';
+}
+// Joindre/remplacer une notice directement depuis la grille catalogue
+function attachCatNotice(catId){
+  const input=document.createElement('input');input.type='file';input.accept='.pdf,.png,.jpg,.jpeg,.webp';
+  input.onchange=e=>{
+    const f=e.target.files?.[0];if(!f) return;
+    const r=new FileReader();r.onload=ev=>{
+      const c=S.catalog.find(x=>x.id===catId);
+      if(c){c.noticeFileName=f.name;c.noticeFileUrl=ev.target.result;c.noticeMimeType=f.type;}
+      renderCatalogGrid();scheduleAutosave();
+      showToast(`Notice "${f.name}" attachée à la référence.`);
+    };r.readAsDataURL(f);
+  };input.click();
+}
+function removeCatNotice(catId){
+  const c=S.catalog.find(x=>x.id===catId);
+  if(c){delete c.noticeFileName;delete c.noticeFileUrl;delete c.noticeMimeType;}
+  renderCatalogGrid();scheduleAutosave();
+  showToast('Notice supprimée de la référence.');
 }
 
 // ═══════════════════════════════════════
@@ -5071,6 +5206,9 @@ const PA = (function(){
     baieColor:'#2a6fd1', baieSize:30,
     percementSize:18, percementColor:'#ef4444', percementWidth:3,
     eraserSize:20,
+    borneColor:'#16a34a', borneRadius:14, wifiRadius:120, wifiOpacity:0.25,
+    porteColor:'#d97706', porteSize:22,
+    centraleColor:'#7c3aed', centraleSize:30, centraleLabel:'CCA',
   };
 
   const st = {
@@ -5136,6 +5274,9 @@ const PA = (function(){
       ${toolBtn('camera','Caméra','C','','cam')}
       ${toolBtn('fov','Angle de vue','F','','fov')}
       ${toolBtn('baie','Baie informatique','I','','baie')}
+      ${toolBtn('borne','Borne WiFi','N','','borne')}
+      ${toolBtn('porte','Porte contrôle accès','A','','porte')}
+      ${toolBtn('centrale','Centrale CA','K','','centrale')}
       ${toolBtn('percement','Percement','X','','cross')}
       ${toolBtn('text','Texte','T','','text')}
       <div class="pa-div"></div>
@@ -5203,6 +5344,9 @@ const PA = (function(){
     else if (id === 'camera') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>';
     else if (id === 'fov') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12 L22 6 A12 12 0 0 1 22 18 Z" fill="currentColor" fill-opacity="0.3"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>';
     else if (id === 'baie') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="1"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="8" y1="19" x2="16" y2="19"/></svg>';
+    else if (id === 'borne') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="14" r="2" fill="currentColor"/><path d="M8 11a5.4 5.4 0 0 1 8 0"/><path d="M5 8a9.4 9.4 0 0 1 14 0"/></svg>';
+    else if (id === 'porte') icon = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><text x="12" y="17" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="currentColor">P</text></svg>';
+    else if (id === 'centrale') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="17" y2="13"/><circle cx="7" cy="17" r="1.5" fill="#4ade80" stroke="none"/></svg>';
     else if (id === 'percement') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>';
     else if (id === 'text') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="12" y1="4" x2="12" y2="20"/></svg>';
     else if (id === 'eraser') icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20H7l-4-4 11-11 9 9z"/><line x1="14" y1="8" x2="8" y2="14"/></svg>';
@@ -5230,6 +5374,9 @@ const PA = (function(){
         else if (st.tool === 'text') st.defaults.textColor = c;
         else if (st.tool === 'baie') st.defaults.baieColor = c;
         else if (st.tool === 'percement') st.defaults.percementColor = c;
+        else if (st.tool === 'borne') st.defaults.borneColor = c;
+        else if (st.tool === 'porte') st.defaults.porteColor = c;
+        else if (st.tool === 'centrale') st.defaults.centraleColor = c;
         if (st.selectedId) {
           const s = st.shapes.find(x => x.id === st.selectedId);
           if (s) { if ('color' in s) s.color = c; else if ('stroke' in s) s.stroke = c; }
@@ -5336,7 +5483,7 @@ const PA = (function(){
     window.addEventListener('keydown', e => {
       if (!qs2('modal-notebook').classList.contains('open')) return;
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
-      const km = {v:'select',h:'pan',b:'pen',l:'line',w:'wall',r:'rect',c:'camera',f:'fov',t:'text',i:'baie',x:'percement',e:'eraser'};
+      const km = {v:'select',h:'pan',b:'pen',l:'line',w:'wall',r:'rect',c:'camera',f:'fov',t:'text',i:'baie',x:'percement',e:'eraser',n:'borne',a:'porte',k:'centrale'};
       if (km[e.key.toLowerCase()]) {
         const btn = host.querySelector(`[data-tool="${km[e.key.toLowerCase()]}"]`);
         if (btn) btn.click();
@@ -5589,6 +5736,8 @@ const PA = (function(){
   function updateShape(id, upd){ const s=st.shapes.find(x=>x.id===id); if(!s) return; Object.assign(s, upd); render(); persistCurrent(); scheduleAutosave(); }
   function nextCameraLabel(){ const e = st.shapes.filter(s=>s.type==='camera').map(s=>s.label); for(let i=1;i<100;i++){ const l='C'+String(i).padStart(2,'0'); if(!e.includes(l)) return l; } return 'C'; }
   function nextBaieLabel(){ const e = st.shapes.filter(s=>s.type==='baie').map(s=>s.label); for(let i=1;i<50;i++){ const l='BAIE'+String(i).padStart(2,'0'); if(!e.includes(l)) return l; } return 'BAIE'; }
+  function nextBorneLabel(){ const e = st.shapes.filter(s=>s.type==='borne').map(s=>s.label); for(let i=1;i<50;i++){ const l='AP'+String(i).padStart(2,'0'); if(!e.includes(l)) return l; } return 'AP'; }
+  function nextPorteLabel(){ const e = st.shapes.filter(s=>s.type==='porte').map(s=>s.label); for(let i=1;i<100;i++){ const l='P'+String(i).padStart(2,'0'); if(!e.includes(l)) return l; } return 'P'; }
 
   // ─── Mouse ───
   function onPanStart(e){
@@ -5627,6 +5776,9 @@ const PA = (function(){
     else if (st.tool==='fov') { const sh={type:'fov',x:p.x,y:p.y,radius:st.defaults.fovRadius,bearing:st.defaults.fovBearing,aperture:st.defaults.fovAperture,color:st.defaults.fovColor,opacity:st.defaults.fovOpacity,layer:'annot'}; addShape(sh); st.selectedId=sh.id; updatePropsPanel(); }
     else if (st.tool==='text') { const t=prompt('Texte:'); if(t){ addShape({type:'text',x:p.x,y:p.y,text:t,color:st.defaults.textColor,size:st.defaults.textSize,layer:'annot'}); } }
     else if (st.tool==='baie') { const sh={type:'baie',x:p.x,y:p.y,size:st.defaults.baieSize,color:st.defaults.baieColor,label:nextBaieLabel(),layer:'annot'}; addShape(sh); st.selectedId=sh.id; updatePropsPanel(); }
+    else if (st.tool==='borne') { const sh={type:'borne',x:p.x,y:p.y,radius:st.defaults.borneRadius,color:st.defaults.borneColor,label:nextBorneLabel(),wifiRadius:st.defaults.wifiRadius,wifiOpacity:st.defaults.wifiOpacity,layer:'annot'}; addShape(sh); st.selectedId=sh.id; updatePropsPanel(); }
+    else if (st.tool==='porte') { const sh={type:'porte',x:p.x,y:p.y,size:st.defaults.porteSize,color:st.defaults.porteColor,label:nextPorteLabel(),layer:'annot'}; addShape(sh); st.selectedId=sh.id; updatePropsPanel(); }
+    else if (st.tool==='centrale') { const sh={type:'centrale',x:p.x,y:p.y,size:st.defaults.centraleSize,color:st.defaults.centraleColor,label:st.defaults.centraleLabel,layer:'annot'}; addShape(sh); st.selectedId=sh.id; updatePropsPanel(); }
     else if (st.tool==='percement') { const sh={type:'percement',x:p.x,y:p.y,size:st.defaults.percementSize,color:st.defaults.percementColor,width:st.defaults.percementWidth,layer:'annot'}; addShape(sh); st.selectedId=sh.id; updatePropsPanel(); }
     else if (st.tool==='eraser') { st.drawing=true; st.lastErasePoint=p; eraseAt(p.x,p.y); }
   }
@@ -5641,16 +5793,18 @@ const PA = (function(){
       const h = st.dragHandle.handle;
       const dx = p.x - st.dragStart.x, dy = p.y - st.dragStart.y;
       if (h === 'move') {
-        if (['camera','fov','text','baie','percement'].includes(sh.type)) { sh.x += dx; sh.y += dy; }
+        if (['camera','fov','text','baie','percement','borne','porte','centrale'].includes(sh.type)) { sh.x += dx; sh.y += dy; }
         else if (sh.type==='line') { sh.x1+=dx; sh.y1+=dy; sh.x2+=dx; sh.y2+=dy; }
         else if (sh.type==='rect') { sh.x+=dx; sh.y+=dy; }
         else if (sh.type==='pen'||sh.type==='polyline') { sh.points = sh.points.map(pt=>[pt[0]+dx,pt[1]+dy]); }
         st.dragStart = p;
       } else if (h==='p1' && sh.type==='line') { sh.x1=p.x; sh.y1=p.y; }
       else if (h==='p2' && sh.type==='line') { sh.x2=p.x; sh.y2=p.y; }
-      else if (h==='radius' && (sh.type==='camera'||sh.type==='fov')) {
+      else if (h==='radius' && (sh.type==='camera'||sh.type==='fov'||sh.type==='borne')) {
         sh.radius = Math.max(5, Math.hypot(p.x-sh.x, p.y-sh.y));
         if (sh.type==='fov') sh.bearing = (Math.atan2(p.y-sh.y, p.x-sh.x) * 180 / Math.PI + 360) % 360;
+      } else if (h==='wifiradius' && sh.type==='borne') {
+        sh.wifiRadius = Math.max(20, Math.hypot(p.x-sh.x, p.y-sh.y));
       } else if (h==='rect-br' && sh.type==='rect') { sh.w = p.x - sh.x; sh.h = p.y - sh.y; }
       updatePropsPanel(); render(); return;
     }
@@ -5738,7 +5892,7 @@ const PA = (function(){
     overlay.setAttribute('viewBox',`0 0 ${newW} ${newH}`);
     const tx = (x,y) => cw ? [oldH-y, x] : [y, oldW-x];
     for (const s of st.shapes) {
-      if (['camera','fov','text','baie','percement'].includes(s.type)) {
+      if (['camera','fov','text','baie','percement','borne','porte','centrale'].includes(s.type)) {
         [s.x,s.y] = tx(s.x,s.y); if (s.type==='fov') s.bearing = ((s.bearing+(cw?90:-90))%360+360)%360;
       } else if (s.type==='line') { [s.x1,s.y1]=tx(s.x1,s.y1); [s.x2,s.y2]=tx(s.x2,s.y2); }
       else if (s.type==='rect') { const [a1,b1]=tx(s.x,s.y),[a2,b2]=tx(s.x+s.w,s.y+s.h); s.x=Math.min(a1,a2); s.y=Math.min(b1,b2); s.w=Math.abs(a2-a1); s.h=Math.abs(b2-b1); }
@@ -5775,13 +5929,18 @@ const PA = (function(){
     if (s.type==='text') return `<text data-shape-id="${s.id}"${se} x="${s.x}" y="${s.y}" font-family="sans-serif" font-size="${s.size}" font-weight="600" fill="${s.color}">${esc2(s.text)}</text>`;
     if (s.type==='baie') { const sz=s.size||30, hf=sz/2; return `<g data-shape-id="${s.id}"${se}><rect x="${s.x-hf}" y="${s.y-hf}" width="${sz}" height="${sz}" fill="${s.color}" stroke="#000" stroke-width="1.5"/><line x1="${s.x-hf+4}" y1="${s.y-hf+sz*0.25}" x2="${s.x+hf-4}" y2="${s.y-hf+sz*0.25}" stroke="#fff" stroke-opacity="0.7" stroke-width="1"/><line x1="${s.x-hf+4}" y1="${s.y-hf+sz*0.5}" x2="${s.x+hf-4}" y2="${s.y-hf+sz*0.5}" stroke="#fff" stroke-opacity="0.7" stroke-width="1"/><line x1="${s.x-hf+4}" y1="${s.y-hf+sz*0.75}" x2="${s.x+hf-4}" y2="${s.y-hf+sz*0.75}" stroke="#fff" stroke-opacity="0.7" stroke-width="1"/>${s.label?`<g><rect x="${s.x-Math.max(25,s.label.length*4.5)}" y="${s.y+hf+2}" width="${Math.max(50,s.label.length*9)}" height="16" rx="2" fill="${s.color}"/><text x="${s.x}" y="${s.y+hf+14}" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#fff">${esc2(s.label)}</text></g>`:''}</g>`; }
     if (s.type==='percement') { const sz=s.size||18, hf=sz/2, w=s.width||3; return `<g data-shape-id="${s.id}"${se}><line x1="${s.x-hf}" y1="${s.y-hf}" x2="${s.x+hf}" y2="${s.y+hf}" stroke="${s.color}" stroke-width="${w}" stroke-linecap="round"/><line x1="${s.x+hf}" y1="${s.y-hf}" x2="${s.x-hf}" y2="${s.y+hf}" stroke="${s.color}" stroke-width="${w}" stroke-linecap="round"/></g>`; }
+    if (s.type==='borne') { const r=s.radius||14, wr=s.wifiRadius||120, wo=s.wifiOpacity!==undefined?s.wifiOpacity:0.25; return `<g data-shape-id="${s.id}"${se}><circle cx="${s.x}" cy="${s.y}" r="${wr}" fill="${s.color}" fill-opacity="${wo}" stroke="${s.color}" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="6 4"/><circle cx="${s.x}" cy="${s.y}" r="${r+4}" fill="#fff"/><circle cx="${s.x}" cy="${s.y}" r="${r}" fill="${s.color}" stroke="#fff" stroke-width="2"/><g stroke="#fff" stroke-width="1.8" fill="none"><path d="M ${s.x-r*0.5} ${s.y+r*0.15} A ${r*0.65} ${r*0.65} 0 0 1 ${s.x+r*0.5} ${s.y+r*0.15}"/><path d="M ${s.x-r*0.28} ${s.y+r*0.45} A ${r*0.35} ${r*0.35} 0 0 1 ${s.x+r*0.28} ${s.y+r*0.45}"/><circle cx="${s.x}" cy="${s.y+r*0.65}" r="${r*0.1}" fill="#fff"/></g>${s.label?`<g><rect x="${s.x-22}" y="${s.y-r-22}" width="44" height="18" rx="3" fill="${s.color}"/><text x="${s.x}" y="${s.y-r-8}" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#fff">${esc2(s.label)}</text></g>`:''}</g>`; }
+    if (s.type==='porte') { const sz=s.size||22; return `<g data-shape-id="${s.id}"${se}><circle cx="${s.x}" cy="${s.y}" r="${sz+4}" fill="#fff"/><circle cx="${s.x}" cy="${s.y}" r="${sz}" fill="${s.color}" stroke="#fff" stroke-width="2"/><text x="${s.x}" y="${s.y+sz*0.42}" text-anchor="middle" font-family="sans-serif" font-size="${Math.round(sz*1.1)}" font-weight="800" fill="#fff">P</text>${s.label?`<g><rect x="${s.x-22}" y="${s.y-sz-22}" width="44" height="18" rx="3" fill="${s.color}"/><text x="${s.x}" y="${s.y-sz-8}" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#fff">${esc2(s.label)}</text></g>`:''}</g>`; }
+    if (s.type==='centrale') { const sz=s.size||30, hf=sz/2; return `<g data-shape-id="${s.id}"${se}><rect x="${s.x-hf-3}" y="${s.y-hf-3}" width="${sz+6}" height="${sz+6}" fill="#fff" rx="4"/><rect x="${s.x-hf}" y="${s.y-hf}" width="${sz}" height="${sz}" fill="${s.color}" stroke="#000" stroke-width="1.5" rx="3"/><line x1="${s.x-hf+4}" y1="${s.y-hf+sz*0.25}" x2="${s.x+hf-4}" y2="${s.y-hf+sz*0.25}" stroke="#fff" stroke-opacity="0.7" stroke-width="1"/><line x1="${s.x-hf+4}" y1="${s.y-hf+sz*0.5}" x2="${s.x+hf-4}" y2="${s.y-hf+sz*0.5}" stroke="#fff" stroke-opacity="0.7" stroke-width="1"/><circle cx="${s.x-hf+6}" cy="${s.y+hf-6}" r="3" fill="#4ade80"/><text x="${s.x+hf*0.3}" y="${s.y+hf-3}" text-anchor="middle" font-family="sans-serif" font-size="${Math.round(sz*0.28)}" font-weight="800" fill="#fff">CA</text>${s.label?`<g><rect x="${s.x-Math.max(25,s.label.length*4.5)}" y="${s.y+hf+2}" width="${Math.max(50,s.label.length*9)}" height="16" rx="2" fill="${s.color}"/><text x="${s.x}" y="${s.y+hf+14}" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#fff">${esc2(s.label)}</text></g>`:''}</g>`; }
     return '';
   }
   function selOverlay(s){
     if (s.type==='camera'||s.type==='fov') { const r=s.radius||50; let h=`<circle class="pa-handle" data-handle="move" data-id="${s.id}" cx="${s.x}" cy="${s.y}" r="6"/>`; const a=(s.bearing||0)*Math.PI/180, hx=s.x+r*Math.cos(a), hy=s.y+r*Math.sin(a); h+=`<line x1="${s.x}" y1="${s.y}" x2="${hx}" y2="${hy}" stroke="#2a6fd1" stroke-width="1" stroke-dasharray="3 3"/><circle class="pa-handle pa-rot" data-handle="radius" data-id="${s.id}" cx="${hx}" cy="${hy}" r="6"/>`; return h; }
+    if (s.type==='borne') { const r=s.radius||14, wr=s.wifiRadius||120; let h=`<circle class="pa-handle" data-handle="move" data-id="${s.id}" cx="${s.x}" cy="${s.y}" r="6"/>`; h+=`<line x1="${s.x}" y1="${s.y}" x2="${s.x+r}" y2="${s.y}" stroke="#16a34a" stroke-width="1" stroke-dasharray="3 3"/><circle class="pa-handle" data-handle="radius" data-id="${s.id}" cx="${s.x+r}" cy="${s.y}" r="5" style="fill:#fff;stroke:#16a34a"/>`; h+=`<line x1="${s.x}" y1="${s.y}" x2="${s.x+wr}" y2="${s.y}" stroke="#16a34a" stroke-width="1" stroke-dasharray="6 3" opacity="0.6"/><circle class="pa-handle pa-rot" data-handle="wifiradius" data-id="${s.id}" cx="${s.x+wr}" cy="${s.y}" r="6" style="fill:#4ade80;stroke:#fff"/>`; return h; }
     if (s.type==='line') return `<circle class="pa-handle" data-handle="p1" data-id="${s.id}" cx="${s.x1}" cy="${s.y1}" r="5"/><circle class="pa-handle" data-handle="p2" data-id="${s.id}" cx="${s.x2}" cy="${s.y2}" r="5"/>`;
     if (s.type==='rect') return `<rect class="pa-selbox" x="${Math.min(s.x,s.x+s.w)}" y="${Math.min(s.y,s.y+s.h)}" width="${Math.abs(s.w)}" height="${Math.abs(s.h)}"/><circle class="pa-handle" data-handle="move" data-id="${s.id}" cx="${s.x+s.w/2}" cy="${s.y+s.h/2}" r="5"/><circle class="pa-handle" data-handle="rect-br" data-id="${s.id}" cx="${s.x+s.w}" cy="${s.y+s.h}" r="5"/>`;
     if (s.type==='baie'||s.type==='percement') { const sz=s.size||20; return `<rect class="pa-selbox" x="${s.x-sz/2-4}" y="${s.y-sz/2-4}" width="${sz+8}" height="${sz+8}"/><circle class="pa-handle" data-handle="move" data-id="${s.id}" cx="${s.x}" cy="${s.y}" r="5"/>`; }
+    if (s.type==='porte'||s.type==='centrale') { const sz=s.size||24; return `<rect class="pa-selbox" x="${s.x-sz-4}" y="${s.y-sz-4}" width="${sz*2+8}" height="${sz*2+8}"/><circle class="pa-handle" data-handle="move" data-id="${s.id}" cx="${s.x}" cy="${s.y}" r="5"/>`; }
     return '';
   }
 
@@ -5809,7 +5968,7 @@ const PA = (function(){
     if (st.shapes.length===0) { el.innerHTML = '<div style="padding:8px;font-size:11px;color:#777">Aucun élément</div>'; return; }
     el.innerHTML = st.shapes.map(s => {
       const col = s.color||s.stroke||'#888';
-      const ic = {camera:'⊙',fov:'⌖',line:'╱',polyline:'⌐',rect:'▭',pen:'〜',text:'T',baie:'▦',percement:'✕'}[s.type]||'•';
+      const ic = {camera:'⊙',fov:'⌖',line:'╱',polyline:'⌐',rect:'▭',pen:'〜',text:'T',baie:'▦',percement:'✕',borne:'⊕',porte:'P',centrale:'⊟'}[s.type]||'•';
       const lbl = s.label || s.text || (s.type+' '+s.id.replace('s',''));
       return `<div class="pa-item${s.id===st.selectedId?' on':''}" onclick="PA.selectShape('${s.id}')"><span class="pa-dot" style="background:${col}"></span><span class="pa-lbl">${ic} ${esc2(lbl)}</span><span class="pa-x" onclick="event.stopPropagation();PA.deleteShape('${s.id}')">✕</span></div>`;
     }).join('');
@@ -5820,7 +5979,7 @@ const PA = (function(){
   function updateCursor(){
     stage.className = 'pa-stage';
     if (st.tool==='pan' || st.spacePressed) stage.classList.add('pa-grab');
-    else if (['pen','line','wall','rect','camera','fov','text','baie','percement','eraser'].includes(st.tool)) stage.classList.add('pa-cross');
+    else if (['pen','line','wall','rect','camera','fov','text','baie','borne','porte','centrale','percement','eraser'].includes(st.tool)) stage.classList.add('pa-cross');
   }
 
   function toggleLayer(n){
@@ -5845,6 +6004,9 @@ const PA = (function(){
       fov:'Clic = cône de vision. Angle/portée/transparence réglables.',
       text:'Clic = libellé texte.',
       baie:'Clic = carré baie informatique (couleur au choix, BAIE01, 02…).',
+      borne:'Clic = borne WiFi avec rayon de couverture. Poignée verte = ajuster la portée WiFi (AP01, AP02…).',
+      porte:"Clic = porte contrôle d'accès symbole P (P01, P02…).",
+      centrale:"Clic = centrale de contrôle d'accès (rack + voyant CA).",
       percement:'Clic = croix rouge (percement/traversée de cloison).',
       eraser:'Glissez pour effacer le plan (peint en blanc).',
       delete:'Clic sur un élément pour le supprimer.',
@@ -5857,6 +6019,12 @@ const PA = (function(){
       el.innerHTML = `<label class="pa-f">Couleur</label><input type="color" value="${st.defaults.fovColor}" oninput="PA.setDef('fovColor',this.value)"><label class="pa-f">Ouverture: <span id="av">${st.defaults.fovAperture}</span>°</label><input type="range" min="1" max="360" value="${st.defaults.fovAperture}" oninput="PA.setDef('fovAperture',parseInt(this.value));document.getElementById('av').textContent=this.value"><label class="pa-f">Orientation: <span id="bv">${st.defaults.fovBearing}</span>°</label><input type="range" min="0" max="360" value="${st.defaults.fovBearing}" oninput="PA.setDef('fovBearing',parseInt(this.value));document.getElementById('bv').textContent=this.value"><label class="pa-f">Portée: <span id="rv">${st.defaults.fovRadius}</span>px</label><input type="range" min="20" max="600" value="${st.defaults.fovRadius}" oninput="PA.setDef('fovRadius',parseInt(this.value));document.getElementById('rv').textContent=this.value"><label class="pa-f">Transparence: <span id="ov">${Math.round(st.defaults.fovOpacity*100)}</span>%</label><input type="range" min="5" max="90" value="${st.defaults.fovOpacity*100}" oninput="PA.setDef('fovOpacity',parseInt(this.value)/100);document.getElementById('ov').textContent=this.value"><div class="pa-hint">${h.fov}</div>`;
     } else if (st.tool==='baie') {
       el.innerHTML = `<label class="pa-f">Couleur</label><input type="color" value="${st.defaults.baieColor}" oninput="PA.setDef('baieColor',this.value)"><label class="pa-f">Taille: <span id="bsv">${st.defaults.baieSize}</span>px</label><input type="range" min="12" max="60" value="${st.defaults.baieSize}" oninput="PA.setDef('baieSize',parseInt(this.value));document.getElementById('bsv').textContent=this.value"><div class="pa-hint">${h.baie}</div>`;
+    } else if (st.tool==='borne') {
+      el.innerHTML = `<label class="pa-f">Couleur</label><input type="color" value="${st.defaults.borneColor}" oninput="PA.setDef('borneColor',this.value)"><label class="pa-f">Rayon picto: <span id="brv">${st.defaults.borneRadius}</span>px</label><input type="range" min="8" max="30" value="${st.defaults.borneRadius}" oninput="PA.setDef('borneRadius',parseInt(this.value));document.getElementById('brv').textContent=this.value"><label class="pa-f">Portée WiFi: <span id="bwrv">${st.defaults.wifiRadius}</span>px</label><input type="range" min="40" max="800" value="${st.defaults.wifiRadius}" oninput="PA.setDef('wifiRadius',parseInt(this.value));document.getElementById('bwrv').textContent=this.value"><label class="pa-f">Transparence couverture: <span id="bwov">${Math.round(st.defaults.wifiOpacity*100)}</span>%</label><input type="range" min="5" max="60" value="${st.defaults.wifiOpacity*100}" oninput="PA.setDef('wifiOpacity',parseInt(this.value)/100);document.getElementById('bwov').textContent=this.value"><div class="pa-hint">${h.borne}</div>`;
+    } else if (st.tool==='porte') {
+      el.innerHTML = `<label class="pa-f">Couleur</label><input type="color" value="${st.defaults.porteColor}" oninput="PA.setDef('porteColor',this.value)"><label class="pa-f">Taille: <span id="prtv">${st.defaults.porteSize}</span>px</label><input type="range" min="10" max="50" value="${st.defaults.porteSize}" oninput="PA.setDef('porteSize',parseInt(this.value));document.getElementById('prtv').textContent=this.value"><div class="pa-hint">${h.porte}</div>`;
+    } else if (st.tool==='centrale') {
+      el.innerHTML = `<label class="pa-f">Couleur</label><input type="color" value="${st.defaults.centraleColor}" oninput="PA.setDef('centraleColor',this.value)"><label class="pa-f">Taille: <span id="ccav">${st.defaults.centraleSize}</span>px</label><input type="range" min="16" max="60" value="${st.defaults.centraleSize}" oninput="PA.setDef('centraleSize',parseInt(this.value));document.getElementById('ccav').textContent=this.value"><label class="pa-f">Libellé défaut</label><input type="text" value="${st.defaults.centraleLabel}" oninput="PA.setDef('centraleLabel',this.value)" style="width:100%;background:#1a1a1a;border:1px solid #3a3a3a;color:#e5e5e5;padding:5px 7px;border-radius:4px;font-size:12px"><div class="pa-hint">${h.centrale}</div>`;
     } else if (st.tool==='percement') {
       el.innerHTML = `<label class="pa-f">Couleur</label><input type="color" value="${st.defaults.percementColor}" oninput="PA.setDef('percementColor',this.value)"><label class="pa-f">Taille: <span id="psv">${st.defaults.percementSize}</span>px</label><input type="range" min="8" max="40" value="${st.defaults.percementSize}" oninput="PA.setDef('percementSize',parseInt(this.value));document.getElementById('psv').textContent=this.value"><label class="pa-f">Épaisseur: <span id="pwv">${st.defaults.percementWidth}</span>px</label><input type="range" min="1" max="8" step="0.5" value="${st.defaults.percementWidth}" oninput="PA.setDef('percementWidth',parseFloat(this.value));document.getElementById('pwv').textContent=this.value"><div class="pa-hint">${h.percement}</div>`;
     } else if (st.tool==='text') {
@@ -5895,6 +6063,9 @@ const PA = (function(){
     else if (s.type==='rect') html += `<label class="pa-f">Couleur trait</label><input type="color" value="${s.stroke}" oninput="PA.updateShape('${s.id}',{stroke:this.value})"><label class="pa-f">Remplissage</label><div style="display:flex;gap:6px"><input type="color" value="${s.fill==='none'?'#ffffff':s.fill}" oninput="PA.updateShape('${s.id}',{fill:this.value})"><button class="pa-btn" onclick="PA.updateShape('${s.id}',{fill:'none'})">Aucun</button></div><label class="pa-f">Épaisseur: <span>${s.width}</span>px</label><input type="range" min="1" max="10" step="0.5" value="${s.width}" oninput="PA.updateShape('${s.id}',{width:parseFloat(this.value)});PA.refreshProps()">`;
     else if (s.type==='text') html += `<label class="pa-f">Texte</label><input type="text" value="${esc2(s.text)}" oninput="PA.updateShape('${s.id}',{text:this.value})"><label class="pa-f">Couleur</label><input type="color" value="${s.color}" oninput="PA.updateShape('${s.id}',{color:this.value})"><label class="pa-f">Taille: <span>${s.size}</span>px</label><input type="range" min="8" max="48" value="${s.size}" oninput="PA.updateShape('${s.id}',{size:parseInt(this.value)});PA.refreshProps()">`;
     else if (s.type==='baie') html += `<label class="pa-f">Libellé</label><input type="text" value="${esc2(s.label||'')}" oninput="PA.updateShape('${s.id}',{label:this.value})"><label class="pa-f">Couleur</label><input type="color" value="${s.color}" oninput="PA.updateShape('${s.id}',{color:this.value})"><label class="pa-f">Taille: <span>${s.size}</span>px</label><input type="range" min="12" max="60" value="${s.size}" oninput="PA.updateShape('${s.id}',{size:parseInt(this.value)});PA.refreshProps()">`;
+    else if (s.type==='borne') html += `<label class="pa-f">Étiquette</label><input type="text" value="${esc2(s.label||'')}" oninput="PA.updateShape('${s.id}',{label:this.value})"><label class="pa-f">Couleur</label><input type="color" value="${s.color}" oninput="PA.updateShape('${s.id}',{color:this.value})"><label class="pa-f">Rayon picto: <span>${s.radius}</span>px</label><input type="range" min="8" max="30" value="${s.radius}" oninput="PA.updateShape('${s.id}',{radius:parseInt(this.value)});PA.refreshProps()"><label class="pa-f">Portée WiFi: <span>${s.wifiRadius||120}</span>px</label><input type="range" min="40" max="800" value="${s.wifiRadius||120}" oninput="PA.updateShape('${s.id}',{wifiRadius:parseInt(this.value)});PA.refreshProps()"><label class="pa-f">Transparence: <span>${Math.round((s.wifiOpacity||0.25)*100)}</span>%</label><input type="range" min="5" max="60" value="${(s.wifiOpacity||0.25)*100}" oninput="PA.updateShape('${s.id}',{wifiOpacity:parseInt(this.value)/100});PA.refreshProps()">`;
+    else if (s.type==='porte') html += `<label class="pa-f">Étiquette</label><input type="text" value="${esc2(s.label||'')}" oninput="PA.updateShape('${s.id}',{label:this.value})"><label class="pa-f">Couleur</label><input type="color" value="${s.color}" oninput="PA.updateShape('${s.id}',{color:this.value})"><label class="pa-f">Taille: <span>${s.size}</span>px</label><input type="range" min="10" max="50" value="${s.size}" oninput="PA.updateShape('${s.id}',{size:parseInt(this.value)});PA.refreshProps()">`;
+    else if (s.type==='centrale') html += `<label class="pa-f">Libellé</label><input type="text" value="${esc2(s.label||'')}" oninput="PA.updateShape('${s.id}',{label:this.value})"><label class="pa-f">Couleur</label><input type="color" value="${s.color}" oninput="PA.updateShape('${s.id}',{color:this.value})"><label class="pa-f">Taille: <span>${s.size}</span>px</label><input type="range" min="16" max="60" value="${s.size}" oninput="PA.updateShape('${s.id}',{size:parseInt(this.value)});PA.refreshProps()">`;
     else if (s.type==='percement') html += `<label class="pa-f">Couleur</label><input type="color" value="${s.color}" oninput="PA.updateShape('${s.id}',{color:this.value})"><label class="pa-f">Taille: <span>${s.size}</span>px</label><input type="range" min="8" max="40" value="${s.size}" oninput="PA.updateShape('${s.id}',{size:parseInt(this.value)});PA.refreshProps()"><label class="pa-f">Épaisseur: <span>${s.width}</span>px</label><input type="range" min="1" max="8" step="0.5" value="${s.width}" oninput="PA.updateShape('${s.id}',{width:parseFloat(this.value)});PA.refreshProps()">`;
     html += `<button class="pa-btn pa-btn-danger" style="width:100%;margin-top:10px" onclick="PA.deleteShape('${s.id}')">Supprimer l'élément</button>`;
     el.innerHTML = html;
@@ -6593,8 +6764,11 @@ function pvBlockHTML(block,secNum=1){
     }
     case 'doe_docs':{if(!d.docs?.length) return null;
       let h=`<div style="font-size:1.3em;font-weight:700;color:#1a3a5c;border-bottom:1.5pt solid #1a4a7a;padding-bottom:4pt;margin-bottom:10pt">${secNum}. Documents &amp; notices</div>`;
-      h+=`<table style="width:100%;border-collapse:collapse;page-break-inside:avoid"><thead><tr>${['Nom','Catégorie','Lié à'].map(x=>`<th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em">${x}</th>`).join('')}</tr></thead><tbody>`;
-      d.docs.forEach((r,i)=>{h+=`<tr style="background:${i%2?'#f4f8fd':'#fff'}"><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.name)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.category)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.linkedTo)}</td></tr>`;});
+      h+=`<table style="width:100%;border-collapse:collapse;page-break-inside:avoid"><thead><tr>${['Nom','Catégorie','Lié à','Fichier'].map(x=>`<th style="background:#2e74b5;color:#fff;padding:4pt 8pt;border:1pt solid #1e5f9f;text-align:left;font-size:.88em">${x}</th>`).join('')}</tr></thead><tbody>`;
+      d.docs.forEach((r,i)=>{
+        const fileCell=r.fileUrl?`<a href="${r.fileUrl}" style="color:#1a4a7a;font-size:.85em" download="${e2(r.fileName)}">${e2(r.fileName)}</a>`:'—';
+        h+=`<tr style="background:${i%2?'#f4f8fd':'#fff'}"><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.name)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.category)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${e2(r.linkedTo)}</td><td style="padding:4pt 8pt;border:1pt solid #ccc">${fileCell}</td></tr>`;
+      });
       return h+`</tbody></table>`;
     }
     case 'doe_tests':{if(!d.tests?.length) return null;
