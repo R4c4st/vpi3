@@ -1252,7 +1252,7 @@ canvas{display:block;touch-action:none;width:100%}
       <div style="display:flex;flex-direction:column;gap:10px;font-size:13px">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <span style="color:var(--muted)">Version</span>
-          <span style="font-weight:700;color:var(--text);background:var(--panel-soft);border:1px solid var(--line);border-radius:6px;padding:2px 9px;font-size:12px">v17b <span style="color:var(--warn);font-weight:600">β bêta</span></span>
+          <span style="font-weight:700;color:var(--text);background:var(--panel-soft);border:1px solid var(--line);border-radius:6px;padding:2px 9px;font-size:12px">v21 <span style="color:var(--warn);font-weight:600">β bêta</span></span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center">
           <span style="color:var(--muted)">Développé par</span>
@@ -1857,7 +1857,13 @@ canvas{display:block;touch-action:none;width:100%}
       <div class="card">
         <div class="toolbar">
           <div class="left"><h4 style="margin:0">Fournitures &amp; matériel</h4></div>
-          <div class="right"><button class="btn primary" onclick="addEquipRow('tech')">+ Ligne</button></div>
+          <div class="right">
+            <button class="btn" onclick="copyEquipVpiToTech()" title="Reprendre le matériel de pose du VPI dans le DT" style="display:flex;align-items:center;gap:5px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Reprendre VPI
+            </button>
+            <button class="btn primary" onclick="addEquipRow('tech')">+ Ligne</button>
+          </div>
         </div>
         <div class="sub">Sélection depuis le catalogue courant faible ou saisie libre.</div>
         <div class="tbl-wrap">
@@ -1871,6 +1877,10 @@ canvas{display:block;touch-action:none;width:100%}
         <div class="toolbar">
           <div class="left"><h4 style="margin:0">Photos &amp; plans techniques</h4></div>
           <div class="right">
+            <button class="btn" onclick="copyPhotosVpiToTech()" title="Copier toutes les photos et plans du VPI dans ce module" style="display:flex;align-items:center;gap:5px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Reprendre photos VPI
+            </button>
             <button class="btn" onclick="triggerPhoto('tech')">+ Photo</button>
             <button class="btn" onclick="createWhiteboard('tech')">+ Tableau blanc</button>
             <button class="btn primary" onclick="openCaptureModal('tech')">Éditeur</button>
@@ -2108,10 +2118,31 @@ canvas{display:block;touch-action:none;width:100%}
       </div>
     </div>
     <div class="module-body">
+      <!-- Infos client synthèse (lues depuis VPI/DT) -->
+      <div id="doe-client-banner" style="background:var(--panel-soft);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:9px;flex:1;min-width:200px">
+          <div style="width:36px;height:36px;border-radius:10px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <div id="doe-banner-company" style="font-size:13px;font-weight:700;color:var(--text)">—</div>
+            <div id="doe-banner-contact" style="font-size:11px;color:var(--muted)">—</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:22px;flex-wrap:wrap">
+          <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Adresse</div><div id="doe-banner-address" style="font-size:12px;color:var(--text)">—</div></div>
+          <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Référence chantier</div><div id="doe-banner-ref" style="font-size:12px;color:var(--text)">—</div></div>
+          <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Chargé d'affaires</div><div id="doe-banner-manager" style="font-size:12px;color:var(--text)">—</div></div>
+        </div>
+        <div style="flex-shrink:0">
+          <span id="doe-banner-source" style="font-size:10px;color:var(--muted);font-style:italic">Données VPI / DT</span>
+        </div>
+      </div>
+
       <div class="soft-banner">
-        <div><div class="title">Actions rapides DOE</div><div class="desc">Créer la base DOE, joindre les documents et renseigner le recettage.</div></div>
+        <div><div class="title">Actions rapides DOE</div><div class="desc">Reprendre le dossier technique, joindre les documents et renseigner le recettage.</div></div>
         <div class="quick-actions">
-          <button class="btn" onclick="promoteTechToDoe()">↓ Reprendre DT</button>
+          <button class="btn" onclick="promoteTechToDoe()">↓ Reprendre DT complet</button>
           <button class="btn" onclick="addDocRow()">+ Document</button>
           <button class="btn" onclick="addTestRow()">+ Recettage</button>
         </div>
@@ -2199,6 +2230,10 @@ canvas{display:block;touch-action:none;width:100%}
         <div class="toolbar">
           <div class="left"><h4 style="margin:0">Photos finales DOE</h4></div>
           <div class="right">
+            <button class="btn" onclick="copyPhotosTechToDoe()" title="Copier les photos du Dossier technique dans le DOE" style="display:flex;align-items:center;gap:5px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Reprendre photos DT
+            </button>
             <button class="btn" onclick="triggerPhoto('doe')">+ Photo</button>
             <button class="btn" onclick="createWhiteboard('doe')">+ Tableau blanc</button>
           </div>
@@ -3468,6 +3503,8 @@ function fc(section,key,val){
   S[section][key]=val;
   scheduleAutosave();
   renderMetrics();
+  // Mettre à jour le bandeau DOE si on modifie des infos client VPI ou DT
+  if(section==='vpi'||section==='tech') updateDoeBanner();
 }
 
 function syncFields(){
@@ -3486,6 +3523,7 @@ function syncFields(){
   Object.entries(m).forEach(([id,v])=>{const el=qs(id);if(el&&!el.matches(':focus'))el.value=v||''});
   // Sync faisabilité badge
   if(S.vpi.faisabiliteStatus) setFaisabilite(S.vpi.faisabiliteStatus,true);
+  updateDoeBanner();
 }
 
 // ═══════════════════════════════════════
@@ -4888,12 +4926,107 @@ function promoteVpiToTech(){
   syncFields();renderEquipTable('tech');renderMetrics();
   showToast('VPI repris dans le Dossier technique (chantier, écarts, travaux prépa, matériel).');
 }
+
 function promoteTechToDoe(){
-  const t=S.tech;
+  const t=S.tech;const v=S.vpi;
+  // Infos de base
   if(!S.doe.ref&&t.number) S.doe.ref=t.number;
   if(!S.doe.summary&&t.context) S.doe.summary=t.context;
-  syncFields();renderMetrics();
-  showToast('Données DT reprises dans le DOE.');
+  // Équipements → fiches techniques DOE (si pas encore présentes)
+  if(t.equipment&&t.equipment.length){
+    t.equipment.forEach(eq=>{
+      if(!eq.code&&!eq.name) return;
+      const alreadyThere=S.doe.techSheets.find(s=>s.code===eq.code&&s.name===eq.name);
+      if(!alreadyThere){
+        // Chercher une notice dans le catalogue pour ce code
+        const catEntry=eq.code?S.catalog.find(c=>c.code===eq.code):null;
+        S.doe.techSheets.push({
+          id:uid(),libId:'',code:eq.code||'',name:eq.name||'',family:eq.family||'',
+          fileName:catEntry?.noticeFileName||'',fileUrl:catEntry?.noticeFileUrl||'',
+          mimeType:catEntry?.noticeMimeType||'',note:eq.remark||''
+        });
+      }
+    });
+  }
+  // Réseau → docs DOE (plans/configs)
+  if(t.network&&t.network.length&&!S.doe.docs.find(d=>d.linkedTo==='réseau')){
+    S.doe.docs.push({id:uid(),name:'Configuration réseau',category:'Plan',linkedTo:'réseau',fileName:'',fileUrl:'',mimeType:''});
+  }
+  // Planning → résumé si vide
+  if(!S.doe.summary&&t.planning&&t.planning.length){
+    S.doe.summary=t.planning.map(j=>`${j.date||''}${j.desc?' — '+j.desc:''}`).join('\n');
+  }
+  syncFields();renderDoeSheets();renderDoeDocs();renderMetrics();updateDoeBanner();
+  showToast('DT repris dans le DOE : équipements, fiches techniques, réseau.');
+}
+
+// Copier les photos VPI → DT (sans doublons par src)
+function copyPhotosVpiToTech(){
+  const vpiPhotos=S.photos.filter(p=>p.target==='vpi');
+  if(!vpiPhotos.length){showToast('Aucune photo dans le VPI.');return;}
+  const existingSrcs=new Set(S.photos.filter(p=>p.target==='tech').map(p=>p.src));
+  let added=0;
+  vpiPhotos.forEach(p=>{
+    if(!existingSrcs.has(p.src)){
+      S.photos.push({...p,id:uid(),target:'tech'});
+      added++;
+    }
+  });
+  renderPhotos('tech');renderMetrics();scheduleAutosave();
+  showToast(added?`${added} photo${added>1?'s':''} VPI copiée${added>1?'s':''} dans le DT.`:'Toutes les photos VPI sont déjà présentes dans le DT.');
+}
+
+// Copier les photos DT → DOE (sans doublons par src)
+function copyPhotosTechToDoe(){
+  const techPhotos=S.photos.filter(p=>p.target==='tech');
+  if(!techPhotos.length){showToast('Aucune photo dans le Dossier technique.');return;}
+  const existingSrcs=new Set(S.photos.filter(p=>p.target==='doe').map(p=>p.src));
+  let added=0;
+  techPhotos.forEach(p=>{
+    if(!existingSrcs.has(p.src)){
+      S.photos.push({...p,id:uid(),target:'doe'});
+      added++;
+    }
+  });
+  renderPhotos('doe');renderMetrics();scheduleAutosave();
+  showToast(added?`${added} photo${added>1?'s':''} DT copiée${added>1?'s':''} dans le DOE.`:'Toutes les photos DT sont déjà présentes dans le DOE.');
+}
+
+// Copier les équipements/fournitures VPI → DT (sans doublons par code+name)
+function copyEquipVpiToTech(){
+  const vpiEquip=S.vpi.equipment||[];
+  if(!vpiEquip.length){showToast('Aucun matériel dans le VPI.');return;}
+  const existing=new Set(S.tech.equipment.map(e=>(e.code||'')+'||'+(e.name||'')));
+  let added=0;
+  vpiEquip.forEach(e=>{
+    const key=(e.code||'')+'||'+(e.name||'');
+    if(!existing.has(key)){
+      S.tech.equipment.push({...e,id:uid()});
+      existing.add(key);
+      added++;
+    }
+  });
+  renderEquipTable('tech');renderMetrics();scheduleAutosave();
+  showToast(added?`${added} ligne${added>1?'s':''} VPI ajoutée${added>1?'s':''} au DT.`:'Tout le matériel VPI est déjà présent dans le DT.');
+}
+function updateDoeBanner(){
+  // Priorité : DT > VPI pour les infos client
+  const company=S.tech.clientRef||S.vpi.clientCompany||'—';
+  const address=S.tech.address||S.vpi.clientAddress||'—';
+  const contact=S.tech.contact||S.vpi.clientContact||'—';
+  const phone=S.vpi.clientPhone?` · ${S.vpi.clientPhone}`:'';
+  const manager=S.tech.manager||S.vpi.salesRef||'—';
+  const ref=S.tech.number||S.vpi.orderRef||'—';
+  const source=(S.tech.number||S.tech.clientRef)?'DT':'VPI';
+  const el_company=qs('doe-banner-company');const el_contact=qs('doe-banner-contact');
+  const el_address=qs('doe-banner-address');const el_ref=qs('doe-banner-ref');
+  const el_manager=qs('doe-banner-manager');const el_source=qs('doe-banner-source');
+  if(el_company) el_company.textContent=company;
+  if(el_contact) el_contact.textContent=contact+phone;
+  if(el_address) el_address.textContent=address;
+  if(el_ref) el_ref.textContent=ref;
+  if(el_manager) el_manager.textContent=manager;
+  if(el_source) el_source.textContent=`Source : ${source}`;
 }
 
 // ═══════════════════════════════════════
