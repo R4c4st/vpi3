@@ -7172,9 +7172,8 @@ function SHOW(mod,id){
 // ── Impression : on relance le rendu final via buildPrint* (les options sont déjà dans S.pdfOpts)
 function pvPrint(){
   const container=document.getElementById('pv-blocks-container');
-  const printRoot=document.getElementById('printRoot');
-  if(!printRoot){alert('Element printRoot introuvable.');return;}
 
+  // 1) Récupérer le HTML à imprimer (preview en cours ou rebuild)
   let bodyHtml='';
   if(container&&container.innerHTML.trim()){
     bodyHtml=container.innerHTML;
@@ -7184,7 +7183,13 @@ function pvPrint(){
     bodyHtml=buildFn();
   }
 
-  // Copie + nettoyage
+  // DIAGNOSTIC : alerter si le contenu source est vide
+  if(!bodyHtml || !bodyHtml.trim()){
+    alert('Aucun contenu à imprimer — ouvrez d\'abord la prévisualisation, puis réessayez.');
+    return;
+  }
+
+  // 2) Nettoyer : retirer transforms de preview + éléments .no-print
   const tmp=document.createElement('div');
   tmp.innerHTML=bodyHtml;
   const docEl=tmp.querySelector('.oci-doc');
@@ -7197,29 +7202,200 @@ function pvPrint(){
   }
   tmp.querySelectorAll('.no-print').forEach(el=>el.remove());
 
-  // Injection dans printRoot
-  printRoot.innerHTML=tmp.innerHTML;
+  // 3) Cloner les styles de la page courante
+  const stylesText=Array.from(document.querySelectorAll('style'))
+    .map(s=>s.textContent).join('\n');
 
-  // Fermer la preview
+  // 4) Ouvrir une popup VIERGE
+  const win=window.open('about:blank','_blank','width=900,height=1200');
+  if(!win){
+    alert('Popup bloquée — autorisez les pop-ups pour ce site puis réessayez.');
+    return;
+  }
+
+  // 5) Construction DIRECTE du DOM de la popup (pas de document.write)
+  //    On laisse le navigateur créer son HTML par défaut, puis on manipule le DOM.
+  const wdoc=win.document;
+
+  // Titre
+  wdoc.title='Impression — Dossier OCI Connect';
+
+  // S'assurer qu'on a bien un <head> et un <body>
+  if(!wdoc.head){
+    wdoc.documentElement.insertBefore(wdoc.createElement('head'), wdoc.documentElement.firstChild);
+  }
+  if(!wdoc.body){
+    wdoc.documentElement.appendChild(wdoc.createElement('body'));
+  }
+
+  // meta charset
+  const metaCharset=wdoc.createElement('meta');
+  metaCharset.setAttribute('charset','utf-8');
+  wdoc.head.appendChild(metaCharset);
+
+  // FIX CRITIQUE : forcer le mode clair dans la popup.
+  // L'app utilise des variables CSS --bg, --text, etc. qui passent en dark
+  // via @media (prefers-color-scheme: dark). Dans la popup, le contenu
+  // héritait de ces variables → texte blanc sur fond sombre → invisible
+  // à l'impression (fond retiré par @media print).
+  wdoc.documentElement.setAttribute('data-theme','light');
+  wdoc.documentElement.style.colorScheme='light';
+
+  // CSS de la barre d'outils + layout popup
+  //    Les !important sur les variables neutralisent TOUT le thème dark hérité
+  //    de l'app (radial-gradient, var(--bg), var(--text), etc.).
+  const popupCss=wdoc.createElement('style');
+  popupCss.textContent=
+    /* Reset des variables CSS du thème de l'app en valeurs claires */
+    ':root, html, html:not([data-theme]), html[data-theme="light"], html[data-theme="dark"]{'+
+    '  --bg:#ffffff !important; --bg2:#ffffff !important;'+
+    '  --panel:#ffffff !important; --panel-soft:#f4f8fd !important;'+
+    '  --line:#d9e4f0 !important; --text:#1a1a1a !important;'+
+    '  --muted:#6a7c92 !important; --primary:#0f4f84 !important;'+
+    '  --primary2:#1a6bc4 !important;'+
+    '  color-scheme:light !important;'+
+    '}'+
+    /* Neutraliser toute règle @media (prefers-color-scheme: dark) héritée */
+    'html, body{'+
+    '  background:#fff !important;'+
+    '  background-image:none !important;'+
+    '  color:#1a1a1a !important;'+
+    '  min-height:auto !important;'+
+    '}'+
+    'html,body{margin:0;padding:0;}'+
+    'body{font-family:Arial,"IBM Plex Sans",sans-serif;}'+
+    '#print-toolbar{position:fixed;top:0;left:0;right:0;z-index:9999;'+
+    '  background:linear-gradient(135deg,#0f4f84,#1a6bc4);color:#fff;'+
+    '  padding:10px 16px;display:flex;align-items:center;gap:12px;'+
+    '  box-shadow:0 2px 8px rgba(0,0,0,.25);font-size:13px;}'+
+    '#print-toolbar .title{font-weight:700;flex:1;}'+
+    '#print-toolbar button{background:#fff;color:#0f4f84;border:none;'+
+    '  padding:8px 18px;border-radius:6px;font-weight:700;cursor:pointer;'+
+    '  font-size:13px;font-family:inherit;}'+
+    '#print-toolbar button:hover{background:#e3f0ff;}'+
+    '#print-toolbar button.secondary{background:transparent;color:#fff;'+
+    '  border:1px solid rgba(255,255,255,.5);}'+
+    '@media screen {'+
+    '  body{background:#e5e7eb;}'+
+    '  #print-content{padding:76px 20px 20px;}'+
+    '  .oci-doc{margin:0 auto;box-shadow:0 4px 20px rgba(0,0,0,.15);background:#fff;}'+
+    '}'+
+    /* S\'assurer que le contenu est VISIBLE coûte que coûte */
+    '#print-content{display:block !important; visibility:visible !important; opacity:1 !important;}'+
+    '#print-content > *{display:block !important; visibility:visible !important;}'+
+    '.oci-doc{display:block !important; visibility:visible !important; opacity:1 !important;}'+
+    '@media print {'+
+    '  #print-toolbar{display:none !important;}'+
+    '  #print-content{padding:0 !important;}'+
+    '  body{background:#fff;}'+
+    '  .oci-doc{margin:0;box-shadow:none;}'+
+    /* FORCE la conservation des couleurs de fond à l\'impression */
+    '  *,*::before,*::after{'+
+    '    -webkit-print-color-adjust:exact !important;'+
+    '    print-color-adjust:exact !important;'+
+    '    color-adjust:exact !important;'+
+    '  }'+
+    '}';
+
+  // CSS de l'app (styles .oci-doc, .print-*, @page, @media print…)
+  const appCss=wdoc.createElement('style');
+  appCss.textContent=stylesText;
+  wdoc.head.appendChild(appCss);
+
+  // popupCss en DERNIER pour que ses !important écrasent tout (notamment
+  // les règles @media (prefers-color-scheme: dark) de l'app).
+  wdoc.head.appendChild(popupCss);
+
+  // 6) Barre d'outils (créée en DOM, pas en innerHTML pour pouvoir y attacher des handlers)
+  const toolbar=wdoc.createElement('div');
+  toolbar.id='print-toolbar';
+
+  const titleSpan=wdoc.createElement('span');
+  titleSpan.className='title';
+  titleSpan.textContent='📄 Dossier OCI Connect — Aperçu impression';
+  toolbar.appendChild(titleSpan);
+
+  const btnPrint=wdoc.createElement('button');
+  btnPrint.textContent='🖨️ Imprimer / Enregistrer PDF';
+  btnPrint.addEventListener('click',function(){ win.print(); });
+  toolbar.appendChild(btnPrint);
+
+  // Bouton "Télécharger HTML" — livrable client figé, réouvrable dans
+  // n'importe quel navigateur, Ctrl+P → PDF identique à cette popup.
+  const btnDownload=wdoc.createElement('button');
+  btnDownload.textContent='⬇️ Télécharger HTML';
+  btnDownload.style.cssText='background:#f4f8fd;color:#0f4f84;';
+  btnDownload.addEventListener('click',function(){
+    try{
+      // Sérialiser le document actuel de la popup, en excluant la barre d'outils
+      const clone=wdoc.documentElement.cloneNode(true);
+      const tb=clone.querySelector('#print-toolbar');
+      if(tb) tb.remove();
+      const html='<!DOCTYPE html>\n<html lang="fr">'+clone.innerHTML+'</html>';
+      const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+      const url=URL.createObjectURL(blob);
+      const a=wdoc.createElement('a');
+      const now=new Date();
+      const stamp=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+      a.href=url;
+      a.download='Dossier_OCI_Connect_'+stamp+'.html';
+      wdoc.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); },1000);
+    }catch(e){
+      alert('Erreur téléchargement : '+e.message);
+    }
+  });
+  toolbar.appendChild(btnDownload);
+
+  const btnClose=wdoc.createElement('button');
+  btnClose.className='secondary';
+  btnClose.textContent='✕ Fermer';
+  btnClose.style.cssText='background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.5);';
+  btnClose.addEventListener('click',function(){ win.close(); });
+  toolbar.appendChild(btnClose);
+
+  wdoc.body.appendChild(toolbar);
+
+  // 7) Zone de contenu : on transfère le DOM déjà parsé (tmp),
+  //    ce qui évite TOUT problème d'échappement HTML
+  const contentDiv=wdoc.createElement('div');
+  contentDiv.id='print-content';
+
+  const htmlLenBefore=tmp.innerHTML.length;
+
+  // Transférer les enfants de tmp vers contentDiv (via importNode pour que
+  // les éléments appartiennent au document de la popup)
+  let transferred=0;
+  while(tmp.firstChild){
+    const imported=wdoc.importNode(tmp.firstChild, true);
+    contentDiv.appendChild(imported);
+    tmp.removeChild(tmp.firstChild);
+    transferred++;
+  }
+
+  wdoc.body.appendChild(contentDiv);
+
+  // Garde-fou : si rien n'a été transféré, afficher un message clair
+  if(transferred===0 || htmlLenBefore<50){
+    const warning=wdoc.createElement('div');
+    warning.style.cssText='margin:100px auto;max-width:600px;padding:30px;'+
+      'background:#fff3cd;border:2px solid #ffc107;border-radius:12px;'+
+      'color:#856404;font-size:16px;text-align:center;';
+    warning.innerHTML='<strong style="font-size:20px;display:block;margin-bottom:12px">⚠️ Contenu vide</strong>'+
+      '<p>Aucun contenu à imprimer. Ouvrez la prévisualisation puis réessayez.</p>';
+    contentDiv.appendChild(warning);
+  }
+
+  // Logs discrets en console (F12) pour debug éventuel
+  console.log('[pvPrint]',transferred,'enfants,',htmlLenBefore,'chars');
+
+  // 8) Fermer la preview de l'app principale
   const prevModal=document.getElementById('modal-preview');
   if(prevModal) prevModal.classList.remove('open');
 
-  // Attendre que TOUTES les images (QR compris) soient chargées avant print
-  const imgs=Array.from(printRoot.querySelectorAll('img'));
-  const waitImgs=imgs.map(img=>{
-    if(img.complete && img.naturalWidth>0) return Promise.resolve();
-    return new Promise(res=>{
-      const done=()=>res();
-      img.addEventListener('load',done,{once:true});
-      img.addEventListener('error',done,{once:true});
-      // timeout fallback 3s
-      setTimeout(done,3000);
-    });
-  });
-
-  Promise.all(waitImgs).then(()=>{
-    setTimeout(function(){ window.print(); },150);
-  });
+  // 9) Focus sur la popup. Pas d'auto-print.
+  try{ win.focus(); }catch(e){}
 }
 
 // Alias conservés pour rétrocompatibilité avec d'anciens boutons onclick
