@@ -1071,6 +1071,12 @@ canvas{display:block;touch-action:none;width:100%}
 }
 .oci-run-hdr .r{color:#999; letter-spacing:0;}
 
+/* ── Marge de respiration en haut de page après un saut (réglable) ── */
+.oci-run-hdr{ padding-top:calc(8pt + var(--page-top-margin, 0pt)); }
+.oci-page-start{ padding-top:calc(14pt + var(--page-top-margin, 0pt)) !important; }
+/* Photos pleine page : marge haute aussi */
+.oci-photo-fullpage{ margin-top:var(--page-top-margin, 0pt); }
+
 /* ── Bandeau de couverture (haut de page 1 uniquement) */
 .oci-cover-hdr{
   padding:14pt 16pt; border-bottom:0.5pt solid var(--oci-line);
@@ -1483,7 +1489,8 @@ canvas{display:block;touch-action:none;width:100%}
   .oci-doc { max-width:210mm !important; width:210mm !important; margin:0 auto !important; padding:0 !important; }
   .oci-body { padding:10mm 14mm 8mm 14mm !important; }
   .oci-cover-hdr { padding:12mm 14mm 6mm 14mm !important; }
-  .oci-run-hdr { padding:6mm 14mm 3mm 14mm !important; }
+  .oci-run-hdr { padding:calc(6mm + var(--page-top-margin, 0pt)) 14mm 3mm 14mm !important; }
+  .oci-page-start { padding-top:calc(10mm + var(--page-top-margin, 0pt)) !important; }
   .oci-foot { padding:3mm 14mm 6mm 14mm !important; }
   /* Page-break hygiene */
   .oci-doc .oci-h1, .oci-doc .oci-h2, .oci-doc .oci-h2-sep { page-break-after:avoid; }
@@ -1517,6 +1524,22 @@ canvas{display:block;touch-action:none;width:100%}
   background:linear-gradient(to bottom, rgba(26,107,196,.04), transparent);
 }
 .oci-page-break::before { content:"↵ Nouvelle page"; }
+
+/* ── Séparateur léger entre sections en FLUX CONTINU (mode auto) ── */
+.oci-sec-sep{
+  display:block; height:0; margin:var(--sec-gap,10pt) 0 0 0; border:none;
+}
+.oci-sec-cont{
+  /* La section continue sur la même page : padding haut proportionnel à l'espacement choisi */
+  padding-top:var(--sec-gap-pad,4pt) !important;
+}
+/* Éviter qu'un titre de section se retrouve seul en bas de page */
+.oci-doc .oci-sec .oci-h1{ page-break-after:avoid; break-after:avoid; }
+.oci-doc .oci-sec{ page-break-inside:auto; }
+@media print{
+  .oci-sec-sep{ height:0 !important; margin:var(--sec-gap,8pt) 0 0 0 !important; }
+  .oci-sec-cont{ padding-top:var(--sec-gap-pad,4mm) !important; }
+}
 
 /* ══════════ Panneau d'options PDF (in-app) ══════════ */
 .pdfopts-overlay{
@@ -3089,8 +3112,17 @@ canvas{display:block;touch-action:none;width:100%}
         </select>
       </div>
 
+      <button id="pv-layout-btn" onclick="pvToggleLayoutPanel()" title="Éditeur de mise en page : réordonner les rubriques et placer les sauts de page" style="display:flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid #374151;border-radius:6px;background:#1e2535;color:#94a3b8;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Disposition
+      </button>
+
       <div style="flex:1"></div>
 
+      <button onclick="pvExportWord()" title="Exporter en Word (.docx)" style="padding:7px 16px;border:none;border-radius:7px;background:linear-gradient(135deg,#2b5797,#1f4e79);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:7px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13l1.5 4 1.5-4 1.5 4 1.5-4"/></svg>
+        Word
+      </button>
       <button onclick="pvPrint()" style="padding:7px 18px;border:none;border-radius:7px;background:linear-gradient(135deg,#0f4f84,#1a6bc4);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:7px">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
         Imprimer / PDF
@@ -3432,6 +3464,296 @@ canvas{display:block;touch-action:none;width:100%}
 <div id="printRoot"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   OCI WORD ENGINE — Export .docx natif (OOXML) sans dépendance externe
+   Génère un vrai fichier Word à partir du HTML de rendu (buildPrint*).
+   Fonctionne 100% hors-ligne (ZIP "stored" en JS pur + CRC32).
+   ═══════════════════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+
+/* ---------- 1. CRC32 + ZIP (stored, pas de compression) ---------- */
+const _crcTable=(function(){const t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}return t;})();
+function crc32(bytes){let c=0xFFFFFFFF;for(let i=0;i<bytes.length;i++)c=_crcTable[(c^bytes[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+function strBytes(str){return new TextEncoder().encode(str);}
+// Construit un ZIP à partir de [{name, data(Uint8Array)}]
+function makeZip(files){
+  const chunks=[]; const central=[]; let offset=0;
+  const u16=n=>[n&0xFF,(n>>8)&0xFF];
+  const u32=n=>[n&0xFF,(n>>8)&0xFF,(n>>16)&0xFF,(n>>24)&0xFF];
+  for(const f of files){
+    const nameB=strBytes(f.name); const data=f.data; const crc=crc32(data);
+    const local=[].concat(u32(0x04034b50),u16(20),u16(0),u16(0),u16(0),u16(0),
+      u32(crc),u32(data.length),u32(data.length),u16(nameB.length),u16(0));
+    chunks.push(new Uint8Array(local)); chunks.push(nameB); chunks.push(data);
+    const cen=[].concat(u32(0x02014b50),u16(20),u16(20),u16(0),u16(0),u16(0),u16(0),
+      u32(crc),u32(data.length),u32(data.length),u16(nameB.length),u16(0),u16(0),u16(0),u16(0),
+      u32(0),u32(offset));
+    central.push(new Uint8Array(cen)); central.push(nameB);
+    offset+=local.length+nameB.length+data.length;
+  }
+  let cenSize=0; central.forEach(c=>cenSize+=c.length);
+  const end=[].concat(u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),
+    u32(cenSize),u32(offset),u16(0));
+  const all=[...chunks,...central,new Uint8Array(end)];
+  let total=0; all.forEach(a=>total+=a.length);
+  const out=new Uint8Array(total); let p=0;
+  all.forEach(a=>{out.set(a,p);p+=a.length;});
+  return out;
+}
+
+/* ---------- 2. Helpers XML ---------- */
+function xmlEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+const EMU_PER_PX=9525;          // 1px = 9525 EMU
+const TWIP_PER_PX=15;           // approx (96dpi → 1px=15twip)
+// Couleurs OCI (proches du DOE Vauconsant)
+const CLR={
+  primary:'1F4E79', primaryDk:'14365A', headFill:'2E5C8A', headText:'FFFFFF',
+  rowAlt:'EEF4FB', border:'BFD2E6', text:'15263A', muted:'6A7C92',
+  ok:'11976F', warn:'D18610', danger:'C53737', accent:'D6285D', rule:'1F4E79'
+};
+
+/* ---------- 3. Modèle de document : liste de blocs ---------- */
+// On construit une liste de blocs structurés, plus fiable que parser du HTML brut.
+// Chaque "build*" pour Word produira un tableau de blocs via les builders ci-dessous.
+
+function pPr(opts){
+  opts=opts||{}; let s='<w:pPr>';
+  // ORDRE OOXML STRICT : pStyle, keepNext, pBdr, shd, numPr, spacing, ind, jc, rPr
+  if(opts.style) s+=`<w:pStyle w:val="${opts.style}"/>`;
+  if(opts.keepNext) s+='<w:keepNext/>';
+  if(opts.borderBottom) s+=`<w:pBdr><w:bottom w:val="single" w:sz="${opts.borderBottom.sz||12}" w:space="4" w:color="${opts.borderBottom.color||CLR.rule}"/></w:pBdr>`;
+  if(opts.shade) s+=`<w:shd w:val="clear" w:color="auto" w:fill="${opts.shade}"/>`;
+  if(opts.bullet) s+='<w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr>';
+  const sp=[]; if(opts.before!=null)sp.push(`w:before="${opts.before}"`); if(opts.after!=null)sp.push(`w:after="${opts.after}"`); if(opts.line!=null)sp.push(`w:line="${opts.line}" w:lineRule="auto"`);
+  if(sp.length) s+=`<w:spacing ${sp.join(' ')}/>`;
+  if(opts.ind) s+=`<w:ind w:left="${opts.ind}"/>`;
+  if(opts.jc) s+=`<w:jc w:val="${opts.jc}"/>`;
+  s+='</w:pPr>'; return s;
+}
+function run(text,opts){
+  opts=opts||{}; let rpr='<w:rPr>';
+  if(opts.b)rpr+='<w:b/>'; if(opts.i)rpr+='<w:i/>';
+  if(opts.color)rpr+=`<w:color w:val="${opts.color}"/>`;
+  if(opts.sz)rpr+=`<w:sz w:val="${opts.sz}"/><w:szCs w:val="${opts.sz}"/>`;
+  if(opts.font)rpr+=`<w:rFonts w:ascii="${opts.font}" w:hAnsi="${opts.font}"/>`;
+  if(opts.caps)rpr+='<w:caps/>';
+  if(opts.spacing)rpr+=`<w:spacing w:val="${opts.spacing}"/>`;
+  rpr+='</w:rPr>';
+  const parts=String(text==null?'':text).split('\n');
+  let r='';
+  parts.forEach((seg,i)=>{
+    if(i>0) r+=`<w:r>${rpr}<w:br/></w:r>`;
+    r+=`<w:r>${rpr}<w:t xml:space="preserve">${xmlEsc(seg)}</w:t></w:r>`;
+  });
+  return r;
+}
+function para(runsXml,pprOpts){return `<w:p>${pPr(pprOpts)}${runsXml||''}</w:p>`;}
+
+// Titres
+function h1(text){
+  return para(run(text,{b:true,sz:30,color:CLR.primaryDk,font:'Arial'}),
+    {before:240,after:120,borderBottom:{sz:18,color:CLR.rule},keepNext:true});
+}
+function h2(text){
+  return para(run(text,{b:true,sz:24,color:CLR.primary,font:'Arial'}),
+    {before:200,after:80,keepNext:true});
+}
+function h3(text){
+  return para(run(text,{b:true,sz:20,color:CLR.text,font:'Arial'}),{before:140,after:60,keepNext:true});
+}
+function pText(text,opts){opts=opts||{};return para(run(text,{sz:opts.sz||19,color:opts.color||CLR.text,b:opts.b,i:opts.i}),{after:opts.after!=null?opts.after:80,line:276,jc:opts.jc});}
+function bullet(text){return para(run(text,{sz:19,color:CLR.text}),{bullet:true,after:40,line:264});}
+function spacer(h){return para('',{after:h||60});}
+function pageBreak(){return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';}
+
+// Tableau. rows = [[{t,head,bold,fill,color,w,align}]] ; widths en twips
+function table(rows,colWidths,opts){
+  opts=opts||{};
+  const totalW=colWidths.reduce((a,b)=>a+b,0);
+  let t=`<w:tbl><w:tblPr><w:tblW w:w="${totalW}" w:type="dxa"/>`;
+  t+=`<w:tblBorders>`;
+  ['top','left','bottom','right','insideH','insideV'].forEach(b=>{t+=`<w:${b} w:val="single" w:sz="4" w:space="0" w:color="${CLR.border}"/>`;});
+  t+=`</w:tblBorders><w:tblLayout w:type="fixed"/></w:tblPr>`;
+  t+='<w:tblGrid>'+colWidths.map(w=>`<w:gridCol w:w="${w}"/>`).join('')+'</w:tblGrid>';
+  rows.forEach(row=>{
+    t+='<w:tr>';
+    row.forEach((cell,ci)=>{
+      const w=cell.w||colWidths[ci]||colWidths[0];
+      const fill=cell.fill||(cell.head?CLR.headFill:null);
+      const span=cell.span||1;
+      t+='<w:tc><w:tcPr>';
+      t+=`<w:tcW w:w="${w}" w:type="dxa"/>`;
+      if(span>1)t+=`<w:gridSpan w:val="${span}"/>`;
+      if(fill)t+=`<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/>`;
+      t+='<w:tcMar><w:top w:w="40" w:type="dxa"/><w:left w:w="90" w:type="dxa"/><w:bottom w:w="40" w:type="dxa"/><w:right w:w="90" w:type="dxa"/></w:tcMar>';
+      t+='<w:vAlign w:val="center"/></w:tcPr>';
+      const txtColor=cell.color||(cell.head?CLR.headText:CLR.text);
+      t+=para(run(cell.t,{b:cell.bold||cell.head,color:txtColor,sz:cell.sz||18}),{after:0,jc:cell.align,line:240});
+      t+='</w:tc>';
+    });
+    t+='</w:tr>';
+  });
+  t+='</w:tbl>';
+  t+=spacer(80);
+  return t;
+}
+
+// Image inline depuis dataURL → ajoute média + relation, renvoie le XML drawing
+function imageBlock(state,dataUrl,maxWpx,caption){
+  try{
+    const m=/^data:(image\/(png|jpeg|jpg|gif|webp));base64,(.+)$/i.exec(dataUrl||'');
+    if(!m) return caption?pText(caption,{i:true,color:CLR.muted,sz:16}):'';
+    const ext=m[2].toLowerCase()==='jpg'?'jpeg':m[2].toLowerCase();
+    const b64=m[3]; const bin=atob(b64); const bytes=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+    // dimensions
+    let wpx=maxWpx||560, hpx=Math.round(wpx*0.62);
+    const dim=_imgSize(bytes,ext); if(dim){const r=dim.h/dim.w; wpx=Math.min(maxWpx||560,dim.w); hpx=Math.round(wpx*r);}
+    const id=state.media.length+1;
+    const fname=`image${id}.${ext==='jpeg'?'jpg':ext}`;
+    state.media.push({name:fname,data:bytes,ext:ext});
+    const rid=`rIdImg${id}`;
+    state.imgRels.push(`<Relationship Id="${rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/${fname}"/>`);
+    if(ext==='jpeg')state.ctypes.jpg=true; else state.ctypes[ext]=true;
+    const cx=wpx*EMU_PER_PX, cy=hpx*EMU_PER_PX;
+    const drawing=`<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="60" w:after="40"/></w:pPr><w:r><w:drawing>`+
+      `<wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${cx}" cy="${cy}"/>`+
+      `<wp:effectExtent l="0" t="0" r="0" b="0"/><wp:docPr id="${id}" name="${fname}"/>`+
+      `<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr>`+
+      `<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">`+
+      `<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${id}" name="${fname}"/><pic:cNvPicPr/></pic:nvPicPr>`+
+      `<pic:blipFill><a:blip r:embed="${rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>`+
+      `<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic>`+
+      `</a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`;
+    let out=drawing;
+    if(caption) out+=para(run(caption,{i:true,sz:16,color:CLR.muted}),{jc:'center',after:120});
+    return out;
+  }catch(e){ return caption?pText(caption,{i:true,color:CLR.muted}):''; }
+}
+// Lecture dimensions PNG/JPEG basique
+function _imgSize(bytes,ext){
+  try{
+    if(ext==='png'){ return {w:(bytes[16]<<24|bytes[17]<<16|bytes[18]<<8|bytes[19])>>>0, h:(bytes[20]<<24|bytes[21]<<16|bytes[22]<<8|bytes[23])>>>0}; }
+    if(ext==='jpeg'){ let i=2; while(i<bytes.length){ if(bytes[i]!==0xFF){i++;continue;} const marker=bytes[i+1];
+      if(marker>=0xC0&&marker<=0xC3){ return {h:(bytes[i+5]<<8|bytes[i+6]), w:(bytes[i+7]<<8|bytes[i+8])}; }
+      const len=(bytes[i+2]<<8|bytes[i+3]); i+=2+len; } }
+  }catch(e){}
+  return null;
+}
+
+/* ---------- 4. Assemblage final du .docx ---------- */
+function buildDocx(blocksXml,meta){
+  const state=meta.state;
+  const headerText=meta.headerLeft||'OCI Connect — RCI Groupe OCI';
+  const headerRight=meta.headerRight||'';
+  const footerRef=meta.footerRef||'';
+  // Header / Footer
+  const headerXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:hdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="12" w:space="4" w:color="${CLR.rule}"/></w:pBdr><w:tabs><w:tab w:val="right" w:pos="9360"/></w:tabs><w:spacing w:after="0"/></w:pPr>`+
+`<w:r><w:rPr><w:b/><w:sz w:val="16"/><w:color w:val="${CLR.primary}"/></w:rPr><w:t xml:space="preserve">${xmlEsc(headerText)}</w:t></w:r>`+
+`<w:r><w:tab/></w:r><w:r><w:rPr><w:i/><w:sz w:val="16"/><w:color w:val="${CLR.primary}"/></w:rPr><w:t xml:space="preserve">${xmlEsc(headerRight)}</w:t></w:r></w:p></w:hdr>`;
+  const footerXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:p><w:pPr><w:pBdr><w:top w:val="single" w:sz="6" w:space="4" w:color="${CLR.border}"/></w:pBdr><w:tabs><w:tab w:val="center" w:pos="4680"/><w:tab w:val="right" w:pos="9360"/></w:tabs><w:spacing w:before="0" w:after="0"/></w:pPr>`+
+`<w:r><w:rPr><w:sz w:val="14"/><w:color w:val="${CLR.muted}"/></w:rPr><w:t xml:space="preserve">Confidentiel — Usage interne OCI Connect</w:t></w:r>`+
+`<w:r><w:tab/></w:r><w:r><w:rPr><w:sz w:val="14"/><w:color w:val="${CLR.muted}"/></w:rPr><w:t xml:space="preserve">${xmlEsc(footerRef)}</w:t></w:r>`+
+`<w:r><w:tab/></w:r><w:r><w:rPr><w:sz w:val="14"/><w:color w:val="${CLR.muted}"/></w:rPr><w:t xml:space="preserve">Page </w:t></w:r>`+
+`<w:r><w:rPr><w:sz w:val="14"/><w:color w:val="${CLR.muted}"/></w:rPr><w:fldChar w:fldCharType="begin"/></w:r>`+
+`<w:r><w:rPr><w:sz w:val="14"/><w:color w:val="${CLR.muted}"/></w:rPr><w:instrText xml:space="preserve">PAGE</w:instrText></w:r>`+
+`<w:r><w:rPr><w:sz w:val="14"/><w:color w:val="${CLR.muted}"/></w:rPr><w:fldChar w:fldCharType="end"/></w:r></w:p></w:ftr>`;
+
+  const documentXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+  xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+  xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+  xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+<w:body>
+${blocksXml}
+<w:sectPr>
+<w:headerReference w:type="default" r:id="rIdHeader"/>
+<w:footerReference w:type="default" r:id="rIdFooter"/>
+<w:pgSz w:w="11906" w:h="16838"/>
+<w:pgMar w:top="1418" w:right="1276" w:bottom="1134" w:left="1276" w:header="708" w:footer="708" w:gutter="0"/>
+</w:sectPr>
+</w:body></w:document>`;
+
+  const styles=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="19"/><w:szCs w:val="19"/><w:lang w:val="fr-FR"/></w:rPr></w:rPrDefault></w:docDefaults>
+<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style>
+</w:styles>`;
+
+  const numbering=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:abstractNum w:abstractNumId="0"><w:lvl w:ilvl="0"><w:start w:val="1"/><w:numFmt w:val="bullet"/><w:lvlText w:val="&#8226;"/><w:lvlJc w:val="left"/><w:pPr><w:ind w:left="454" w:hanging="227"/></w:pPr><w:rPr><w:rFonts w:ascii="Symbol" w:hAnsi="Symbol"/></w:rPr></w:lvl></w:abstractNum>
+<w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num></w:numbering>`;
+
+  // Relationships document
+  let docRels=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+<Relationship Id="rIdNum" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>
+<Relationship Id="rIdHeader" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header1.xml"/>
+<Relationship Id="rIdFooter" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>
+${state.imgRels.join('\n')}
+</Relationships>`;
+
+  let defaults='<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>';
+  if(state.ctypes.png)defaults+='<Default Extension="png" ContentType="image/png"/>';
+  if(state.ctypes.jpg)defaults+='<Default Extension="jpg" ContentType="image/jpeg"/>';
+  if(state.ctypes.gif)defaults+='<Default Extension="gif" ContentType="image/gif"/>';
+  if(state.ctypes.webp)defaults+='<Default Extension="webp" ContentType="image/webp"/>';
+  const contentTypes=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+${defaults}
+<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
+<Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>
+<Override PartName="/word/header1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"/>
+<Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>
+</Types>`;
+
+  const rootRels=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`;
+
+  const files=[
+    {name:'[Content_Types].xml',data:strBytes(contentTypes)},
+    {name:'_rels/.rels',data:strBytes(rootRels)},
+    {name:'word/document.xml',data:strBytes(documentXml)},
+    {name:'word/styles.xml',data:strBytes(styles)},
+    {name:'word/numbering.xml',data:strBytes(numbering)},
+    {name:'word/header1.xml',data:strBytes(headerXml)},
+    {name:'word/footer1.xml',data:strBytes(footerXml)},
+    {name:'word/_rels/document.xml.rels',data:strBytes(docRels)},
+  ];
+  state.media.forEach(m=>files.push({name:`word/media/${m.name}`,data:m.data}));
+  return makeZip(files);
+}
+
+/* ---------- 5. API publique ---------- */
+window.OCIWord={
+  CLR, EMU_PER_PX, TWIP_PER_PX,
+  newState(){return {media:[],imgRels:[],ctypes:{},};},
+  h1,h2,h3,pText,bullet,spacer,pageBreak,table,para,run,imageBlock,
+  build(blocks,meta){
+    const xml=Array.isArray(blocks)?blocks.join('\n'):blocks;
+    return buildDocx(xml,meta);
+  },
+  download(bytes,filename){
+    const blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},1000);
+  }
+};
+})();
+</script>
 <script>
 // ═══════════════════════════════════════
 // ICONS
@@ -3915,7 +4237,12 @@ const S={
     dayCards:false,       // Fiches du jour individuelles dans le DT
     pvReception:true,     // PV de réception en dernière page du DT
     netMemoCard:true,     // Carte mémo réseau dans le sommaire du DT
-    printComments:false   // Afficher notes terrain vierges pour annotations manuscrites
+    printComments:false,  // Afficher notes terrain vierges pour annotations manuscrites
+    pagination:'auto',    // 'auto' (intelligent) | 'force' (1 rubrique/page) | 'manual'
+    manualBreaks:{},      // sauts de page manuels par module : {tech:{showPhotos:true}}
+    sectionGap:10,        // espacement vertical entre modules en flux continu (pt)
+    pageTopMargin:0,      // marge de respiration en haut de page après un saut (pt)
+    doeMetier:'auto'      // modèle DOE Word : auto|video|acces|reseau|generic
   }
 };
 
@@ -6847,6 +7174,9 @@ function openPreviewModal(){
 
 function pvSetModule(mod){
   _pvMod=mod;
+  _layoutMode=false;  // repartir sur le panneau Sections au changement de module
+  const lb=document.getElementById('pv-layout-btn');
+  if(lb){ lb.style.background='#1e2535'; lb.style.color='#94a3b8'; }
   // Mettre à jour l'état visuel des onglets
   ['vpi','tech','doe','rfc'].forEach(x=>{
     const btn=document.getElementById('pv-tab-'+x);
@@ -6893,7 +7223,16 @@ function pvRender(){
   try{
     const html=buildFn();
     container.innerHTML=html;
-    container.style.cssText=`padding:0;box-sizing:border-box;width:100%;position:relative;background:#fff;color:#1a1a1a;min-height:${h}px`;
+    // Espacement vertical réglable entre modules (flux continu)
+    const gap=(S.pdfOpts&&S.pdfOpts.sectionGap!=null)?S.pdfOpts.sectionGap:10;
+    const topM=(S.pdfOpts&&S.pdfOpts.pageTopMargin!=null)?S.pdfOpts.pageTopMargin:0;
+    container.style.setProperty('--sec-gap',gap+'pt');
+    container.style.setProperty('--sec-gap-pad',Math.max(2,Math.round(gap*0.4))+'pt');
+    container.style.setProperty('--page-top-margin',topM+'pt');
+    container.style.cssText+=`;padding:0;box-sizing:border-box;width:100%;position:relative;background:#fff;color:#1a1a1a;min-height:${h}px`;
+    container.style.setProperty('--sec-gap',gap+'pt');
+    container.style.setProperty('--sec-gap-pad',Math.max(2,Math.round(gap*0.4))+'pt');
+    container.style.setProperty('--page-top-margin',topM+'pt');
     const docEl=container.querySelector('.oci-doc');
     if(docEl){ docEl.style.maxWidth='100%'; docEl.style.padding='14mm 12mm'; }
   }catch(e){
@@ -7023,16 +7362,262 @@ function pvSetOrder(mod,newOrder){
   scheduleAutosave();
 }
 
+/* ════ ÉDITEUR DE MISE EN PAGE V22 ════ */
+/* ═══════════════════════════════════════════════════════════════════════
+   ÉDITEUR DE MISE EN PAGE — panneau "Disposition"
+   • Liste les modules dans l'ordre, regroupés visuellement par PAGE
+   • Glisser-déposer pour réordonner
+   • Clic sur la zone inter-module pour insérer / retirer un saut de page
+   • Pilote S.pdfOpts.pagination ('auto'|'force'|'manual') + S.pdfOpts.manualBreaks
+   Se branche sur le système _secStart existant (aucun saut en dur).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+// Libellés lisibles des sections par module (réutilise PV_SECTIONS)
+function _layoutSectionsFor(mod){
+  const order = pvGetOrder(mod);
+  const defs = PV_SECTIONS[mod]||[];
+  return order
+    .map(id=>defs.find(s=>s.id===id))
+    .filter(s=>s && pvGetOption(mod,s.id)); // uniquement les sections visibles
+}
+
+// Pose / retire un saut manuel AVANT une section
+function layoutToggleBreak(mod,secId){
+  if(!S.pdfOpts.manualBreaks) S.pdfOpts.manualBreaks={};
+  if(!S.pdfOpts.manualBreaks[mod]) S.pdfOpts.manualBreaks[mod]={};
+  S.pdfOpts.manualBreaks[mod][secId]=!S.pdfOpts.manualBreaks[mod][secId];
+  // dès qu'on touche un saut manuel, on bascule en mode 'manual'
+  S.pdfOpts.pagination='manual';
+  scheduleAutosave();
+  pvRender();
+  pvRenderLayoutPanel();
+}
+
+function _layoutHasBreak(mod,secId){
+  return !!(S.pdfOpts.manualBreaks && S.pdfOpts.manualBreaks[mod] && S.pdfOpts.manualBreaks[mod][secId]);
+}
+
+// Change le mode de pagination global
+function layoutSetMode(mode){
+  S.pdfOpts.pagination=mode;
+  if(mode==='auto'||mode==='force'){
+    // on garde les manualBreaks en mémoire mais ils ne s'appliquent qu'en 'manual'
+  }
+  scheduleAutosave();
+  pvRender();
+  pvRenderLayoutPanel();
+}
+
+// Règle l'espacement vertical entre modules (en points)
+function layoutSetGap(val){
+  const g=Math.max(0,Math.min(40,parseInt(val)||0));
+  S.pdfOpts.sectionGap=g;
+  const lbl=document.getElementById('pv-gap-val');
+  if(lbl) lbl.textContent=g+' pt';
+  const rng=document.querySelector('#pv-options-panel input[type=range]');
+  if(rng && parseInt(rng.value)!==g) rng.value=g;
+  // Mise à jour live sans reconstruire tout le panneau (pour garder le curseur fluide)
+  const container=document.getElementById('pv-blocks-container');
+  if(container){
+    container.style.setProperty('--sec-gap',g+'pt');
+    container.style.setProperty('--sec-gap-pad',Math.max(2,Math.round(g*0.4))+'pt');
+  }
+  scheduleAutosave();
+}
+
+// Règle la marge de respiration en haut de page (après un saut), en points
+function layoutSetTopMargin(val){
+  const m=Math.max(0,Math.min(60,parseInt(val)||0));
+  S.pdfOpts.pageTopMargin=m;
+  const lbl=document.getElementById('pv-topm-val');
+  if(lbl) lbl.textContent=m+' pt';
+  const container=document.getElementById('pv-blocks-container');
+  if(container){
+    container.style.setProperty('--page-top-margin',m+'pt');
+  }
+  scheduleAutosave();
+}
+
+// Rendu du panneau de disposition (remplace le panneau d'options quand actif)
+let _layoutMode=false; // true = panneau disposition affiché à la place des sections
+function pvToggleLayoutPanel(){
+  _layoutMode=!_layoutMode;
+  pvRenderOptionsPanel();
+  const btn=document.getElementById('pv-layout-btn');
+  if(btn){ btn.style.background=_layoutMode?'#2b5797':'#1e2535'; btn.style.color=_layoutMode?'#fff':'#94a3b8'; }
+}
+
+function pvRenderLayoutPanel(){
+  if(_layoutMode) pvRenderOptionsPanel();
+}
+
+// Construit le HTML du panneau disposition
+function _layoutPanelHtml(mod){
+  const mode=(S.pdfOpts.pagination||'auto');
+  const sections=_layoutSectionsFor(mod);
+
+  let h=`<div style="padding:12px 16px;border-bottom:1px solid #374151;background:#0f1828">
+    <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Comportement des pages</div>
+    <div style="display:flex;flex-direction:column;gap:5px">`;
+  const modes=[
+    ['auto','📄 Intelligent','Coupe seulement si ça déborde (recommandé)'],
+    ['force','📐 Une par page','Chaque rubrique sur sa propre page'],
+    ['manual','✂️ Manuel','Je place les sauts moi-même ci-dessous'],
+  ];
+  modes.forEach(([k,lbl,desc])=>{
+    const on=(mode===k);
+    h+=`<button onclick="layoutSetMode('${k}')" style="text-align:left;padding:8px 10px;border:1px solid ${on?'#2b5797':'#2c3a52'};border-radius:8px;background:${on?'#18243a':'#141a28'};color:#dde8f5;cursor:pointer;font-family:inherit;transition:.15s">
+      <div style="font-size:12px;font-weight:700">${lbl}</div>
+      <div style="font-size:10px;color:#7a95b5;margin-top:2px;line-height:1.4">${desc}</div>
+    </button>`;
+  });
+  h+=`</div></div>`;
+
+  // Réglage de l'espacement vertical entre modules
+  const gap=(S.pdfOpts.sectionGap!=null)?S.pdfOpts.sectionGap:10;
+  h+=`<div style="padding:12px 16px;border-bottom:1px solid #374151">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+      <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em">Espace entre rubriques</span>
+      <span id="pv-gap-val" style="font-size:11px;font-weight:700;color:#2b5797;background:#141a28;border:1px solid #2c3a52;border-radius:5px;padding:2px 8px">${gap} pt</span>
+    </div>
+    <input type="range" min="0" max="40" step="2" value="${gap}"
+      oninput="layoutSetGap(this.value)"
+      style="width:100%;accent-color:#2b5797;cursor:pointer"/>
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#475569;margin-top:2px">
+      <span>Compact</span><span>Aéré</span>
+    </div>
+    <div style="display:flex;gap:5px;margin-top:8px">
+      <button onclick="layoutSetGap(6)" style="flex:1;padding:5px;border:1px solid #2c3a52;border-radius:6px;background:#141a28;color:#94a3b8;font-size:10px;cursor:pointer;font-family:inherit">Serré</button>
+      <button onclick="layoutSetGap(12)" style="flex:1;padding:5px;border:1px solid #2c3a52;border-radius:6px;background:#141a28;color:#94a3b8;font-size:10px;cursor:pointer;font-family:inherit">Normal</button>
+      <button onclick="layoutSetGap(22)" style="flex:1;padding:5px;border:1px solid #2c3a52;border-radius:6px;background:#141a28;color:#94a3b8;font-size:10px;cursor:pointer;font-family:inherit">Large</button>
+    </div>
+  </div>`;
+
+  // Réglage de la marge en haut de page (après un saut)
+  const topM=(S.pdfOpts.pageTopMargin!=null)?S.pdfOpts.pageTopMargin:0;
+  h+=`<div style="padding:12px 16px;border-bottom:1px solid #374151">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+      <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em">Marge en haut de page</span>
+      <span id="pv-topm-val" style="font-size:11px;font-weight:700;color:#2b5797;background:#141a28;border:1px solid #2c3a52;border-radius:5px;padding:2px 8px">${topM} pt</span>
+    </div>
+    <input type="range" min="0" max="60" step="2" value="${topM}"
+      oninput="layoutSetTopMargin(this.value)"
+      style="width:100%;accent-color:#2b5797;cursor:pointer"/>
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#475569;margin-top:2px">
+      <span>Collé</span><span>Très aéré</span>
+    </div>
+    <div style="font-size:9.5px;color:#64748b;margin-top:7px;line-height:1.45">Décale vers le bas le début d'une rubrique qui démarre une nouvelle page.</div>
+  </div>`;
+  h+=`<div style="padding:12px 16px 6px">
+    <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Disposition des rubriques</div>
+    <div style="font-size:10px;color:#64748b;margin-bottom:8px">${mode==='manual'?'Glissez pour réordonner · cliquez ✂️ pour couper la page':'Glissez pour réordonner · activez le mode Manuel pour placer des sauts'}</div>
+  </div>`;
+
+  h+=`<div id="pv-layout-list" style="padding:0 12px 12px">`;
+  let pageNum=1;
+  h+=`<div class="pv-page-label" style="display:flex;align-items:center;gap:6px;margin:4px 0 6px;font-size:10px;font-weight:700;color:#2b5797;text-transform:uppercase;letter-spacing:.06em">
+    <span style="display:inline-block;width:18px;height:22px;border:1.5px solid #2b5797;border-radius:2px;position:relative;flex-shrink:0"></span> Page ${pageNum}</div>`;
+
+  sections.forEach((s,idx)=>{
+    const brk = (idx>0) && (mode==='force' || (mode==='manual' && _layoutHasBreak(mod,s.id)));
+    if(brk){
+      pageNum++;
+      h+=`<div class="pv-page-label" style="display:flex;align-items:center;gap:6px;margin:10px 0 6px;font-size:10px;font-weight:700;color:#2b5797;text-transform:uppercase;letter-spacing:.06em">
+        <span style="display:inline-block;width:18px;height:22px;border:1.5px solid #2b5797;border-radius:2px;flex-shrink:0"></span> Page ${pageNum}</div>`;
+    }
+    // Zone "couper ici" entre modules (mode manuel)
+    if(idx>0 && mode==='manual'){
+      const has=_layoutHasBreak(mod,s.id);
+      h+=`<div onclick="layoutToggleBreak('${mod}','${s.id}')" title="${has?'Retirer le saut de page':'Couper la page ici'}"
+        style="display:flex;align-items:center;gap:6px;margin:-2px 0 4px;padding:2px 6px;cursor:pointer;border-radius:5px;font-size:9.5px;color:${has?'#2b5797':'#475569'};${has?'background:rgba(43,87,151,.12)':''}"
+        onmouseover="this.style.background='rgba(43,87,151,.18)'" onmouseout="this.style.background='${has?'rgba(43,87,151,.12)':'transparent'}'">
+        <span style="font-size:11px">✂️</span><span style="flex:1;border-top:1px dashed ${has?'#2b5797':'#374151'}"></span><span>${has?'Saut de page':'Couper ici'}</span>
+      </div>`;
+    }
+    h+=`<div class="pv-layout-row" draggable="true" data-id="${s.id}" data-mod="${mod}"
+      style="display:flex;align-items:center;gap:8px;padding:9px 11px;margin-bottom:5px;border-radius:8px;cursor:grab;
+             background:#1a2236;border:1px solid #2c3a52;transition:.12s">
+      <span style="color:#475569;font-size:15px;cursor:grab;flex-shrink:0;user-select:none">⠿</span>
+      <span style="font-size:12px;color:#dde8f5;flex:1;font-weight:600">${esc(s.label)}</span>
+    </div>`;
+  });
+  h+=`</div>`;
+  return h;
+}
+
+// Active le drag&drop sur la liste de disposition
+function _layoutInitDrag(mod){
+  const list=document.getElementById('pv-layout-list');
+  if(!list) return;
+  let dragSrc=null;
+  list.querySelectorAll('.pv-layout-row').forEach(row=>{
+    row.addEventListener('dragstart',e=>{ dragSrc=row; row.style.opacity='0.4'; e.dataTransfer.effectAllowed='move'; });
+    row.addEventListener('dragend',()=>{ row.style.opacity=''; list.querySelectorAll('.pv-layout-row').forEach(r=>r.style.borderColor='#2c3a52'); });
+    row.addEventListener('dragover',e=>{ e.preventDefault(); if(row!==dragSrc){ row.style.borderColor='#2b5797'; } });
+    row.addEventListener('dragleave',()=>{ row.style.borderColor='#2c3a52'; });
+    row.addEventListener('drop',e=>{
+      e.preventDefault();
+      if(!dragSrc||dragSrc===row) return;
+      const rows=Array.from(list.querySelectorAll('.pv-layout-row'));
+      const si=rows.indexOf(dragSrc), ti=rows.indexOf(row);
+      if(si<ti) row.after(dragSrc); else row.before(dragSrc);
+      // recalcule l'ordre complet (en réinsérant les sections masquées à leur place relative)
+      const visibleOrder=Array.from(list.querySelectorAll('.pv-layout-row')).map(r=>r.dataset.id);
+      _layoutCommitOrder(mod,visibleOrder);
+      pvRender();
+      pvRenderOptionsPanel();
+    });
+  });
+}
+
+// Fusionne le nouvel ordre des sections visibles avec les sections masquées
+function _layoutCommitOrder(mod,visibleOrder){
+  const full=pvGetOrder(mod).slice();
+  const hidden=full.filter(id=>!visibleOrder.includes(id));
+  // On reconstruit : on parcourt l'ancien ordre, en remplaçant les visibles par le nouvel ordre
+  let vi=0; const merged=full.map(id=>{
+    if(visibleOrder.includes(id)){ return visibleOrder[vi++]; }
+    return id; // section masquée : garde sa position
+  });
+  pvSetOrder(mod,merged);
+}
+
 function pvRenderOptionsPanel(){
   const panel=document.getElementById('pv-options-panel');
   if(!panel) return;
   const mod=_pvMod||'tech';
+
+  // ── Mode "Disposition" : éditeur de mise en page (drag&drop + sauts) ──
+  if(_layoutMode){
+    panel.innerHTML=_layoutPanelHtml(mod);
+    _layoutInitDrag(mod);
+    return;
+  }
+
   const order=pvGetOrder(mod);
   // Reconstruire la liste ordonnée
   const allDefs=PV_SECTIONS[mod]||[];
   const ordered=order.map(id=>allDefs.find(s=>s.id===id)).filter(Boolean);
 
-  let h=`<div style="padding:12px 16px;border-bottom:1px solid #374151;">
+  let h='';
+
+  // ── Sélecteur de métier (DOE uniquement) : configure le modèle Word ──
+  if(mod==='doe'){
+    const cur=(S.pdfOpts.doeMetier||'auto');
+    const det=(typeof doeDetectMetier==='function')?doeDetectMetier():'generic';
+    const metiers={auto:'Auto-détection',video:'Vidéosurveillance',acces:'Contrôle d\'accès',reseau:'Réseau / câblage',generic:'Courant faible (générique)'};
+    h+=`<div style="padding:12px 16px;border-bottom:1px solid #374151;background:#0f1828">
+      <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Modèle DOE (export Word)</div>
+      <select onchange="S.pdfOpts.doeMetier=this.value;scheduleAutosave();pvRenderOptionsPanel()" style="width:100%;background:#1e2535;border:1px solid #2b5797;border-radius:7px;color:#cbd5e1;font-size:12px;padding:7px 9px;font-family:inherit">`;
+    Object.entries(metiers).forEach(([k,lbl])=>{
+      h+=`<option value="${k}" ${cur===k?'selected':''}>${lbl}${k==='auto'?' ('+metiers[det]+')':''}</option>`;
+    });
+    h+=`</select>
+      <div style="font-size:10px;color:#64748b;margin-top:6px;line-height:1.5">Le bouton <b style="color:#94a3b8">Word</b> génère un DOE structuré (5 sections type Vauconsant), pré-rempli depuis vos données.</div>
+    </div>`;
+  }
+
+  h+=`<div style="padding:12px 16px;border-bottom:1px solid #374151;">
     <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Sections</div>
     <div style="font-size:10px;color:#64748b;margin-bottom:8px">Glissez pour réordonner · décochez pour masquer</div>
     <div style="display:flex;gap:4px;margin-bottom:8px">
@@ -7361,6 +7946,12 @@ function pvPrint(){
   //    ce qui évite TOUT problème d'échappement HTML
   const contentDiv=wdoc.createElement('div');
   contentDiv.id='print-content';
+  // Respecter l'espacement inter-modules choisi dans l'éditeur de disposition
+  const _gap=(S.pdfOpts&&S.pdfOpts.sectionGap!=null)?S.pdfOpts.sectionGap:10;
+  contentDiv.style.setProperty('--sec-gap',_gap+'pt');
+  contentDiv.style.setProperty('--sec-gap-pad',Math.max(2,Math.round(_gap*0.4))+'pt');
+  const _topM=(S.pdfOpts&&S.pdfOpts.pageTopMargin!=null)?S.pdfOpts.pageTopMargin:0;
+  contentDiv.style.setProperty('--page-top-margin',_topM+'pt');
 
   const htmlLenBefore=tmp.innerHTML.length;
 
@@ -8347,6 +8938,53 @@ function _ociFoot(module,page){
   };
   return `<div class="oci-foot"><span>${labels[module]||'OCI Connect'}</span><span>${page||''}</span></div>`;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PAGINATION INTELLIGENTE — modes auto / force / manuel
+   Remplace les sauts de page "en dur" par une décision contextuelle.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+// Mode courant : 'auto' (intelligent, défaut) · 'force' (1 rubrique/page) · 'manuel' (éditeur)
+function pageMode(){ return (S.pdfOpts && S.pdfOpts.pagination) || 'auto'; }
+
+// Saut manuel posé par l'utilisateur AVANT une section (éditeur visuel)
+function manualBreakBefore(mod,secId){
+  if(!S.pdfOpts.manualBreaks) return false;
+  if(!S.pdfOpts.manualBreaks[mod]) return false;
+  return !!S.pdfOpts.manualBreaks[mod][secId];
+}
+function toggleManualBreak(mod,secId){
+  if(!S.pdfOpts.manualBreaks) S.pdfOpts.manualBreaks={};
+  if(!S.pdfOpts.manualBreaks[mod]) S.pdfOpts.manualBreaks[mod]={};
+  S.pdfOpts.manualBreaks[mod][secId]=!S.pdfOpts.manualBreaks[mod][secId];
+  scheduleAutosave();
+  if(typeof pvRender==='function') pvRender();
+}
+
+// ── Début d'une section dans le rendu ──
+// Décide s'il faut : un saut de page dur, un séparateur léger, ou rien.
+// `secId` = identifiant de section (pour respecter les sauts manuels + l'ancien pvGetPageBreak)
+// `clientName` = pour le bandeau de rappel (affiché uniquement après un vrai saut)
+// Compteur de sections pour l'éditeur visuel (réinitialisé à chaque rendu)
+let _secCounter=0;
+let _curSecId=null;   // sid réel exposé par le dispatcher courant
+function resetSecCounter(){ _secCounter=0; _curSecId=null; }
+
+function _secStart(mod, clientName, explicitId){
+  const secId = explicitId || _curSecId || (mod+'_sec'+(++_secCounter));
+  const mode=pageMode();
+  // Saut forcé : mode "force" OU réglage panneau OU saut manuel éditeur
+  const forced = (mode==='force') || pvGetPageBreak(mod,secId) || manualBreakBefore(mod,secId);
+  if(forced){
+    return `<div class="oci-page-break" data-sec="${secId}" data-mod="${mod}"></div>`
+         + _ociRunHdr(mod, clientName)
+         + `<div class="oci-body oci-sec oci-page-start" data-sec="${secId}" data-mod="${mod}">`;
+  }
+  // Flux continu : séparateur léger, pas de nouvel en-tête de page
+  return `<div class="oci-sec-sep" data-sec="${secId}" data-mod="${mod}"></div>`
+       + `<div class="oci-body oci-sec oci-sec-cont" data-sec="${secId}" data-mod="${mod}">`;
+}
+
 function _ociPictoIcon(kind){
   const icons={
     task:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
@@ -8507,6 +9145,7 @@ function _ociSetAllPhotosFullPage(val){
 // VPI — Rapport avant-vente (violet/lavande · analytique)
 // ═══════════════════════════════════════════════════════════════════════
 function buildPrintVPI(){
+  if(typeof resetSecCounter==='function')resetSecCounter();
   const v=S.vpi;
   const opts=S.pdfOpts||{};
   const notes=S.notebookPages.filter(p=>p.target==='vpi'&&p.content.trim());
@@ -8700,6 +9339,7 @@ function buildPrintVPI(){
 // ═══════════════════════════════════════════════════════════════════════
 // DOSSIER TECHNIQUE — Terrain opérationnel (bleu/orange · chantier)
 // ═══════════════════════════════════════════════════════════════════════
+  if(typeof resetSecCounter==='function')resetSecCounter();
 function buildPrintTech(){
   const t=S.tech, v=S.vpi;
   const opts=S.pdfOpts||{};
@@ -8851,9 +9491,7 @@ function buildPrintTech(){
     showToc: ()=>{
       // ── SOMMAIRE + MÉMO
       if(SHOW('tech','showToc') || SHOW('tech','showNetMemo')){
-        h+=`<div class="oci-page-break"></div>`;
-        h+=_ociRunHdr('tech',clientName);
-        h+=`<div class="oci-body">`;
+        h+=_secStart('tech',clientName);
 
         if(SHOW('tech','showToc')){
           h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('list')}</div><div class="t">Sommaire</div></div>`;
@@ -8922,9 +9560,7 @@ function buildPrintTech(){
               const fin=r.dateFin?_ociDateFull(r.dateFin)||r.dateFin:'';
               const periode=deb&&fin?`${deb} → ${fin}`:deb||fin||'Période';
               const isFirstAndOnly=(i===0&&t.planning.length===1);
-              if(!isFirstAndOnly) h+=`<div class="oci-page-break"></div>`;
-              h+=_ociRunHdr('tech',clientName);
-              h+=`<div class="oci-body">`;
+              if(!isFirstAndOnly) h+=_secStart('tech',clientName);
               h+=`<div style="background:linear-gradient(135deg,#f5a623,#c87a00);color:#fff;padding:12pt 16pt;border-radius:6pt;margin-bottom:12pt">
                 <div style="font-size:8pt;opacity:.8;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3pt">Période d'intervention</div>
                 <div style="font-size:14pt;font-weight:700">${esc(periode)}</div>
@@ -8945,9 +9581,7 @@ function buildPrintTech(){
             }
             // ── JOUR ──
             jourIdx++;
-            h+=`<div class="oci-page-break"></div>`;
-            h+=_ociRunHdr('tech',clientName);
-            h+=`<div class="oci-body">`;
+            h+=_secStart('tech',clientName);
             const dateLabel=_ociDateFull(r.date)||'';
             const dayShort=r.date?new Date(r.date+'T00:00:00').toLocaleDateString('fr-FR',{weekday:'short'}):'';
             h+=`<div class="oci-day-hdr">
@@ -8984,9 +9618,7 @@ function buildPrintTech(){
             h+=_ociFoot('tech',`${ref} · Jour ${jourIdx}`);
           });
         } else {
-          h+=`<div class="oci-page-break"></div>`;
-          h+=_ociRunHdr('tech',clientName);
-          h+=`<div class="oci-body">`;
+          h+=_secStart('tech',clientName);
           h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('calendar')}</div><div class="t">Planning détaillé par journée</div></div>`;
           let jourIdx=0;
           t.planning.forEach((r,i)=>{
@@ -9050,9 +9682,7 @@ function buildPrintTech(){
     showMateriel: ()=>{
       // ── MATÉRIEL
       if(SHOW('tech','showMateriel') && (t.equipment.length||v.equipment.length)){
-        h+=`<div class="oci-page-break"></div>`;
-        h+=_ociRunHdr('tech',clientName);
-        h+=`<div class="oci-body">`;
+        h+=_secStart('tech',clientName);
         h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('box')}</div><div class="t">Matériels &amp; consommables</div></div>`;
         h+=`<div style="display:flex;gap:14pt;font-size:8pt;color:var(--oci-text-muted);margin-bottom:10pt">
           <span><span style="display:inline-block;width:9pt;height:9pt;border:1pt solid #888;border-radius:1pt;vertical-align:middle;margin-right:3pt"></span>Chargé véhicule</span>
@@ -9094,9 +9724,7 @@ function buildPrintTech(){
     showReseau: ()=>{
       // ── RÉSEAU
       if(SHOW('tech','showReseau') && (v.cables.length||t.network.length)){
-        h+=`<div class="oci-page-break"></div>`;
-        h+=_ociRunHdr('tech',clientName);
-        h+=`<div class="oci-body">`;
+        h+=_secStart('tech',clientName);
         h+=`<div class="oci-h1"><div class="ico" style="background:#faeeda">${_ociPictoIcon('network')}</div><div class="t">Câbles &amp; configuration réseau</div></div>`;
 
         if(v.cables.length){
@@ -9138,9 +9766,7 @@ function buildPrintTech(){
     showPrep: ()=>{
       // ── PRÉPA
       if(SHOW('tech','showPrep') && v.prep&&v.prep.length){
-        h+=`<div class="oci-page-break"></div>`;
-        h+=_ociRunHdr('tech',clientName);
-        h+=`<div class="oci-body">`;
+        h+=_secStart('tech',clientName);
         h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('box')}</div><div class="t">Travaux préparatoires</div></div>`;
         h+=`<table class="oci-tbl"><thead><tr><th>Type</th><th>Description / localisation</th><th>Prise en charge</th><th style="width:40pt">Qté</th><th>Remarque</th></tr></thead><tbody>`;
         v.prep.forEach(r=>{h+=`<tr><td>${esc(r.type)}</td><td>${esc(r.desc)}</td><td>${esc(r.charge)}</td><td>${esc(r.qty)}</td><td>${esc(r.note)}</td></tr>`;});
@@ -9154,9 +9780,7 @@ function buildPrintTech(){
     showMes: ()=>{
       // ── MES
       if(SHOW('tech','showMes') && t.notes4){
-        h+=`<div class="oci-page-break"></div>`;
-        h+=_ociRunHdr('tech',clientName);
-        h+=`<div class="oci-body">`;
+        h+=_secStart('tech',clientName);
         h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('cog')}</div><div class="t">Paramétrage &amp; mise en service</div></div>`;
         const cl=t.notes4.split('\n').filter(l=>l.trim());
         h+=`<ul style="margin:0;padding-left:16pt;font-size:9pt;line-height:1.6">`;
@@ -9179,9 +9803,7 @@ function buildPrintTech(){
         const vpiPh=S.photos.filter(p=>p.target==='vpi'&&p.src);
         const allPh=[...techPh,...vpiPh];
         if(allPh.length){
-          h+=`<div class="oci-page-break"></div>`;
-          h+=_ociRunHdr('tech',clientName);
-          h+=`<div class="oci-body">`;
+          h+=_secStart('tech',clientName);
           h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('camera')}</div><div class="t">Photos de chantier</div></div>`;
           allPh.forEach(p=>{
             h+=_ociPhotoFull(p.src,p.caption||p.name||'',p.id||'tech_'+(p.src||'').slice(-24));
@@ -9197,9 +9819,7 @@ function buildPrintTech(){
     showNotes: ()=>{
       // ── NOTES
       if(SHOW('tech','showNotes') && notes.length){
-        h+=`<div class="oci-page-break"></div>`;
-        h+=_ociRunHdr('tech',clientName);
-        h+=`<div class="oci-body">`;
+        h+=_secStart('tech',clientName);
         h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('list')}</div><div class="t">Notes techniques</div></div>`;
         notes.forEach(n=>{
           if(n.title) h+=`<div class="oci-h2">${esc(n.title)}</div>`;
@@ -9214,9 +9834,7 @@ function buildPrintTech(){
     pvReception: ()=>{
       // ── PV RÉCEPTION (optionnel — décoché par défaut)
       if(SHOW('tech','pvReception')){
-        h+=`<div class="oci-page-break"></div>`;
-        h+=_ociRunHdr('tech',clientName);
-        h+=`<div class="oci-body">`;
+        h+=_secStart('tech',clientName);
         h+=`<div class="oci-h1"><div class="ico" style="background:var(--oci-ok-fill)">${_ociPictoIcon('file')}</div><div class="t">Procès-verbal de fin d'intervention</div></div>`;
         h+=`<p style="font-size:9pt;color:var(--oci-text-muted);margin:0 0 12pt">Document à signer par le client et le technicien en fin d'intervention</p>`;
 
@@ -9253,11 +9871,9 @@ function buildPrintTech(){
   };
   _techSectOrder.forEach((sid,idx)=>{
     if(!_dtSect[sid]) return;
-    // Saut de page manuel demandé par l'utilisateur (sauf 1ère section)
-    if(idx>0 && pvGetPageBreak('tech',sid)){
-      h+=`<div class="oci-page-break"></div>`;
-    }
+    _curSecId=sid;
     _dtSect[sid]();
+    _curSecId=null;
   });
 
 
@@ -9267,6 +9883,466 @@ function buildPrintTech(){
 // ═══════════════════════════════════════════════════════════════════════
 // DOE — Dossier des Ouvrages Exécutés (bleu marine · institutionnel)
 // ═══════════════════════════════════════════════════════════════════════
+/* ════ MODULES V22 : DOE WORD + EXPORT ════ */
+/* ═══════════════════════════════════════════════════════════════════════
+   DOE WORD — Générateur type "Vauconsant" (5 sections), pré-rempli du state
+   Configurable selon le métier du chantier (vidéo, contrôle d'accès, réseau…)
+   S'appuie sur window.OCIWord (moteur OOXML).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+// Largeur de contenu utile (twips) : A4 - marges (≈ 9354)
+const DOE_CW = 9354;
+
+// Détection auto du métier d'après le besoin/contexte saisi
+function doeDetectMetier(){
+  const t=((S.vpi.need||'')+' '+(S.tech.context||'')+' '+(S.tech.scope||'')).toLowerCase();
+  if(/vid[ée]o|cam[ée]ra|surveillance|vsm|dahua|hikvision/.test(t)) return 'video';
+  if(/contr[oô]le.?d.?acc[èe]s|badge|lecteur|centrale|interphon/.test(t)) return 'acces';
+  if(/r[ée]seau|switch|vlan|wifi|borne|fibre|cuivre|cat\s?6|cat\s?7/.test(t)) return 'reseau';
+  return 'generic';
+}
+const DOE_METIERS={
+  video:  {label:'Infrastructure Vidéosurveillance', obj:'Fourniture et pose d\'un système de vidéosurveillance IP'},
+  acces:  {label:'Système de Contrôle d\'Accès',      obj:'Fourniture et pose d\'un système de contrôle d\'accès'},
+  reseau: {label:'Infrastructure Réseau',            obj:'Déploiement d\'infrastructure réseau (câblage, actifs)'},
+  generic:{label:'Travaux Courants Faibles',         obj:'Fourniture et pose d\'équipements courants faibles'},
+};
+
+// ── Récupère les valeurs pré-remplies depuis le state ──
+function doeGather(){
+  const v=S.vpi, t=S.tech, d=S.doe;
+  const metier=(S.pdfOpts.doeMetier&&S.pdfOpts.doeMetier!=='auto')?S.pdfOpts.doeMetier:doeDetectMetier();
+  const M=DOE_METIERS[metier]||DOE_METIERS.generic;
+  return {
+    metier, M,
+    client: v.clientCompany||t.clientRef||'—',
+    adresse: v.clientAddress||t.address||'',
+    ref: d.ref?('DT-RCI-'+d.ref.replace(/^DT-RCI-/,'')):(t.number||'DT-RCI-______'),
+    objet: d.summary&&d.summary.length<160 ? d.summary : M.obj,
+    periode: '', // rempli depuis planning si dispo
+    chargeAffaire: t.manager||'',
+    equipe: t.techniciens||'',
+    contactSite: v.clientContact||'',
+    contactPhone: v.clientPhone||'',
+    contactEmail: v.clientEmail||'',
+    visitDate: v.visitDate||'',
+    version: d.version||'1.0',
+    date: d.date||todayISO(),
+    redacteur: 'Raphaël CASTELLANOS — OCI Connect Nancy',
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+//  GÉNÉRATION WORD COMPLÈTE
+// ════════════════════════════════════════════════════════════
+function buildDoeWord(){
+  const W=window.OCIWord; const st=W.newState();
+  const g=doeGather(); const v=S.vpi, t=S.tech, d=S.doe;
+  const C=W.CLR;
+  const B=[]; // blocs
+
+  // ---------- PAGE DE COUVERTURE ----------
+  B.push(W.spacer(400));
+  B.push(W.para(W.run('OCI CONNECT — RCI Groupe OCI',{b:true,sz:36,color:C.primary,caps:true,spacing:20}),{jc:'center',after:60}));
+  B.push(W.para(W.run('Connecter les entreprises & les hommes',{i:true,sz:18,color:C.accent}),{jc:'center',after:300}));
+  B.push(W.para('',{after:0,borderBottom:{sz:18,color:C.rule}}));
+  B.push(W.spacer(300));
+  B.push(W.para(W.run('DOSSIER DES OUVRAGES EXÉCUTÉS',{b:true,sz:44,color:C.primaryDk}),{jc:'center',after:120}));
+  B.push(W.para(W.run(g.M.label,{sz:30,color:C.primary}),{jc:'center',after:300}));
+  B.push(W.para('',{after:0,borderBottom:{sz:12,color:C.border}}));
+  B.push(W.spacer(240));
+  // Tableau d'identification
+  const idRows=[
+    ['Client', g.client],
+    ['Adresse', g.adresse||'—'],
+    ['Référence dossier', g.ref],
+    ['Objet des travaux', g.objet],
+    ['Période d\'intervention', g.periode||'—'],
+    ['Chargé d\'affaires', g.chargeAffaire||'—'],
+    ['Équipe technique', g.equipe||'—'],
+    ['Gestion des travaux', 'Raphaël CASTELLANOS — OCI Connect Nancy'],
+    ['Rédacteur DOE', g.redacteur],
+    ['Version document', 'DOE v'+g.version+' — '+_ociDate(g.date)],
+  ].map((r,i)=>[
+    {t:r[0],bold:true,fill:C.rowAlt,w:2900,sz:18},
+    {t:r[1],w:DOE_CW-2900,sz:18,color:(r[0]==='Référence dossier')?C.primary:C.text,bold:(r[0]==='Référence dossier'||r[0]==='Client')}
+  ]);
+  B.push(W.table(idRows,[2900,DOE_CW-2900]));
+  B.push(W.pageBreak());
+
+  // ---------- SOMMAIRE ----------
+  B.push(W.h1('SOMMAIRE'));
+  const toc=[
+    '1. RAPPORT DE PRÉ-VISITE',
+    '2. DOSSIER TECHNIQUE D\'INSTALLATION',
+    '3. PARAMÉTRAGE TECHNIQUE',
+    '4. TRAVAUX RÉALISÉS ET RÉCEPTION',
+    '5. MISE EN SERVICE ET VALIDATION CLIENT',
+    'ANNEXES',
+  ];
+  toc.forEach(s=>B.push(W.para(W.run(s,{sz:20,b:true,color:C.text}),{after:80,line:300})));
+  B.push(W.pageBreak());
+
+  // ════════ 1. RAPPORT DE PRÉ-VISITE ════════
+  B.push(W.h1('1. RAPPORT DE PRÉ-VISITE'));
+  B.push(W.h2('1.1 Informations générales'));
+  const infoRows=[
+    ['Champ','Détail','Info complémentaire'].map(x=>({t:x,head:true})),
+  ];
+  const addInfo=(k,val,info)=>infoRows.push([
+    {t:k,bold:true,fill:C.rowAlt,w:2600,sz:18},
+    {t:val||'—',w:4200,sz:18},
+    {t:info||'',w:DOE_CW-2600-4200,sz:18}
+  ]);
+  addInfo('Client',g.client,'');
+  addInfo('Adresse',g.adresse,'');
+  addInfo('Contact site',g.contactSite, g.contactPhone?('Tél. '+g.contactPhone):'');
+  addInfo('Intervenants OCI',g.equipe,'');
+  addInfo('Chargé d\'affaires',g.chargeAffaire, g.contactEmail);
+  addInfo('Pré-visite réalisée par','Raphaël CASTELLANOS — OCI Connect', g.visitDate?_ociDate(g.visitDate):'');
+  B.push(W.table(infoRows,[2600,4200,DOE_CW-2600-4200]));
+
+  B.push(W.h2('1.2 Contexte et objet des travaux'));
+  if(v.faisabilite||t.context){
+    B.push(W.pText(v.faisabilite||t.context));
+  } else {
+    B.push(W.pText('Suite à la pré-visite technique, ce rapport formalise l\'état des lieux des cheminements existants et détaille les travaux réalisés.'));
+  }
+  // Liste des travaux (depuis équipement / besoin)
+  B.push(W.para(W.run('Travaux réalisés :',{b:true,sz:19,color:C.text}),{before:80,after:60}));
+  const travaux=[];
+  if(t.equipment&&t.equipment.length){
+    t.equipment.slice(0,8).forEach(e=>{ if(e.name||e.code) travaux.push('Fourniture et pose : '+(e.name||e.code)+(e.qty?(' ('+e.qty+(e.unit||'')+')'):'')); });
+  }
+  if(v.cables&&v.cables.length) travaux.push('Tirage et raccordement des liaisons (fibre / cuivre)');
+  if(!travaux.length) travaux.push('Travaux courants faibles selon cahier des charges');
+  travaux.forEach(x=>B.push(W.bullet(x)));
+
+  // 1.3 État des lieux
+  if(v.faisabiliteStatus||v.conclusion||t.prereq){
+    B.push(W.h2('1.3 État des lieux — Relevé de pré-visite'));
+    B.push(W.pText(t.prereq||v.conclusion||'Les chemins de câble existants ont été identifiés lors de la pré-visite.'));
+  }
+
+  // 1.4 Architecture (depuis réseau / contrôle accès)
+  B.push(W.h2('1.4 Architecture réseau prévue'));
+  const archRows=[[{t:'Baie / Coffret',head:true},{t:'Localisation',head:true},{t:'Équipements desservis',head:true}]];
+  let hasArch=false;
+  if(t.ca&&t.ca.reseau&&t.ca.reseau.length){
+    t.ca.reseau.forEach(r=>{ hasArch=true; archRows.push([
+      {t:r.baie||r.centrale||'—',w:3000,sz:18,bold:true,fill:C.rowAlt},
+      {t:r.emplacement||'—',w:3500,sz:18},
+      {t:r.lecteur||r.switchName||'—',w:DOE_CW-3000-3500,sz:18}]); });
+  }
+  if(!hasArch && t.network&&t.network.length){
+    t.network.slice(0,8).forEach(r=>{ hasArch=true; archRows.push([
+      {t:r.equipment||'—',w:3000,sz:18,bold:true,fill:C.rowAlt},
+      {t:r.note||'—',w:3500,sz:18},
+      {t:r.ip||'—',w:DOE_CW-3000-3500,sz:18}]); });
+  }
+  if(hasArch) B.push(W.table(archRows,[3000,3500,DOE_CW-3000-3500]));
+  else B.push(W.pText('Architecture détaillée en section 3 (Paramétrage technique).',{i:true,color:C.muted}));
+
+  // 1.5 Contraintes / vigilance
+  if(v.vigilance&&v.vigilance.length){
+    B.push(W.h2('1.5 Contraintes et prérequis identifiés'));
+    const cRows=[[{t:'Priorité',head:true},{t:'Contrainte / Action requise',head:true},{t:'Responsable',head:true}]];
+    v.vigilance.forEach(vg=>{
+      const lvl=(vg.level||'info').toUpperCase();
+      cRows.push([
+        {t:lvl,w:1800,sz:17,bold:true,fill:C.rowAlt,color:(vg.level==='critical'?C.danger:vg.level==='warning'?C.warn:C.primary)},
+        {t:[vg.desc,vg.zone].filter(Boolean).join(' — ')||vg.label||'—',w:5400,sz:18},
+        {t:vg.action||'OCI Connect',w:DOE_CW-1800-5400,sz:18}]);
+    });
+    B.push(W.table(cRows,[1800,5400,DOE_CW-1800-5400]));
+  }
+
+  // ════════ 2. DOSSIER TECHNIQUE ════════
+  B.push(W.pageBreak());
+  B.push(W.h1('2. DOSSIER TECHNIQUE D\'INSTALLATION'));
+  B.push(W.h2('2.1 Matériels et fournitures'));
+  B.push(W.pText('L\'ensemble des fournitures ci-dessous a été approvisionné, posé et mis en service dans le cadre du présent chantier.'));
+  if(t.equipment&&t.equipment.length){
+    const eqRows=[[{t:'Désignation',head:true},{t:'Référence',head:true},{t:'Qté',head:true},{t:'Statut',head:true}]];
+    t.equipment.forEach(e=>{
+      eqRows.push([
+        {t:e.name||e.code||'—',w:4200,sz:18},
+        {t:e.code||'—',w:3000,sz:17},
+        {t:String((e.qty||'—'))+(e.unit?(' '+e.unit):''),w:900,sz:18,align:'center'},
+        {t:'✓ Posé',w:DOE_CW-4200-3000-900,sz:17,color:C.ok,bold:true,align:'center'}]);
+    });
+    B.push(W.table(eqRows,[4200,3000,900,DOE_CW-4200-3000-900]));
+  } else {
+    B.push(W.pText('Aucun matériel saisi dans le module Dossier Technique.',{i:true,color:C.muted}));
+  }
+
+  // 2.2 Passages de câbles
+  if(v.cables&&v.cables.length){
+    B.push(W.h2('2.2 Passages de câbles — Relevé'));
+    const cabRows=[[{t:'De',head:true},{t:'Vers',head:true},{t:'Long.',head:true},{t:'Type',head:true},{t:'État',head:true}]];
+    v.cables.forEach(c=>{
+      cabRows.push([
+        {t:c.from||c.depart||'—',w:2400,sz:18},
+        {t:c.to||c.arrivee||'—',w:2400,sz:18},
+        {t:(c.length||c.longueur||'—')+(c.length?' m':''),w:1100,sz:18,align:'center'},
+        {t:c.type||'—',w:1900,sz:17},
+        {t:'✓ OK',w:DOE_CW-2400-2400-1100-1900,sz:17,color:C.ok,bold:true,align:'center'}]);
+    });
+    B.push(W.table(cabRows,[2400,2400,1100,1900,DOE_CW-2400-2400-1100-1900]));
+  }
+
+  // ════════ 3. PARAMÉTRAGE TECHNIQUE ════════
+  B.push(W.pageBreak());
+  B.push(W.h1('3. PARAMÉTRAGE TECHNIQUE'));
+
+  // 3.x Équipements réseau / caméras / lecteurs
+  const netList = (t.ca&&t.ca.reseau&&t.ca.reseau.length)?t.ca.reseau:(t.network||[]);
+  if(netList.length){
+    B.push(W.h2('3.1 Plan d\'adressage et inventaire des équipements'));
+    const isCA = t.ca&&t.ca.reseau&&t.ca.reseau.length;
+    if(isCA){
+      const nRows=[[{t:'Centrale / Lecteur',head:true},{t:'Emplacement',head:true},{t:'IP',head:true},{t:'Masque',head:true},{t:'Passerelle',head:true}]];
+      t.ca.reseau.forEach(r=>{
+        nRows.push([
+          {t:r.centrale||r.lecteur||'—',w:2700,sz:18,bold:true},
+          {t:r.emplacement||'—',w:2400,sz:18},
+          {t:r.ip||'—',w:1700,sz:17},
+          {t:r.masque||'/24',w:1100,sz:17,align:'center'},
+          {t:r.passerelle||'—',w:DOE_CW-2700-2400-1700-1100,sz:17}]);
+      });
+      B.push(W.table(nRows,[2700,2400,1700,1100,DOE_CW-2700-2400-1700-1100]));
+    } else {
+      const nRows=[[{t:'Équipement',head:true},{t:'IP',head:true},{t:'Masque',head:true},{t:'Passerelle',head:true},{t:'SN',head:true}]];
+      t.network.forEach(r=>{
+        nRows.push([
+          {t:r.equipment||'—',w:2600,sz:18,bold:true},
+          {t:r.ip||'—',w:1800,sz:17},
+          {t:r.mask||'/24',w:1100,sz:17,align:'center'},
+          {t:r.gateway||'—',w:1800,sz:17},
+          {t:r.serial||'—',w:DOE_CW-2600-1800-1100-1800,sz:16}]);
+      });
+      B.push(W.table(nRows,[2600,1800,1100,1800,DOE_CW-2600-1800-1100-1800]));
+    }
+  } else {
+    B.push(W.pText('Aucune donnée de paramétrage réseau saisie.',{i:true,color:C.muted}));
+  }
+
+  // Groupes / usagers (contrôle d'accès)
+  if(t.ca&&t.ca.groupes&&t.ca.groupes.length){
+    B.push(W.h2('3.2 Groupes d\'accès configurés'));
+    const gRows=[[{t:'Groupe',head:true},{t:'Lecteurs autorisés',head:true}]];
+    t.ca.groupes.forEach(gr=>gRows.push([
+      {t:gr.nom||'—',w:3000,sz:18,bold:true},
+      {t:(Array.isArray(gr.lecteurs)?gr.lecteurs.join(', '):gr.lecteurs)||'—',w:DOE_CW-3000,sz:18}]));
+    B.push(W.table(gRows,[3000,DOE_CW-3000]));
+  }
+
+  // ════════ 4. TRAVAUX RÉALISÉS ════════
+  B.push(W.pageBreak());
+  B.push(W.h1('4. TRAVAUX RÉALISÉS ET RÉCEPTION'));
+  if(t.planning&&t.planning.length){
+    B.push(W.h2('4.1 Planning des interventions réalisées'));
+    const pRows=[[{t:'Date / Période',head:true},{t:'Intervenant / Site',head:true},{t:'Description des travaux',head:true}]];
+    t.planning.forEach(p=>{
+      const periode = p.mode==='periode' ? ((p.dateDebut||'')+(p.dateFin?(' → '+p.dateFin):'')) : (p.date||'—');
+      const taches = Array.isArray(p.taches) ? p.taches.map(x=>x.label).filter(Boolean).join(' · ') : (p.label||'—');
+      pRows.push([
+        {t:periode||'—',w:2400,sz:18,bold:true},
+        {t:[p.tech,p.site].filter(Boolean).join(' — ')||'—',w:2600,sz:17},
+        {t:taches||p.label||'—',w:DOE_CW-2400-2600,sz:18}]);
+    });
+    B.push(W.table(pRows,[2400,2600,DOE_CW-2400-2600]));
+  }
+  // 4.x Travaux préparatoires
+  if(v.prep&&v.prep.length){
+    B.push(W.h2('4.2 Travaux préparatoires réalisés'));
+    const prRows=[[{t:'Type',head:true},{t:'Description',head:true},{t:'État',head:true}]];
+    v.prep.forEach(p=>prRows.push([
+      {t:p.type||'—',w:2400,sz:18,bold:true},
+      {t:[p.desc,p.note].filter(Boolean).join(' — ')||'—',w:5000,sz:18},
+      {t:'✓ Réalisé',w:DOE_CW-2400-5000,sz:17,color:C.ok,bold:true,align:'center'}]));
+    B.push(W.table(prRows,[2400,5000,DOE_CW-2400-5000]));
+  }
+
+  // ════════ 5. MISE EN SERVICE ════════
+  B.push(W.pageBreak());
+  B.push(W.h1('5. MISE EN SERVICE ET VALIDATION CLIENT'));
+  if(d.tests&&d.tests.length){
+    B.push(W.h2('5.1 Procès-verbaux de recette et tests'));
+    const tRows=[[{t:'Test / Opération',head:true},{t:'Équipement',head:true},{t:'Résultat',head:true},{t:'Valeur',head:true}]];
+    d.tests.forEach(tt=>{
+      const ok=/ok|pass|conform|✓/i.test(tt.result||'');
+      tRows.push([
+        {t:tt.test||'—',w:3400,sz:18},
+        {t:tt.equip||'—',w:2400,sz:18},
+        {t:tt.result||'—',w:1600,sz:17,color:ok?C.ok:C.warn,bold:true,align:'center'},
+        {t:tt.value||'—',w:DOE_CW-3400-2400-1600,sz:17}]);
+    });
+    B.push(W.table(tRows,[3400,2400,1600,DOE_CW-3400-2400-1600]));
+  }
+  // 5.x Photos de réception
+  const doePh=S.photos.filter(p=>p.target==='doe'&&p.src);
+  if(doePh.length){
+    B.push(W.h2('5.2 Vues à la réception'));
+    doePh.slice(0,12).forEach(p=>{
+      B.push(W.imageBlock(st,p.src,520,p.caption||p.name||''));
+    });
+  }
+
+  // ════════ ANNEXES ════════
+  if(d.docs&&d.docs.length){
+    B.push(W.pageBreak());
+    B.push(W.h1('ANNEXES'));
+    B.push(W.pText('Les documents suivants sont joints au présent DOE :'));
+    const aRows=[[{t:'Référence',head:true},{t:'Document',head:true},{t:'Catégorie',head:true}]];
+    d.docs.forEach((doc,i)=>aRows.push([
+      {t:'ANNEXE '+String.fromCharCode(65+i),w:2000,sz:18,bold:true,fill:C.rowAlt},
+      {t:doc.name||'—',w:4800,sz:18},
+      {t:doc.category||'—',w:DOE_CW-2000-4800,sz:18}]));
+    B.push(W.table(aRows,[2000,4800,DOE_CW-2000-4800]));
+  }
+
+  // Signature de fin
+  B.push(W.spacer(200));
+  B.push(W.para('',{borderBottom:{sz:6,color:C.border},after:80}));
+  B.push(W.para(W.run('Établi par OCI Connect — Agence de Nancy',{b:true,sz:19,color:C.primary}),{after:40}));
+  if(g.chargeAffaire) B.push(W.pText('Chargé d\'affaires : '+g.chargeAffaire,{sz:18,after:20}));
+  B.push(W.pText('Gestion des travaux : Raphaël CASTELLANOS',{sz:18,after:20}));
+  B.push(W.pText('Document établi le : '+_ociDate(g.date)+' — Version '+g.version,{sz:18,color:C.muted}));
+  B.push(W.para(W.run('Référence dossier : '+g.ref,{b:true,sz:18,color:C.primary}),{before:40}));
+
+  // Build final
+  const bytes=W.build(B,{
+    state:st,
+    headerLeft:'OCI Connect — RCI Groupe OCI',
+    headerRight:'DOE — '+g.M.label,
+    footerRef:g.ref,
+  });
+  const fname='DOE_'+(g.client.replace(/[^a-zA-Z0-9]/g,'_')||'OCI')+'_v'+g.version+'.docx';
+  W.download(bytes,fname);
+  if(typeof showToast==='function') showToast('DOE Word généré : '+fname);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EXPORT WORD — point d'entrée + choix du mode (fidèle / éditable)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+// Ouvre une mini-modale pour choisir le mode d'export Word du module courant
+function pvExportWord(){
+  const mod=_pvMod||'doe';
+  // Pour le DOE on a le builder dédié type Vauconsant ; pour les autres modules
+  // on convertit le HTML de preview en Word "éditable simplifié".
+  const overlay=document.createElement('div');
+  overlay.id='word-export-modal';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(8,12,20,.72);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)';
+  overlay.onclick=e=>{if(e.target===overlay)overlay.remove();};
+  const isDoe=(mod==='doe');
+  overlay.innerHTML=`
+    <div style="width:460px;max-width:92vw;background:#1a2030;border:1px solid #2c3a52;border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.55);overflow:hidden;font-family:'IBM Plex Sans',system-ui,sans-serif">
+      <div style="padding:18px 22px;border-bottom:1px solid #2c3a52;display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#2b5797,#1f4e79);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px">W</div>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#dde8f5">Export Word (.docx)</div>
+          <div style="font-size:11px;color:#7a95b5">${isDoe?'DOE — modèle OCI Connect':'Document éditable'}</div>
+        </div>
+      </div>
+      <div style="padding:16px 22px;display:flex;flex-direction:column;gap:10px">
+        ${isDoe?`
+        <button onclick="_doExportWord('doe-fidele')" style="text-align:left;padding:13px 15px;border:1px solid #2c3a52;border-radius:11px;background:#141a28;color:#dde8f5;cursor:pointer;font-family:inherit;transition:.15s" onmouseover="this.style.borderColor='#2b5797';this.style.background='#18243a'" onmouseout="this.style.borderColor='#2c3a52';this.style.background='#141a28'">
+          <div style="font-size:13px;font-weight:700;margin-bottom:3px">📐 DOE structuré (recommandé)</div>
+          <div style="font-size:11px;color:#7a95b5;line-height:1.5">Modèle 5 sections type Vauconsant, pré-rempli depuis vos données. Tableaux, couleurs OCI, pagination. Idéal à transmettre tel quel ou à peaufiner.</div>
+        </button>`:''}
+        <button onclick="_doExportWord('${mod}-editable')" style="text-align:left;padding:13px 15px;border:1px solid #2c3a52;border-radius:11px;background:#141a28;color:#dde8f5;cursor:pointer;font-family:inherit;transition:.15s" onmouseover="this.style.borderColor='#2b5797';this.style.background='#18243a'" onmouseout="this.style.borderColor='#2c3a52';this.style.background='#141a28'">
+          <div style="font-size:13px;font-weight:700;margin-bottom:3px">✏️ Éditable simplifié</div>
+          <div style="font-size:11px;color:#7a95b5;line-height:1.5">Reprend le contenu affiché à l'écran, converti en Word léger. Mise en page épurée, parfaite pour retoucher librement dans Word.</div>
+        </button>
+      </div>
+      <div style="padding:0 22px 18px;display:flex;justify-content:flex-end">
+        <button onclick="document.getElementById('word-export-modal').remove()" style="padding:8px 16px;border:1px solid #2c3a52;border-radius:8px;background:transparent;color:#7a95b5;font-size:12px;cursor:pointer;font-family:inherit">Annuler</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function _doExportWord(mode){
+  const m=document.getElementById('word-export-modal'); if(m)m.remove();
+  try{
+    if(mode==='doe-fidele'){ buildDoeWord(); return; }
+    // mode éditable : convertir le HTML de preview courant en Word simple
+    const mod=mode.split('-')[0];
+    _exportPreviewHtmlToWord(mod);
+  }catch(e){
+    console.error(e);
+    if(typeof showToast==='function') showToast('Erreur export Word : '+e.message);
+  }
+}
+
+// ── Export "éditable simplifié" : parse le HTML de preview → blocs Word ──
+function _exportPreviewHtmlToWord(mod){
+  const W=window.OCIWord; const st=W.newState(); const C=W.CLR;
+  const container=document.getElementById('pv-blocks-container');
+  if(!container||!container.innerHTML.trim()){
+    if(typeof showToast==='function') showToast('Ouvrez d\'abord l\'aperçu du document.');
+    return;
+  }
+  const B=[];
+  const root=container;
+  // Parcours récursif simplifié : on récupère titres, paragraphes, listes, tables, images
+  function walk(node){
+    node.childNodes.forEach(n=>{
+      if(n.nodeType!==1) return;
+      const tag=n.tagName.toLowerCase();
+      const cls=n.className||'';
+      const txt=(n.textContent||'').trim();
+      if(/oci-h1|bigtitle/.test(cls)){ if(txt)B.push(W.h1(txt)); return; }
+      if(/oci-h2/.test(cls)){ if(txt)B.push(W.h2(txt)); return; }
+      if(tag==='h1'){ if(txt)B.push(W.h1(txt)); return; }
+      if(tag==='h2'||tag==='h3'){ if(txt)B.push(W.h2(txt)); return; }
+      if(tag==='table'){ B.push(_tableToWord(n)); return; }
+      if(tag==='img'){ const src=n.getAttribute('src'); if(src&&src.startsWith('data:')) B.push(W.imageBlock(st,src,520,n.getAttribute('alt')||'')); return; }
+      if(tag==='ul'||tag==='ol'){ n.querySelectorAll('li').forEach(li=>{const t=(li.textContent||'').trim(); if(t)B.push(W.bullet(t));}); return; }
+      if(/oci-page-break/.test(cls)){ B.push(W.pageBreak()); return; }
+      // Conteneurs : on descend
+      if(n.querySelector&&(n.querySelector('table,img,ul,ol')|| n.children.length>0)){
+        // si le noeud a du texte direct significatif et pas d'enfant bloc, on l'ajoute
+        walk(n);
+      } else if(txt){
+        B.push(W.pText(txt));
+      }
+    });
+  }
+  walk(root);
+  if(!B.length){ if(typeof showToast==='function')showToast('Rien à exporter.'); return; }
+  const tags={vpi:'VPI',tech:'Dossier Technique',rfc:'Rapport de fin de chantier',doe:'DOE'};
+  const clientName=S.vpi.clientCompany||S.tech.clientRef||'OCI';
+  const bytes=W.build(B,{state:st,headerLeft:'OCI Connect — RCI Groupe OCI',headerRight:tags[mod]||'',footerRef:clientName});
+  const fname=(tags[mod]||'Document').replace(/[^a-zA-Z0-9]/g,'_')+'_'+clientName.replace(/[^a-zA-Z0-9]/g,'_')+'.docx';
+  W.download(bytes,fname);
+  if(typeof showToast==='function') showToast('Word éditable généré : '+fname);
+}
+
+// Convertit une <table> HTML en bloc Word
+function _tableToWord(tableEl){
+  const W=window.OCIWord; const C=W.CLR;
+  const rows=[]; const trs=tableEl.querySelectorAll('tr');
+  let maxCols=0;
+  trs.forEach(tr=>{ const c=tr.querySelectorAll('td,th').length; if(c>maxCols)maxCols=c; });
+  if(!maxCols) return W.spacer(20);
+  const colW=Math.floor(9354/maxCols);
+  const widths=Array(maxCols).fill(colW);
+  trs.forEach((tr,ri)=>{
+    const cells=tr.querySelectorAll('td,th'); const row=[];
+    cells.forEach((td,ci)=>{
+      const isHead=td.tagName.toLowerCase()==='th'|| (ri===0 && tableEl.querySelector('thead'));
+      row.push({t:(td.textContent||'').trim(),head:isHead,fill:isHead?C.headFill:(ri%2===0?null:C.rowAlt),w:colW,sz:17});
+    });
+    while(row.length<maxCols) row.push({t:'',w:colW,sz:17});
+    rows.push(row);
+  });
+  return W.table(rows,widths);
+}
+  if(typeof resetSecCounter==='function')resetSecCounter();
+
 function buildPrintDoe(){
   const d=S.doe, t=S.tech, v=S.vpi;
   const opts=S.pdfOpts||{};
@@ -9353,10 +10429,7 @@ function buildPrintDoe(){
   h+=_ociFoot('doe',`${ref} · Couverture`);
 
   if(SHOW('doe','showDocs') && d.docs&&d.docs.length){
-    h+=_pvBreak('doe','showDocs');
-    h+=`<div class="oci-page-break"></div>`;
-    h+=_ociRunHdr('doe',clientName);
-    h+=`<div class="oci-body">`;
+    h+=_secStart('doe',clientName);
     h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('file')}</div><div class="t">Documents &amp; notices techniques</div></div>`;
     h+=`<table class="oci-tbl"><thead><tr><th>Nom</th><th>Catégorie</th><th>Lié à</th></tr></thead><tbody>`;
     d.docs.forEach(r=>{h+=`<tr><td>${esc(r.name)}</td><td>${esc(r.category)}</td><td>${esc(r.linkedTo)}</td></tr>`;});
@@ -9366,10 +10439,7 @@ function buildPrintDoe(){
   }
 
   if(SHOW('doe','showSheets') && d.techSheets&&d.techSheets.length){
-    h+=_pvBreak('doe','showSheets');
-    h+=`<div class="oci-page-break"></div>`;
-    h+=_ociRunHdr('doe',clientName);
-    h+=`<div class="oci-body">`;
+    h+=_secStart('doe',clientName);
     h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('box')}</div><div class="t">Fiches techniques des équipements installés</div></div>`;
     d.techSheets.forEach(r=>{
       h+=`<div class="oci-net-card" style="border-left-color:var(--oci-primary-d)">
@@ -9394,10 +10464,7 @@ function buildPrintDoe(){
   }
 
   if(SHOW('doe','showReseau') && t.network&&t.network.length){
-    h+=_pvBreak('doe','showReseau');
-    h+=`<div class="oci-page-break"></div>`;
-    h+=_ociRunHdr('doe',clientName);
-    h+=`<div class="oci-body">`;
+    h+=_secStart('doe',clientName);
     h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('network')}</div><div class="t">Architecture réseau — configuration livrée</div></div>`;
     t.network.forEach(r=>{
       h+=`<div class="oci-net-card">
@@ -9422,10 +10489,7 @@ function buildPrintDoe(){
   }
 
   if(SHOW('doe','showTests') && d.tests&&d.tests.length){
-    h+=_pvBreak('doe','showTests');
-    h+=`<div class="oci-page-break"></div>`;
-    h+=_ociRunHdr('doe',clientName);
-    h+=`<div class="oci-body">`;
+    h+=_secStart('doe',clientName);
     h+=`<div class="oci-h1"><div class="ico" style="background:var(--oci-ok-fill)">${_ociPictoIcon('check')}</div><div class="t">Procès-verbaux de recette</div></div>`;
     h+=`<table class="oci-tbl"><thead><tr><th>Test</th><th>Équipement</th><th style="width:70pt">Résultat</th><th>Valeur</th></tr></thead><tbody>`;
     d.tests.forEach(r=>{
@@ -9438,10 +10502,7 @@ function buildPrintDoe(){
   }
 
   if(SHOW('doe','showPhotos') && doePh.length){
-    h+=_pvBreak('doe','showPhotos');
-    h+=`<div class="oci-page-break"></div>`;
-    h+=_ociRunHdr('doe',clientName);
-    h+=`<div class="oci-body">`;
+    h+=_secStart('doe',clientName);
     h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('camera')}</div><div class="t">Photos de l'ouvrage livré</div></div>`;
     doePh.forEach(p=>{ h+=_ociPhotoFull(p.src,p.caption||p.name||'',p.id||'doe_'+(p.src||'').slice(-24)); });
     h+=`</div>`;
@@ -9449,10 +10510,7 @@ function buildPrintDoe(){
   }
 
   if(SHOW('doe','showGaranties')){
-    h+=_pvBreak('doe','showGaranties');
-    h+=`<div class="oci-page-break"></div>`;
-    h+=_ociRunHdr('doe',clientName);
-    h+=`<div class="oci-body">`;
+    h+=_secStart('doe',clientName);
     h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('phone')}</div><div class="t">Garanties &amp; contacts maintenance</div></div>`;
     h+=`<div class="oci-card">
       <div class="hdr"><div class="ico">${_ociPictoIcon('check')}</div><div class="t">Contact SAV OCI Connect</div></div>
@@ -9485,6 +10543,7 @@ function buildPrintDoe(){
 }
 
 // ═══════════════════════════════════════════════════════════════════════
+  if(typeof resetSecCounter==='function')resetSecCounter();
 // RFC — Rapport de fin de chantier (vert · bilan & attestation)
 // ═══════════════════════════════════════════════════════════════════════
 function buildPrintRfc(){
@@ -9594,9 +10653,7 @@ function buildPrintRfc(){
 
   if(SHOW('rfc','showJours') && (r.jours||[]).length){
     h+=_pvBreak('rfc','showJours');
-    h+=`<div class="oci-page-break"></div>`;
-    h+=_ociRunHdr('rfc',clientName);
-    h+=`<div class="oci-body">`;
+    h+=_secStart('rfc',clientName);
     h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('calendar')}</div><div class="t">Récapitulatif des travaux réalisés</div></div>`;
     (r.jours||[]).forEach((j,ji)=>{
       h+=`<div style="margin-bottom:14pt">
@@ -9619,9 +10676,7 @@ function buildPrintRfc(){
 
   if(SHOW('rfc','showEquip') && (r.equip||[]).length){
     h+=_pvBreak('rfc','showEquip');
-    h+=`<div class="oci-page-break"></div>`;
-    h+=_ociRunHdr('rfc',clientName);
-    h+=`<div class="oci-body">`;
+    h+=_secStart('rfc',clientName);
     h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('box')}</div><div class="t">Matériel installé</div></div>`;
     h+=`<table class="oci-tbl"><thead><tr><th>Désignation</th><th>Référence / Modèle</th><th style="width:40pt;text-align:center">Qté</th><th>Observations</th></tr></thead><tbody>`;
     (r.equip||[]).forEach(e=>{
@@ -9634,9 +10689,7 @@ function buildPrintRfc(){
 
   if(SHOW('rfc','showReserves') && (r.reserves||[]).filter(x=>x.desc&&x.desc.trim()).length){
     h+=_pvBreak('rfc','showReserves');
-    h+=`<div class="oci-page-break"></div>`;
-    h+=_ociRunHdr('rfc',clientName);
-    h+=`<div class="oci-body">`;
+    h+=_secStart('rfc',clientName);
     h+=`<div class="oci-h1"><div class="ico" style="background:var(--oci-warn-fill)">${_ociPictoIcon('alert')}</div><div class="t">Réserves</div></div>`;
     (r.reserves||[]).filter(x=>x.desc&&x.desc.trim()).forEach((rs,i)=>{
       h+=`<div class="oci-alert warn" style="margin-bottom:6pt">
@@ -9650,9 +10703,7 @@ function buildPrintRfc(){
 
   if(SHOW('rfc','showObs') && r.observations){
     h+=_pvBreak('rfc','showObs');
-    h+=`<div class="oci-page-break"></div>`;
-    h+=_ociRunHdr('rfc',clientName);
-    h+=`<div class="oci-body">`;
+    h+=_secStart('rfc',clientName);
     h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('list')}</div><div class="t">Observations générales</div></div>`;
     h+=`<p style="font-size:9.5pt;line-height:1.6;white-space:pre-wrap;margin:0">${esc(r.observations)}</p>`;
     h+=`</div>`;
@@ -9661,9 +10712,7 @@ function buildPrintRfc(){
 
   if(SHOW('rfc','showPhotos') && (rfcPhotos.length||vpiPhotos.length)){
     h+=_pvBreak('rfc','showPhotos');
-    h+=`<div class="oci-page-break"></div>`;
-    h+=_ociRunHdr('rfc',clientName);
-    h+=`<div class="oci-body">`;
+    h+=_secStart('rfc',clientName);
     h+=`<div class="oci-h1"><div class="ico">${_ociPictoIcon('camera')}</div><div class="t">Photos de l'intervention</div></div>`;
 
     // Pairing avant/après si les deux sont disponibles
@@ -9692,9 +10741,7 @@ function buildPrintRfc(){
   // PV validation (optionnel)
   if(SHOW('rfc','pvReception')){
     h+=_pvBreak('rfc','pvReception');
-    h+=`<div class="oci-page-break"></div>`;
-    h+=_ociRunHdr('rfc',clientName);
-    h+=`<div class="oci-body">`;
+    h+=_secStart('rfc',clientName);
     h+=`<div class="oci-h1"><div class="ico" style="background:var(--oci-ok-fill)">${_ociPictoIcon('file')}</div><div class="t">Validation &amp; signatures</div></div>`;
     if(r.commentaireValidation){
       h+=`<div style="background:var(--oci-fill-50);border-radius:6pt;padding:9pt 12pt;margin-bottom:12pt;font-size:9pt;line-height:1.55">
